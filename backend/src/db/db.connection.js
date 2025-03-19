@@ -2,7 +2,7 @@
 import '../config/config.js'; // Usa import para dotenv (necesita dotenv/config)
 import mysql from 'mysql2/promise';
 
-const pool = mysql.createPool({
+const connection = mysql.createPool({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
@@ -14,7 +14,7 @@ const pool = mysql.createPool({
 });
 
 // Prueba la conexión a la base de datos
-pool.getConnection()
+connection.getConnection()
   .then(connection => {
     console.log('Conexión exitosa a la base de datos MySQL');
     connection.release(); // Libera la conexión
@@ -23,4 +23,4 @@ pool.getConnection()
     console.error('Error al conectar a la base de datos:', err);
   });
 
-export default pool;
+export default connection;
