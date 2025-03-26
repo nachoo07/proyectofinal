@@ -1,13 +1,13 @@
 import connection from "../../db/db.connection.js";
 
-const allNotifications = async (request, response) => {
+const getAllNotification = async (request, response) => {
   const query = `SELECT * FROM notifications`;
 
   const result = await connection.query(query);
   response.send(result[0]);
 };
 
-const singleNotification = async (request, response) => {
+const getNotificicationByNotification = async (request, response) => {
   const id = request.params.id;
 
   try {
@@ -134,8 +134,8 @@ const deleteNotification = async (req, res) => {
 };
 
 export default {
-  allNotifications,
-  singleNotification,
+  getAllNotification,
+  getNotificicationByNotification,
   createNotification,
   updateNotification,
   deleteNotification,
