@@ -3,10 +3,10 @@ import express from "express";
 const router = express.Router();
 import controller from "../../controllers/motion/motion.controller.js";
 
-router.get("/motions/", getAllMotion);
-router.get("/motions/:id", getMotionByMotion);
-router.post("/motions", controller.createMotion); // Ruta corregida
-router.put("/motions/:id", controller.updateMotion);
-router.delete("/motions/:id", controller.deleteMotion);
+router.get("/", getAllMotion);
+router.get("/:id", getMotionByMotion);
+router.post("/create", createMotion); // Ruta corregida
+router.put("/update/:id", updateMotion);
+router.delete("/delete/:id", deleteMotion);
 
 export default notificationRouter;
