@@ -1,10 +1,10 @@
-import pool from '../../db/db.connection.js';
+import connection from '../../db/db.connection.js';
 
 // Obtener todos los profesores
 export const allTeachers = async (req, res) => {
     const query = "SELECT * FROM teacher";
     try {
-        const [rows] = await pool.query(query);
+        const [rows] = await connection.query(query);
         res.json(rows);
     } catch (err) {
         console.error("Error en la consulta:", err);
@@ -17,7 +17,7 @@ export const singleTeacher = async (req, res) => {
     const { id } = req.params;
     const query = "SELECT * FROM teacher WHERE id = ?";
     try {
-        const [rows] = await pool.query(query, [id]);
+        const [rows] = await connection.query(query, [id]);
         if (rows.length === 0) {
             return res.status(404).json({ error: "Profesor no encontrado" });
         }
@@ -35,7 +35,7 @@ export const createTeacher = async (req, res) => {
     const values = [name, lastName, email, phone || null];
 
     try {
-        const [result] = await pool.query(query, values);
+        const [result] = await connection.query(query, values);
         res.status(201).json({
             message: "Profesor creado exitosamente",
             id: result.insertId
@@ -54,7 +54,7 @@ export const editTeacher = async (req, res) => {
     const values = [name, lastName, email, phone || null, id];
 
     try {
-        const [result] = await pool.query(query, values);
+        const [result] = await connection.query(query, values);
         if (result.affectedRows === 0) {
             return res.status(404).json({ error: "Profesor no encontrado" });
         }
@@ -71,7 +71,7 @@ export const eraseTeacher = async (req, res) => {
     const query = "DELETE FROM teacher WHERE id = ?";
 
     try {
-        const [result] = await pool.query(query, [id]);
+        const [result] = await connection.query(query, [id]);
         if (result.affectedRows === 0) {
             return res.status(404).json({ error: "Profesor no encontrado" });
         }

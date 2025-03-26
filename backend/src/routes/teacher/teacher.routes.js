@@ -1,28 +1,13 @@
-// routes/teacherRoutes.js
 import express from 'express';
-import { 
-    allTeachers,
-    singleTeacher,
-    createTeacher,
-    editTeacher,
-    eraseTeacher 
-} from '../../controllers/teacher/teacher.controller.js';
+import { authenticate, authorizeRole } from '../../Middleware/login/auth.js';
+import { allTeachers,singleTeacher,createTeacher,editTeacher,eraseTeacher } from '../../controllers/teacher/teacher.controller.js';
 
 const router = express.Router();
 
-// Obtener todos los profesores
-router.get('/', allTeachers);
-
-// Obtener un profesor por ID
-router.get('/:id', singleTeacher);
-
-// Crear un nuevo profesor
-router.post('/', createTeacher);
-
-// Editar un profesor
-router.put('/:id', editTeacher);
-
-// Eliminar un profesor
-router.delete('/:id', eraseTeacher);
+router.get('/',authenticate, authorizeRole(['admin']), allTeachers);// Obtener todos los profesores
+router.get('/:id',authenticate, authorizeRole(['admin']), singleTeacher);// Obtener un profesor por ID
+router.post('/',authenticate, authorizeRole(['admin']), createTeacher);// Crear un nuevo profesor
+router.put('/:id',authenticate, authorizeRole(['admin']), editTeacher);// Editar un profesor
+router.delete('/:id',authenticate, authorizeRole(['admin']), eraseTeacher);// Eliminar un profesor
 
 export default router;
