@@ -1,5 +1,5 @@
 // student.controller.js
-import pool from '../../db/db.connection.js'; // Importa el pool de conexiones desde db.connection.js
+import connection from '../../db/db.connection.js'; // Importa el pool de conexiones desde db.connection.js
 
 // Crear un nuevo estudiante
 export const createStudent = async (req, res) => {
@@ -27,7 +27,7 @@ export const createStudent = async (req, res) => {
     }
 
     // Insertar el estudiante en la tabla
-    const [result] = await pool.query(
+    const [result] = await connection.query(
       'INSERT INTO students (name, lastName, dni, birthDate, address, motherName, fatherName, motherPhone, fatherPhone, category, mail, state, comment, profileImage) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
       [name, lastName, dni, birthDate, address, motherName || null, fatherName || null, motherPhone || null, fatherPhone || null, category, mail || null, state || 'Activo',  comment || null, profileImage || 'https://i.pinimg.com/736x/24/f2/25/24f22516ec47facdc2dc114f8c3de7db.jpg']
     );
@@ -46,7 +46,7 @@ export const createStudent = async (req, res) => {
 // Listar todos los estudiantes (GET)
 export const getAllStudents = async (req, res) => {
   try {
-    const [rows] = await pool.query('SELECT * FROM students');
+    const [rows] = await connection.query('SELECT * FROM students');
     res.json(rows);
   } catch (err) {
     res.status(500).json({ error: 'Error al consultar los estudiantes', details: err.message });
@@ -57,7 +57,7 @@ export const getAllStudents = async (req, res) => {
 export const getStudentById = async (req, res) => {
   const { id } = req.params;
   try {
-    const [rows] = await pool.query('SELECT * FROM students WHERE id = ?', [id]);
+    const [rows] = await connection.query('SELECT * FROM students WHERE id = ?', [id]);
     if (rows.length === 0) {
       return res.status(404).json({ error: 'Estudiante no encontrado' });
     }
@@ -88,7 +88,7 @@ export const updateStudent = async (req, res) => {
   } = req.body;
 
   try {
-    const [result] = await pool.query(
+    const [result] = await connection.query(
       'UPDATE students SET name=?, lastName=?, dni=?, birthDate=?, address=?, motherName=?, fatherName=?, motherPhone=?, fatherPhone=?, category=?, mail=?, state=?, comment=?, profileImage=? WHERE id=?',
       [
         name,
@@ -125,7 +125,7 @@ export const updateStudent = async (req, res) => {
 export const deleteStudent = async (req, res) => {
   const { id } = req.params;
   try {
-    const [result] = await pool.query('DELETE FROM students WHERE id = ?', [id]);
+    const [result] = await connection.query('DELETE FROM students WHERE id = ?', [id]);
     if (result.affectedRows === 0) {
       return res.status(404).json({ error: 'Estudiante no encontrado' });
     }
