@@ -7,6 +7,7 @@ import TeacherRoutes from './src/routes/teacher/teacher.routes.js';
 import cookieParser from 'cookie-parser'; // Importa cookie-parser
 import userRoutes from './src/routes/user/user.routes.js'; // Importa las rutas de usuario
 import authRoutes from './src/routes/login/login.routes.js'; // Importa las rutas de autenticación
+import studentRoutes from './src/routes/student/student.routes.js'
 const app = express();
 
 // Middlewares
@@ -21,6 +22,7 @@ app.use('/api/users', userRoutes); // Rutas de usuario
 app.use('/api/auth', authRoutes); // Rutas de autenticación
 app.use('/api/shares', ShareRoutes);
 app.use('/api/teachers', TeacherRoutes);
+app.use("/api/student" , studentRoutes);
 
 // Ruta base
 app.get('/', (req, res) => {
@@ -33,7 +35,7 @@ app.use((err, req, res, next) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`La aplicación está escuchando en el puerto ${PORT}`);
+  console.log('La aplicación está escuchando en el puerto ${PORT}');
 });
 
 process.on('uncaughtException', (err) => {
