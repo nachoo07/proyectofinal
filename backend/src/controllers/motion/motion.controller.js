@@ -1,13 +1,13 @@
 import connection from "../../db/db.connection.js"
 // Get all motions
-const allMotions = async  (request, response) => {
+const getAllMotions = async  (request, response) => {
     const query = `SELECT * FROM motions`
     const result = await connection.query(query);
     response.send(result[0]);
 }
 
 // Get single motion by ID
-const singleMotion = async(request, response) => {
+const getMotionByMotion = async(request, response) => {
     const id = request.params.id
     try {
         console.log("Buscando Movimiento con ID:", id); // Depuración
@@ -179,8 +179,8 @@ const deleteMotion = async (req, res) => {
     }
   };
 export default  { 
-    allMotions, 
-    singleMotion, 
+    getAllMotions, 
+    getMotionByMotion, 
     createMotion, 
     updateMotion, 
     deleteMotion
