@@ -9,6 +9,8 @@ import cookieParser from 'cookie-parser'; // Importa cookie-parser
 import userRoutes from './src/routes/user/user.routes.js'; // Importa las rutas de usuario
 import authRoutes from './src/routes/login/login.routes.js'; // Importa las rutas de autenticación
 import studentRoutes from './src/routes/student/student.routes.js'
+import notificationRouter from './src/routes/notification/notification.routes.js';
+
 const app = express();
 
 // Middlewares
@@ -25,6 +27,7 @@ app.use('/api/shares', ShareRoutes);
 app.use('/api/teachers', TeacherRoutes);
 app.use("/api/student" , studentRoutes);
 app.use('/api/motion', motionRoutes); // Rutas de motion
+app.use("/api/notification", notificationRouter);
 
 // Ruta base
 app.get('/', (req, res) => {
