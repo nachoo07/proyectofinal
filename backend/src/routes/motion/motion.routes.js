@@ -1,7 +1,6 @@
 import express from "express";
-
+import {getAllMotion,getMotionByMotion,createMotion,updateMotion ,deleteMotion} from '../../controllers/motion/motion.controller.js'
 const router = express.Router();
-import controller from "../../controllers/motion/motion.controller.js";
 
 router.get("/", getAllMotion);
 router.get("/:id", getMotionByMotion);
