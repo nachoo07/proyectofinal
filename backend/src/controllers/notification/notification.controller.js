@@ -1,13 +1,13 @@
 import connection from "../../db/db.connection.js";
 
-const getAllNotification = async (request, response) => {
+export const getAllNotification = async (request, response) => {
   const query = `SELECT * FROM notifications`;
 
   const result = await connection.query(query);
   response.send(result[0]);
 };
 
-const getNotificicationByNotification = async (request, response) => {
+export const getNotificicationByNotification = async (request, response) => {
   const id = request.params.id;
 
   try {
@@ -28,7 +28,8 @@ const getNotificicationByNotification = async (request, response) => {
     response.status(500).send({ error: "Error fetching notification" });
   }
 };
-const createNotification = async (req, res) => {
+
+export const createNotification = async (req, res) => {
   const { type, message, date, expirationDate } = req.body;
 
   // Asegúrate de validar los valores según los tipos de datos (enum 'event' o 'reminder')
@@ -70,7 +71,7 @@ const createNotification = async (req, res) => {
   }
 };
 
-const updateNotification = async (req, res) => {
+export const updateNotification = async (req, res) => {
   const { id } = req.params; // Obtenemos el ID desde los parámetros de la URL
   const { type, message, date, expirationDate } = req.body; // Obtenemos los nuevos valores desde el cuerpo de la solicitud
 
@@ -111,7 +112,7 @@ const updateNotification = async (req, res) => {
   }
 };
 
-const deleteNotification = async (req, res) => {
+export const deleteNotification = async (req, res) => {
   const { id } = req.params; // Obtenemos el ID desde los parámetros de la URL
 
   const query = `DELETE FROM notifications WHERE id = ?`;
@@ -133,10 +134,4 @@ const deleteNotification = async (req, res) => {
   }
 };
 
-export default {
-  getAllNotification,
-  getNotificicationByNotification,
-  createNotification,
-  updateNotification,
-  deleteNotification,
-};
+
