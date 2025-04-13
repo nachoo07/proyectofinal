@@ -8,4 +8,4 @@ router.post("/create", createMotion); // Ruta corregida
 router.put("/update/:id", updateMotion);
 router.delete("/delete/:id", deleteMotion);
 
-export default notificationRouter;
+export default notificationRouter; 
