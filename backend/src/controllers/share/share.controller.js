@@ -22,7 +22,7 @@ export const allShares = async (req, res) => {
         const [rows] = await connection.query(query);
         res.json(rows);
     }catch (err) {
-    console.error("Error en la consulta:", err);
+    console.error("Error en la consulta de cuota:", err);
     res.status(500).json({ error: "Error en la consulta" });
     }
 };
