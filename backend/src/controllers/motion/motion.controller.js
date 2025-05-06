@@ -1,10 +1,27 @@
 import connection from "../../db/db.connection.js"
 // Get all motions
-const getAllMotions = async  (request, response) => {
-    const query = `SELECT * FROM motions`
-    const result = await connection.query(query);
-    response.send(result[0]);
-}
+export const getAllMotion = async (request, response) => {
+  try {
+    const { type } = request.query; // Obtener el parámetro 'type' de la URL
+    let query = 'SELECT * FROM motions';
+    let queryParams = [];
+
+    // Si se proporciona el parámetro 'type', agregar un WHERE
+    if (type) {
+      query += ' WHERE incomeType = ?';
+      queryParams.push(type);
+    }
+
+    // Ejecutar la consulta
+    const result = await connection.query(query, queryParams);
+
+    // Enviar los resultados como JSON
+    response.status(200).json(result[0]);
+  } catch (error) {
+    console.error('Error al obtener movimientos:', error);
+    response.status(500).json({ error: 'Error al obtener movimientos' });
+  }
+};
 
 // Get single motion by ID
 const getMotionByMotion = async(request, response) => {
@@ -17,10 +34,10 @@ const getMotionByMotion = async(request, response) => {
         );
     
         if (data.length < 1) {
-          return response.status(404).send({ error: "Notification not found" });
+          return response.status(404).send({ error: "Motion not found" });
         }
     
-        console.log("Notificación encontrada:", data[0]); // Depuración
+        console.log("Movimiento encontrado:", data[0]); // Depuración
         response.send(data[0]);
       } catch (error) {
         console.error("Error fetching Report:", error);
