@@ -1,5 +1,9 @@
 import connection from "../../db/db.connection.js";
 
+import dayjs from 'dayjs';
+
+// Asumiendo que estás recibiendo la fecha como string ISO (por ejemplo: "2025-04-22T03:00:00.000Z")
+
 export const getAllNotification = async (request, response) => {
   const query = `SELECT * FROM notifications`;
 
@@ -32,76 +36,82 @@ export const getNotificicationByNotification = async (request, response) => {
 export const createNotification = async (req, res) => {
   const { type, message, date, expirationDate } = req.body;
 
-  // Asegúrate de validar los valores según los tipos de datos (enum 'event' o 'reminder')
+  // Validar el tipo (enum 'event' o 'reminder')
   if (!["event", "reminder"].includes(type)) {
     return res
       .status(400)
       .json({ error: "El tipo debe ser 'event' o 'reminder'" });
   }
 
+  // Validar y formatear expirationDate
+  let formattedExpirationDate;
+  if (expirationDate) {
+    try {
+      formattedExpirationDate = new Date(expirationDate)
+        .toISOString()
+        .slice(0, 19)
+        .replace('T', ' ');
+    } catch (error) {
+      return res
+        .status(400)
+        .json({ error: "Formato de expirationDate inválido" });
+    }
+  } else {
+    return res
+      .status(400)
+      .json({ error: "expirationDate es requerido" });
+  }
+
   // Definir la consulta SQL
   const query = `INSERT INTO notifications (type, message, date, expirationDate) 
-                   VALUES (?, ?, ?, ?)`;
+                 VALUES (?, ?, ?, ?)`;
 
   try {
     // Ejecutar la consulta con parámetros
     const [result] = await connection.execute(query, [
       type,
       message,
-      date,
-      expirationDate,
-    
+      date ? new Date(date).toISOString().slice(0, 19).replace('T', ' ') : new Date().toISOString().slice(0, 19).replace('T', ' '), // Formatear también la fecha 'date'
+      formattedExpirationDate,
     ]);
 
-    // Devolver la respuesta con los detalles de la notificación creada
-    res.status(201).json({
-      message: "Notificación creada correctamente",
-      notification: {
-        id: result.insertId, // El ID generado automáticamente
-        type,
-        message,
-        date,
-        expirationDate,
-  
-      },
-    });
+    return res.status(201).json({ message: "Notificación creada exitosamente", id: result.insertId });
   } catch (error) {
-    console.error("Error creando la notificación:", error);
-    res.status(500).json({ error: "Error interno del servidor" });
+    console.error(error);
+    return res.status(500).json({ error: "Error al crear la notificación" });
   }
 };
 
 export const updateNotification = async (req, res) => {
-  const { id } = req.params; // Obtenemos el ID desde los parámetros de la URL
-  const { type, message, date, expirationDate } = req.body; // Obtenemos los nuevos valores desde el cuerpo de la solicitud
+  const { id } = req.params;
+  const { type, message, date, expirationDate } = req.body;
 
-  // Validar que el tipo de notificación esté dentro de los valores permitidos
+  // Validar el tipo antes de hacer nada
   if (!["event", "reminder"].includes(type)) {
-    return res
-      .status(400)
-      .json({ error: "El tipo debe ser 'event' o 'reminder'" });
+    return res.status(400).json({ error: "El tipo debe ser 'event' o 'reminder'" });
   }
 
-  const query = `UPDATE notifications 
-                   SET type = ?, message = ?, date = ?, expirationDate = ? 
-                   WHERE id = ?`;
+  // Formatear la fecha a un formato válido para MySQL
+  const formattedDate = dayjs(expirationDate).format('YYYY-MM-DD HH:mm:ss');
+
+  const query = `
+    UPDATE notifications 
+    SET type = ?, message = ?, expirationDate = ? 
+    WHERE id = ?
+  `;
 
   try {
-    // Ejecutar la consulta con los parámetros necesarios
     const [result] = await connection.execute(query, [
       type,
       message,
-      date,
-      expirationDate,
+      formattedDate,
       id,
     ]);
 
     if (result.affectedRows === 0) {
-      // Si no se encontró la notificación con ese ID
       return res.status(404).json({ error: "Notificación no encontrada" });
     }
 
-    // Si la actualización fue exitosa
     res.json({
       message: "Notificación actualizada correctamente",
       notification: { id, type, message, date, expirationDate },
