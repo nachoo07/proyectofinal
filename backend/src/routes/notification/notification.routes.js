@@ -15,4 +15,4 @@ router.post("/notifications", createNotification); // Ruta corregida
 router.put("/notifications/:id", updateNotification);
 router.delete("/notifications/:id", deleteNotification);
 
-export default notificationRouter;
+export default router;
