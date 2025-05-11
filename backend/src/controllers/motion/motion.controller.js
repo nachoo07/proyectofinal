@@ -24,7 +24,7 @@ export const getAllMotion = async (request, response) => {
 };
 
 // Get single motion by ID
-const getMotionByMotion = async(request, response) => {
+export const getMotionByMotion = async(request, response) => {
     const id = request.params.id
     try {
         console.log("Buscando Movimiento con ID:", id); // Depuración
@@ -46,7 +46,7 @@ const getMotionByMotion = async(request, response) => {
 }
 
 // Create new motion
-const createMotion = async (req, res) => {
+export const createMotion = async (req, res) => {
     const { concept, date, amount, paymentMethod, incomeType } = req.body;
   
     // Asegúrate de validar los valores según los tipos de datos (enum 'efectivo' o 'transferencia')
@@ -112,7 +112,7 @@ const createMotion = async (req, res) => {
   }
 
 // Edit existing motion
-const updateMotion = async (request, response) => {
+export const updateMotion = async (request, response) => {
     const id = request.params.id
     const { concept, date, amount, paymentMethod, incomeType } = request.body
     console.log('a')
@@ -174,7 +174,7 @@ const updateMotion = async (request, response) => {
 }
 
 // Delete motion
-const deleteMotion = async (req, res) => {
+export const deleteMotion = async (req, res) => {
     const { id } = req.params; // Obtenemos el ID desde los parámetros de la URL
   
     const query = `DELETE FROM motions WHERE id = ?`;
@@ -195,10 +195,5 @@ const deleteMotion = async (req, res) => {
       res.status(500).json({ error: "Error interno del servidor" });
     }
   };
-export default  { 
-    getAllMotions, 
-    getMotionByMotion, 
-    createMotion, 
-    updateMotion, 
-    deleteMotion
-}
+
+

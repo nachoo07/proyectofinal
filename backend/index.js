@@ -2,7 +2,7 @@ import express from 'express';
 import morgan from 'morgan';
 import cors from 'cors';
 import { PORT } from './src/config/config.js'; // Importa el puerto desde config.js
-import motionRoutes from './src/routes/motion.routes.js'; // Importa las rutas de motion
+import motionRoutes from './src/routes/motion/motion.routes.js'; // Importa las rutas de motion
 import ShareRoutes from './src/routes/share/share.routes.js'; 
 import TeacherRoutes from './src/routes/teacher/teacher.routes.js';
 import cookieParser from 'cookie-parser'; // Importa cookie-parser
@@ -10,6 +10,7 @@ import userRoutes from './src/routes/user/user.routes.js'; // Importa las rutas 
 import authRoutes from './src/routes/login/login.routes.js'; // Importa las rutas de autenticación
 import studentRoutes from './src/routes/student/student.routes.js'
 import notificationRouter from './src/routes/notification/notification.routes.js';
+
 
 const app = express();
 
