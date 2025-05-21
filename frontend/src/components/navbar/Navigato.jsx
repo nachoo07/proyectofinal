@@ -29,7 +29,10 @@ const Navigato = () => {
           navbarScroll
         >
           <Nav.Link as={Link} to="/user">usuarios</Nav.Link>
-          <Nav.Link as={Link} to="/" >Link</Nav.Link>
+           <Nav.Link as={Link} to="/notifications">Notificaciones</Nav.Link>
+           <Nav.Link as={Link} to="/motions">Movimientos</Nav.Link>
+           <Nav.Link as={Link} to="/reports">Reportes</Nav.Link>
+          <Nav.Link as={Link} to="/shares" >Cuotas</Nav.Link>
         </Nav>
         <Form className="d-flex">
           {userData && <span className="me-3 align-self-center">Hola, {userData.name}</span>}

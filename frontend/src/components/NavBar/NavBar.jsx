@@ -14,14 +14,14 @@ import {
   MenuItem
 } from '@mui/material';
 import {
-  Home as HomeIcon,
+  Home as HomeAdmin,
   People as PeopleIcon,
   AttachMoney as AttachMoneyIcon,
   SwapHoriz as MovimientosIcon,
   Person as UserIcon,
   Settings as SettingsIcon,
   Report as ReportIcon,
-  Notifications as NotificationsIcon,
+  Notifications as PageNotification,
   Menu as MenuIcon
 } from '@mui/icons-material';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -34,8 +34,6 @@ const NavBar = ({ onNotificationClick }) => {  // Recibimos una función desde e
   const navigate = useNavigate();
   const location = useLocation();
 
-  console.log(location.pathname);
-
   const handleMobileMenuOpen = (event) => {
     setMobileMenuAnchorEl(event.currentTarget);
   };
@@ -45,14 +43,14 @@ const NavBar = ({ onNotificationClick }) => {  // Recibimos una función desde e
   };
 
   const navItems = [
-    { text: 'Inicio', icon: <HomeIcon />, url: '/' },
+    { text: 'Inicio', icon: <HomeAdmin />, url: '/' },
     { text: 'Alumnos', icon: <PeopleIcon />, url: '/alumnos' },
     { text: 'Cuotas', icon: <AttachMoneyIcon />, url: '/cuotas' },
     { text: 'Movimientos', icon: <MovimientosIcon />, url: '/movimientos' },
     { text: 'Usuarios', icon: <UserIcon />, url: '/usuarios' },
     { text: 'Settings', icon: <SettingsIcon />, url: '/settings' },
     { text: 'Reporte', icon: <ReportIcon />, url: '/reports' },
-    { text: 'Notificaciones', icon: <NotificationsIcon />, url: '/notifications' },
+    { text: 'Notificaciones', icon: <PageNotification />, url: '/notifications' },
   ];
 
   return (
@@ -169,7 +167,7 @@ const NavBar = ({ onNotificationClick }) => {  // Recibimos una función desde e
             <Divider />
             <MenuItem onClick={onNotificationClick}>  {/* También en móvil */}
               <ListItemIcon>
-                <NotificationsIcon />
+                <PageNotification />
               </ListItemIcon>
               <ListItemText primary="Notificaciones" />
             </MenuItem>

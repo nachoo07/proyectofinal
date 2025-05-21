@@ -21,7 +21,7 @@ import {
   CircularProgress,
 } from '@mui/material';
 import { useMotions } from '../../context/motion/MotionContext.jsx';
-
+import Navigato from '../navbar/Navigato.jsx';
 // Función para procesar datos para el gráfico
 const processChartData = (motions, selectedYear) => {
   const months = [
@@ -125,6 +125,7 @@ const ReportComponent = () => {
 
   return (
     <Box sx={{ p: 4, bgcolor: 'background.paper' }} className="min-h-screen">
+      <Navigato/>
       <Typography variant="h4" gutterBottom className="text-center">
         Reporte Financiero
       </Typography>

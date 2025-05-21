@@ -1,10 +1,11 @@
-import React from 'react'
+
 import Navigato from '../navbar/Navigato'
+
 
 const HomeAdmin = () => {
   return (
     <>
-        <Navigato />
+        <Navigato/>
         <h1>hola mundo</h1>
     </>
   )

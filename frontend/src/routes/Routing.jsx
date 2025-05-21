@@ -15,8 +15,7 @@ const Routing = () => {
         <Route path="/user" element={<PageUser />} />
         <Route path="/" element={<PageHomeAdmin />} />
         <Route path="/login" element={<PageLogin />} />
-   
-        <Route path="/movimientos" element={<PageMotion />} />
+        <Route path="/motions" element={<PageMotion />} />
 
         <Route path="/notifications" element={<PageNotification />} />
         <Route path="/reports" element={<PageReport />} />

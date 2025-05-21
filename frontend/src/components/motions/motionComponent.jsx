@@ -25,6 +25,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import es from 'date-fns/locale/es';
 import { useMotions } from '../../context/motion/MotionContext';
 import MotionList from './motionList.jsx';
+import Navigato from '../navbar/Navigato.jsx';
 
 const MotionComponent = () => {
   const {
@@ -149,6 +150,7 @@ const MotionComponent = () => {
 
   return (
     <Box sx={{ p: 4, maxWidth: 1000, mx: 'auto' }}>
+      <Navigato />
       <Typography variant="h4" gutterBottom>
         Gestión de Movimientos
       </Typography>
