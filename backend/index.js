@@ -10,15 +10,21 @@ import userRoutes from './src/routes/user/user.routes.js'; // Importa las rutas 
 import authRoutes from './src/routes/login/login.routes.js'; // Importa las rutas de autenticación
 import studentRoutes from './src/routes/student/student.routes.js'
 import notificationRouter from './src/routes/notification/notification.routes.js';
-
+import attendanceRoutes from './src/routes/attendance/attendance.router.js'; // Importa las rutas de asistencia
 
 const app = express();
 
+const corsOptions = {
+  origin: 'http://localhost:5173', // Origen de tu frontend
+  credentials: true, // Permitir credenciales (cookies)
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Métodos permitidos
+  allowedHeaders: ['Content-Type', 'Authorization'], // Encabezados permitidos
+};
 // Middlewares
 app.use(express.json()); // Para parsear JSON en las solicitudes
 app.use(morgan('dev')); // Logs de solicitudes HTTP
 
-app.use(cors()); // Habilita CORS para permitir solicitudes cross-origin
+app.use(cors(corsOptions)); // Habilita CORS para permitir solicitudes cross-origin
 app.use(cookieParser()); // Parsea cookies en las solicitudes
 
 // Rutas
@@ -29,6 +35,7 @@ app.use('/api/teachers', TeacherRoutes);
 app.use("/api/student" , studentRoutes);
 app.use('/api/motion', motionRoutes); // Rutas de motion
 app.use("/api/notification", notificationRouter);
+app.use('/api/attendance', attendanceRoutes); // Rutas de asistencia
 
 // Ruta base
 app.get('/', (req, res) => {
