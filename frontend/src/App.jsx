@@ -1,22 +1,32 @@
+
+import { UserProvider } from './context/user/UserContext';
+import Routing from './routes/Routing';
+import { LoginProvider } from './context/login/LoginContext';
 import { ThemeProvider, CssBaseline } from '@mui/material';
 import theme from './theme';
 import { NotificationProvider } from "./context/notification/notificationContext";
-import Router from './routes/router.jsx';
 import { SharesProvider } from './context/share/ShareContext';
 import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer } from 'react-toastify';
 
 function App() {
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <NotificationProvider>
-        <SharesProvider>
-          <Router />
-          <ToastContainer />
-        </SharesProvider>
-      </NotificationProvider>
-    </ThemeProvider>
+    <>
+      
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <LoginProvider>
+          <UserProvider>
+          <NotificationProvider>
+            <SharesProvider>
+                <Routing />
+              <ToastContainer />
+            </SharesProvider>
+          </NotificationProvider>
+          </UserProvider>
+        </LoginProvider>
+      </ThemeProvider>
+    </>
   );
 }
 

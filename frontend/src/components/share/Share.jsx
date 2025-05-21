@@ -25,6 +25,7 @@ import {
 } from '@mui/material';
 import { SharesContext } from '../../context/share/ShareContext';
 import { toast } from 'react-toastify';
+import Navigato from '../navbar/Navigato';
 
 // Función para obtener los últimos tres meses
 const getLastThreeMonths = () => {
@@ -187,7 +188,7 @@ const Share = () => {
 
   return (
     <Box sx={{ padding: '20px' }}>
-      {/* Campo de búsqueda */}
+      <Navigato />
       <Box sx={{ mb: 3 }}>
         <TextField
           fullWidth
