@@ -1,14 +1,29 @@
 import connection from '../../db/db.connection.js';
 
 // Obtener todos los shares
+// share.controller.js
 export const allShares = async (req, res) => {
-    const query = "SELECT * FROM shares";
+    const query = `
+    SELECT 
+        s.id AS student_id,
+        s.name,
+        s.lastName,
+        sh.id AS share_id,
+        sh.date,
+        sh.amount,
+        sh.state,
+        sh.paymentmethod,
+        sh.paymentdate
+    FROM students s
+    LEFT JOIN shares sh ON s.id = sh.student_id
+    ORDER BY s.lastName, sh.date DESC
+    `;
     try {
         const [rows] = await connection.query(query);
         res.json(rows);
-    } catch (err) {
-        console.error("Error en la consulta:", err);
-        res.status(500).json({ error: "Error en la consulta" });
+    }catch (err) {
+    console.error("Error en la consulta de cuota:", err);
+    res.status(500).json({ error: "Error en la consulta" });
     }
 };
 
@@ -119,3 +134,4 @@ export const eraseShare = async (req, res) => {
         res.status(500).json({ error: "Error al eliminar el share" });
     }
 };
+
