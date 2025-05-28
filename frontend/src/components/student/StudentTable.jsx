@@ -1,27 +1,70 @@
-import React from 'react';
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
 
-const StudentTable = ({ students }) => {
+const StudentTable = ({ students, onDelete }) => {
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const filteredStudents = students.filter((student) =>
+    `${student.name} ${student.address} ${student.category}`
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase())
+  );
+
   return (
-    <table border="1" cellPadding="10" cellSpacing="0">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Nombre</th>
-          <th>Direccion</th> 
-          <th>Categoria</th>
-        </tr>
-      </thead> 
-      <tbody>
-        {students.map((student) => (
-          <tr key={student.id}>
-            <td>{student.id}</td>
-            <td>{student.name}</td>
-            <td>{student.address}</td>
-            <td>{student.category}</td>
+    <div>
+      <h1>Panel de Alumnos</h1>
+
+      <div style={{ margin: "10px 0" }}>
+        <input
+          type="text"
+          placeholder="Buscar por nombre, dirección o categoría"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          style={{ padding: "5px", width: "100%", maxWidth: "300px" }}
+        />
+      </div>
+
+      <Link to="/students/new">
+        <button>Nuevo Alumno</button>
+      </Link>
+
+      <table border="1" cellPadding="10" cellSpacing="0">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Dirección</th>
+            <th>Categoría</th>
+            <th>Acciones</th>
           </tr>
-        ))}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          {filteredStudents.map((student) => (
+            <tr key={student.id}>
+              <td>{student.name}</td>
+              <td>{student.address}</td>
+              <td>{student.category}</td>
+              <td>
+                <Link to={`/students/${student.id}`}>
+                  <button>Ver</button>
+                </Link>
+                <Link to={`/students/${student.id}?edit=true`}>
+                  <button>Editar</button>
+                </Link>
+                &nbsp;
+                <button onClick={() => onDelete(student.id)}>Eliminar</button>
+              </td>
+            </tr>
+          ))}
+          {filteredStudents.length === 0 && (
+            <tr>
+              <td colSpan="4" style={{ textAlign: "center" }}>
+                No se encontraron estudiantes.
+              </td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+    </div>
   );
 };
 
