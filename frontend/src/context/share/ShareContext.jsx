@@ -1,4 +1,3 @@
-// src/context/SharesContext.jsx
 import React, { createContext, useState, useEffect } from 'react';
 import axios from 'axios';
 
@@ -26,13 +25,33 @@ export const SharesProvider = ({ children }) => {
     }
   };
 
+  // Función para crear una nueva cuota
+  const createShare = async (shareData) => {
+    try {
+      const response = await axios.post('http://localhost:4000/api/shares/create', shareData, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+      });
+      const newShare = {
+        ...shareData,
+        share_id: response.data.id,
+        name: studentsWithShares.find((s) => s.student_id === shareData.student_id)?.name,
+        lastName: studentsWithShares.find((s) => s.student_id === shareData.student_id)?.lastName,
+      };
+      setStudentsWithShares((prev) => [newShare, ...prev]);
+      return response.data;
+    } catch (err) {
+      setError('Error al crear la cuota');
+      console.error('Error:', err);
+      throw err;
+    }
+  };
+
   // Función para actualizar una cuota
   const updateShare = async (shareId, updatedData) => {
     try {
       await axios.put(`http://localhost:4000/api/shares/update/${shareId}`, updatedData, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       });
-      // Actualizar el estado local
       setStudentsWithShares((prev) =>
         prev.map((item) =>
           item.share_id === shareId ? { ...item, ...updatedData } : item
@@ -40,6 +59,20 @@ export const SharesProvider = ({ children }) => {
       );
     } catch (err) {
       setError('Error al actualizar la cuota');
+      console.error('Error:', err);
+      throw err;
+    }
+  };
+
+  // Función para eliminar una cuota
+  const deleteShare = async (shareId) => {
+    try {
+      await axios.delete(`http://localhost:4000/api/shares/delete/${shareId}`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+      });
+      setStudentsWithShares((prev) => prev.filter((item) => item.share_id !== shareId));
+    } catch (err) {
+      setError('Error al eliminar la cuota');
       console.error('Error:', err);
       throw err;
     }
@@ -57,7 +90,9 @@ export const SharesProvider = ({ children }) => {
         loading,
         error,
         fetchStudentsWithShares,
+        createShare,
         updateShare,
+        deleteShare,
       }}
     >
       {children}
