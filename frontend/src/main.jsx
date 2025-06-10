@@ -1,9 +1,13 @@
 import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.jsx'
-// eslint-disable-next-line no-undef
+import { BrowserRouter } from 'react-router-dom'
+import { StrictMode } from 'react'
+
 createRoot(document.getElementById('root')).render(
-  <div>
-    <App />
- </div>
+  <StrictMode>
+    <BrowserRouter>
+      <App />
+    </BrowserRouter>
+  </StrictMode>,
 )

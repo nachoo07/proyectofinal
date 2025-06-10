@@ -1,23 +1,15 @@
-import { ThemeProvider, CssBaseline } from '@mui/material';
-import theme from './theme';
-import { NotificationProvider } from "./context/notification/notificationContext";
-import Router from './routes/router.jsx';
-import { SharesProvider } from './context/share/ShareContext';
-import 'react-toastify/dist/ReactToastify.css';
-import { ToastContainer } from 'react-toastify';
 
-function App() {
+
+const App = () => {
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <NotificationProvider>
-        <SharesProvider>
-          <Router />
-          <ToastContainer />
-        </SharesProvider>
-      </NotificationProvider>
-    </ThemeProvider>
+
   );
-}
+};
+
+// Vista principal con la tabla
+const Home = () => {
+  const { students, deleteStudent } = useContext(StudentContext);
+  return <StudentTable students={students} onDelete={deleteStudent} />;
+};
 
 export default App;
