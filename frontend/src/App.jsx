@@ -8,7 +8,7 @@ import { ToastContainer } from 'react-toastify';
 import { UserProvider } from './context/user/UserContext';
 import { StudentProvider } from './context/student/StudentContext';
 
-//NO SE TOCA, POR QUE SINO NO ANDA LA NAVEGACION!!!!! 
+//NO SE Borra, POR QUE SINO NO ANDA LA NAVEGACION!!!!! 
 function App() {
   return (
     <ThemeProvider theme={theme}>
