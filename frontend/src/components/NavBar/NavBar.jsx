@@ -43,11 +43,11 @@ const NavBar = ({ onNotificationClick }) => {  // Recibimos una función desde e
   };
 
   const navItems = [
-    { text: 'Inicio', icon: <HomeAdmin />, url: '/' },
-    { text: 'Alumnos', icon: <PeopleIcon />, url: '/alumnos' },
-    { text: 'Cuotas', icon: <AttachMoneyIcon />, url: '/cuotas' },
-    { text: 'Movimientos', icon: <MovimientosIcon />, url: '/movimientos' },
-    { text: 'Usuarios', icon: <UserIcon />, url: '/usuarios' },
+    { text: 'Inicio', icon: <HomeAdmin />, url: '/home' },
+    { text: 'Alumnos', icon: <PeopleIcon />, url: '/students' },
+    { text: 'Cuotas', icon: <AttachMoneyIcon />, url: '/shares' },
+    { text: 'Movimientos', icon: <MovimientosIcon />, url: '/motions' },
+    { text: 'Usuarios', icon: <UserIcon />, url: '/user' },
     { text: 'Settings', icon: <SettingsIcon />, url: '/settings' },
     { text: 'Reporte', icon: <ReportIcon />, url: '/reports' },
     { text: 'Notificaciones', icon: <PageNotification />, url: '/notifications' },
@@ -55,12 +55,12 @@ const NavBar = ({ onNotificationClick }) => {  // Recibimos una función desde e
 
   return (
     <>
-      <AppBar position="static" color="default" elevation={3} sx={{ 
-        backgroundColor: '#f5f5f5',
+      <AppBar position="static" color="default" elevation={3} sx={{
+        backgroundColor: '#007F5F',
         overflowX: 'auto',
       }}>
-        <Toolbar sx={{ 
-          display: 'flex', 
+        <Toolbar sx={{
+          display: 'flex',
           justifyContent: 'center',
           minHeight: '64px !important',
           px: 0,
@@ -77,26 +77,27 @@ const NavBar = ({ onNotificationClick }) => {  // Recibimos una función desde e
           </IconButton>
 
           {/* Title - hidden on mobile */}
-          <Typography 
-            variant="h6" 
-            component="div" 
-            sx={{ 
+          <Typography
+            variant="h6"
+            component="div"
+            sx={{
               fontWeight: 'bold',
               display: { xs: 'none', md: 'block' },
               mr: 4
             }}
           >
-            Menú Principal
+            Golazo
+          
           </Typography>
 
           {/* Desktop nav items */}
-          <Box sx={{ 
-            display: { xs: 'none', md: 'flex' }, 
+          <Box sx={{
+            display: { xs: 'none', md: 'flex' },
             alignItems: 'center',
             gap: 1
           }}>
-            <List sx={{ 
-              display: 'flex', 
+            <List sx={{
+              display: 'flex',
               padding: 0,
               '& .MuiListItem-root': {
                 width: 'auto',
@@ -104,8 +105,8 @@ const NavBar = ({ onNotificationClick }) => {  // Recibimos una función desde e
               }
             }}>
               {navItems.map((item, index) => (
-                <ListItem 
-                  button 
+                <ListItem
+                  button
                   key={index}
                   selected={location.pathname === item.url}
                   sx={{
@@ -123,12 +124,12 @@ const NavBar = ({ onNotificationClick }) => {  // Recibimos una función desde e
                   <ListItemIcon>
                     {item.icon}
                   </ListItemIcon>
-                  <ListItemText 
-                    primary={item.text} 
-                    primaryTypographyProps={{ 
+                  <ListItemText
+                    primary={item.text}
+                    primaryTypographyProps={{
                       fontWeight: item.selected ? 'medium' : 'normal',
                       whiteSpace: 'nowrap'
-                    }} 
+                    }}
                   />
                 </ListItem>
               ))}
@@ -153,7 +154,7 @@ const NavBar = ({ onNotificationClick }) => {  // Recibimos una función desde e
             </Box>
             <Divider />
             {navItems.map((item, index) => (
-              <MenuItem 
+              <MenuItem
                 key={index}
                 selected={item.selected}
                 onClick={handleMobileMenuClose}

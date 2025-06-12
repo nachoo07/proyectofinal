@@ -1,8 +1,6 @@
 import { useState, useEffect } from 'react';
 import {
   Box,
-  Button,
-  TextField,
   Table,
   TableBody,
   TableCell,
@@ -12,20 +10,15 @@ import {
   Paper,
   IconButton,
   Typography,
-  Grid,
   Alert,
   CircularProgress,
   Tabs,
   Tab,
 } from '@mui/material';
 import { Edit, Delete } from '@mui/icons-material';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import es from 'date-fns/locale/es';
 import { useMotions } from '../../context/motion/MotionContext';
 import MotionList from './motionList.jsx';
-import Navigato from '../navbar/Navigato.jsx';
+import Formulario from './formulario.jsx';
 
 const MotionComponent = () => {
   const {
@@ -50,74 +43,69 @@ const MotionComponent = () => {
   const [localError, setLocalError] = useState('');
   const [tabValue, setTabValue] = useState(0);
 
-  const handleTabChange = (event, newValue) => {
-    setTabValue(newValue);
-    if (newValue === 0) {
-      fetchMotions({ type: 'egreso' });
-    } else {
-      fetchMotions();
-    }
-  };
-
   const formatDateToYYYYMMDD = (date) => {
     if (!date) return null;
     const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0'); // Meses son 0-based
+    const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
   };
 
   useEffect(() => {
-    //setFilters({ type: 'egreso' });
     fetchMotions({ type: 'egreso' });
   }, []);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault(); // Previene el comportamiento por defecto del formulario
-    try {
-      const formattedData = {
-        ...formData,
-        date: formatDateToYYYYMMDD(formData.date),
-      };
-      if (isEditing) {
-        await updateMotion(formData.id, formattedData);
-      } else {
-        await createMotion(formattedData);
-      }
-      // Resetea el formulario después de enviar
-      setFormData({
-        id: null,
-        concept: '',
-        amount: '',
-        date: null,
-        paymentMethod: '',
-        incomeType: 'egreso',
-      });
-      setIsEditing(false);
-      setLocalError('');
-    } catch (err) {
-      console.error(err);
-      setLocalError('Error al guardar el movimiento');
+  const handleTabChange = (event, newValue) => {
+    setTabValue(newValue);
+    setFormData((prev) => ({
+      ...prev,
+      incomeType: newValue === 0 ? 'egreso' : newValue === 2 ? 'ingreso' : prev.incomeType,
+    }));
+    if (newValue === 0) {
+      fetchMotions({ type: 'egreso' });
+    } else if (newValue === 2) {
+      fetchMotions({ type: 'ingreso' });
+    } else {
+      fetchMotions();
     }
   };
 
-  const handleDelete = async (id) => {
-    deleteMotion(id);
+  const handleSubmit = async (motion) => {
+  try {
+    const formattedData = {
+      ...motion,
+      date: formatDateToYYYYMMDD(motion.date),
+    };
+    if (motion.id) {
+      await updateMotion(motion.id, formattedData);
+    } else {
+      await createMotion(formattedData);
+    }
+    setFormData({
+      id: null,
+      concept: "",
+      amount: "",
+      date: null,
+      paymentMethod: "",
+      incomeType: tabValue === 0 ? "egreso" : "ingreso",
+    });
+    setIsEditing(false);
+    setLocalError("");
+    fetchMotions({ type: tabValue === 0 ? "egreso" : "ingreso" });
+  } catch (err) {
+    console.error(err);
+    setLocalError(err.message || "Error al guardar el movimiento");
   }
+};
 
-  const handleInputChange = (event) => {
-    const { name, value } = event.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-  };
-
-  const handleDateChange = (newDate) => {
-    setFormData((prevData) => ({
-      ...prevData,
-      date: newDate,
-    }));
+  const handleDelete = async (id) => {
+    try {
+      await deleteMotion(id);
+      fetchMotions({ type: tabValue === 0 ? 'egreso' : 'ingreso' });
+    } catch (err) {
+      console.error(err);
+      setLocalError('Error al eliminar el movimiento');
+    }
   };
 
   const handleEdit = (motion) => {
@@ -125,12 +113,11 @@ const MotionComponent = () => {
       id: motion.id,
       concept: motion.concept,
       amount: motion.amount,
-      date: new Date(motion.date), // Asegúrate de que sea un objeto Date
+      date: new Date(motion.date),
       paymentMethod: motion.paymentMethod || '',
       incomeType: motion.incomeType || 'egreso',
     });
     setIsEditing(true);
-
   };
 
   const handleCancel = () => {
@@ -140,17 +127,73 @@ const MotionComponent = () => {
       amount: '',
       date: null,
       paymentMethod: '',
-      incomeType: 'egreso',
+      incomeType: tabValue === 0 ? 'egreso' : 'ingreso',
     });
     setIsEditing(false);
-    setLocalError(''); // Opcional: limpia errores locales
+    setLocalError('');
   };
 
-  // ... resto de la lógica de MotionComponent igual que antes ...
+  const renderTable = (title, motions) => (
+    <>
+      <Typography variant="h5" gutterBottom>
+        {title}
+      </Typography>
+      <TableContainer component={Paper} sx={{ mb: 4 }}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>Descripción</TableCell>
+              <TableCell>Monto</TableCell>
+              <TableCell>Fecha</TableCell>
+              <TableCell>Método de Pago</TableCell>
+              <TableCell>Tipo</TableCell>
+              <TableCell>Acciones</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {motions.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={6} align="center">
+                  No hay {title.toLowerCase()} registrados
+                </TableCell>
+              </TableRow>
+            ) : (
+              motions.map((motion) => (
+                <TableRow key={motion.id}>
+                  <TableCell>{motion.concept}</TableCell>
+                  <TableCell>${parseFloat(motion.amount).toFixed(2)}</TableCell>
+                  <TableCell>
+                    {new Date(motion.date).toLocaleDateString('es-ES')}
+                  </TableCell>
+                  <TableCell>{motion.paymentMethod || 'N/A'}</TableCell>
+                  <TableCell>{motion.incomeType === 'ingreso' ? 'Ingreso' : 'Egreso'}</TableCell>
+                  <TableCell>
+                    <IconButton
+                      color="primary"
+                      onClick={() => handleEdit(motion)}
+                      disabled={loading}
+                    >
+                      <Edit />
+                    </IconButton>
+                    <IconButton
+                      color="error"
+                      onClick={() => handleDelete(motion.id)}
+                      disabled={loading}
+                    >
+                      <Delete />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </>
+  );
 
   return (
     <Box sx={{ p: 4, maxWidth: 1000, mx: 'auto' }}>
-      <Navigato />
       <Typography variant="h4" gutterBottom>
         Gestión de Movimientos
       </Typography>
@@ -158,139 +201,61 @@ const MotionComponent = () => {
       <Tabs value={tabValue} onChange={handleTabChange} sx={{ mb: 4 }}>
         <Tab label="Egresos" />
         <Tab label="Todos los Movimientos" />
+        <Tab label="Ingresos" />
       </Tabs>
 
       {tabValue === 0 && (
         <>
-          {/* Formulario */}
-          <Box component="form" onSubmit={handleSubmit} sx={{ mb: 4 }}>
-            <Grid container spacing={2}>
-              <Grid item xs={12}>
-                <TextField
-                  fullWidth
-                  label="Descripción"
-                  name="concept"
-                  value={formData.concept}
-                  onChange={handleInputChange}
-                  variant="outlined"
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  label="Monto"
-                  name="amount"
-                  type="number"
-                  value={formData.amount}
-                  onChange={handleInputChange}
-                  variant="outlined"
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={es}>
-                  <DatePicker
-                    label="Fecha"
-                    value={formData.date}
-                    onChange={handleDateChange}
-                    renderInput={(params) => <TextField fullWidth {...params} />}
-                  />
-                </LocalizationProvider>
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  fullWidth
-                  label="Método de Pago"
-                  name="paymentMethod"
-                  value={formData.paymentMethod}
-                  onChange={handleInputChange}
-                  variant="outlined"
-                  placeholder="Ej: Efectivo, Transferencia"
-                />
-              </Grid>
-              <Grid item xs={12}>
-                {(error || localError) && (
-                  <Alert severity="error" sx={{ mb: 2 }}>
-                    {error || localError}
-                  </Alert>
-                )}
-                {loading && <CircularProgress sx={{ mb: 2 }} />}
-                <Box sx={{ display: 'flex', gap: 2 }}>
-                  <Button type="submit" variant="contained" color="primary" disabled={loading}>
-                    {isEditing ? 'Actualizar' : 'Agregar'}
-                  </Button>
-                  {isEditing && (
-                    <Button
-                      variant="outlined"
-                      color="secondary"
-                      onClick={handleCancel}
-                      disabled={loading}
-                    >
-                      Cancelar
-                    </Button>
-                  )}
-                </Box>
-              </Grid>
-            </Grid>
-          </Box>
-
-          {/* Tabla de Egresos */}
-          <Typography variant="h5" gutterBottom>
-            Lista de Egresos
-          </Typography>
-          <TableContainer component={Paper} sx={{ mb: 4 }}>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Descripción</TableCell>
-                  <TableCell>Monto</TableCell>
-                  <TableCell>Fecha</TableCell>
-                  <TableCell>Método de Pago</TableCell>
-                  <TableCell>Acciones</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {motions.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={5} align="center">
-                      No hay egresos registrados
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  motions.map((motion) => (
-                    <TableRow key={motion.id}>
-                      <TableCell>{motion.concept}</TableCell>
-                      <TableCell>${parseFloat(motion.amount).toFixed(2)}</TableCell>
-                      <TableCell>
-                        {new Date(motion.date).toLocaleDateString('es-ES')}
-                      </TableCell>
-                      <TableCell>{motion.paymentMethod || 'N/A'}</TableCell>
-                      <TableCell>
-                        <IconButton
-                          color="primary"
-                          onClick={() => handleEdit(motion)}
-                          disabled={loading}
-                        >
-                          <Edit />
-                        </IconButton>
-                        <IconButton
-                          color="error"
-                          onClick={() => handleDelete(motion.id)}
-                          disabled={loading}
-                        >
-                          <Delete />
-                        </IconButton>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
-          </TableContainer>
+          <Formulario
+            formData={formData}
+            setFormData={setFormData}
+            handleSubmit={handleSubmit}
+            incomeType="egreso"
+            isEditing={isEditing}
+            handleCancel={handleCancel}
+          />
+          {(error || localError) && (
+            <Alert severity="error" sx={{ mb: 2 }}>
+              {error || localError}
+            </Alert>
+          )}
+          {loading && <CircularProgress sx={{ mb: 2 }} />}
+          {renderTable('Lista de Egresos', motions)}
         </>
       )}
 
       {tabValue === 1 && <MotionList />}
+
+      {tabValue === 2 && (
+        <>
+          <Formulario
+            formData={formData}
+            setFormData={setFormData}
+            handleSubmit={handleSubmit}
+            incomeType="ingreso"
+            isEditing={isEditing}
+            handleCancel={handleCancel}
+          />
+          {(error || localError) && (
+            <Alert severity="error" sx={{ mb: 2 }}>
+              {error || localError}
+            </Alert>
+          )}
+          {loading && <CircularProgress sx={{ mb: 2 }} />}
+          {renderTable('Lista de Ingresos', motions)}
+        </>
+      )}
+      <Box sx={{ mt: 4 }}>
+  <Typography variant="h5" gutterBottom>
+    Resumen Mensual
+  </Typography>
+  {/* Placeholder para el chart, reemplazar con confirmación */}
+  <Box sx={{ height: 300 }}>
+    {/* Aquí irá el chart si confirmas */}
+  </Box>
+</Box>
     </Box>
+    
   );
 };
 

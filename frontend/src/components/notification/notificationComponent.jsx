@@ -34,7 +34,6 @@ import {
 } from '@mui/icons-material';
 import { format, parseISO, isBefore } from 'date-fns';
 import { useNotifications } from '../../context/notification/notificationContext';
-import Navigato from '../navbar/Navigato';
 
 const NotificationComponent = () => {
   const [activeTab, setActiveTab] = useState('all');
@@ -144,7 +143,6 @@ const NotificationComponent = () => {
   return (
     <Box sx={{ width: '100%' }}>
       {/* Encabezado y pestañas horizontales */}
-      <Navigato />
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
         <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
           <Typography variant="h1">Notificaciones</Typography>
