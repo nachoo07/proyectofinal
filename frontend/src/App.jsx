@@ -6,8 +6,10 @@ import { ThemeProvider, CssBaseline } from '@mui/material';
 import theme from './theme';
 import { NotificationProvider } from "./context/notification/notificationContext";
 import { SharesProvider } from './context/share/ShareContext';
+import { TeacherProvider } from './context/teacher/TeacherContext';
 import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer } from 'react-toastify';
+
 
 function App() {
   return (
@@ -19,8 +21,10 @@ function App() {
           <UserProvider>
           <NotificationProvider>
             <SharesProvider>
+              <TeacherProvider>
                 <Routing />
               <ToastContainer />
+              </TeacherProvider> 
             </SharesProvider>
           </NotificationProvider>
           </UserProvider>

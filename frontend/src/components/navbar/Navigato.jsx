@@ -33,6 +33,7 @@ const Navigato = () => {
            <Nav.Link as={Link} to="/motions">Movimientos</Nav.Link>
            <Nav.Link as={Link} to="/reports">Reportes</Nav.Link>
           <Nav.Link as={Link} to="/shares" >Cuotas</Nav.Link>
+          <Nav.Link as={Link} to="/teachers">Profesores</Nav.Link>
         </Nav>
         <Form className="d-flex">
           {userData && <span className="me-3 align-self-center">Hola, {userData.name}</span>}
