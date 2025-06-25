@@ -1,85 +1,86 @@
-
+import React, { createContext, useState, useEffect } from "react";
+import axios from "axios";
 
 export const StudentContext = createContext();
 
 export const StudentProvider = ({ children }) => {
   const [students, setStudents] = useState([]);
 
-  // Traer todos los estudiantes
-  const getAllStudents = async () => {
+  const fetchStudents = async () => {
     try {
-      const res = await fetch("http://localhost:4000/api/student/");
-      const data = await res.json();
-      setStudents(data);
+      const response = await axios.get("http://localhost:4000/api/student", {
+        withCredentials: true,
+      });
+      setStudents(response.data);
     } catch (error) {
-      console.error("Error al cargar estudiantes:", error);
+      console.error("Error al obtener estudiantes:", error);
     }
   };
-
-  // Crear estudiante
-  const createStudent = async (studentData) => {
-    try {
-      const res = await fetch("http://localhost:4000/api/student/create", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(studentData),
-      });
-      if (!res.ok) {
-        throw new Error("Error al crear el estudiante");
-      }
   
-      // Actualizamos la lista llamando a fetchStudents
-      await getAllStudents();
-    } catch (error) {
-      throw new Error("Error al crear el estudiante: " + error.message);
-    }
-  };
 
-  // Actualizar estudiante
-  const updateStudent = async (id, studentData) => {
+  useEffect(() => {
+    fetchStudents();
+  }, []);
+
+  const createStudent = async (formData) => {
     try {
-      const res = await fetch(`http://localhost:4000/api/student/update/${id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(studentData),
-      });
-      if (!res.ok) throw new Error(await res.text());
-  
-      await getAllStudents();
+      const response = await axios.post(
+        "http://localhost:4000/api/student",
+        formData,
+        {
+          withCredentials: true,
+          headers: { "Content-Type": "multipart/form-data" },
+        }
+      );
+      setStudents([...students, response.data]);
     } catch (error) {
-      throw new Error("Error al actualizar estudiante: " + error.message);
-    }
-  };
-
-  const refreshStudents = async () => {
-    const res = await fetch("http://localhost:4000/api/student");
-    const data = await res.json();
-    setStudents(data);
-  };
-
-  // Borrar estudiante
-  const deleteStudent = async (id) => {
-    try {
-      const res = await fetch(`http://localhost:4000/api/student/${id}`, {
-        method: "DELETE",
-      });
-      if (!res.ok) {
-        const error = await res.json();
-        throw new Error(JSON.stringify(error));
-      }
-      setStudents((prev) => prev.filter((s) => s.id !== id));
-    } catch (error) {
+      console.error("Error al crear el estudiante:", error);
       throw error;
     }
   };
 
-  useEffect(() => {
-    getAllStudents();
-  }, []);
+  const updateStudent = async (id, formData) => {
+    try {
+      const response = await axios.put(
+        `http://localhost:4000/api/student/${id}`,
+        formData,
+        {
+          withCredentials: true,
+          headers: { "Content-Type": "multipart/form-data" },
+        }
+      );
+      const updated = students.map((s) =>
+        s.id === parseInt(id) ? response.data : s
+      );
+      setStudents(updated);
+    } catch (error) {
+      console.error("Error al actualizar el estudiante:", error);
+      throw error;
+    }
+  };
+
+  const deleteStudent = async (id) => {
+    try {
+      await axios.delete(`http://localhost:4000/api/student/${id}`, {
+        withCredentials: true,
+      });
+      setStudents(students.filter((s) => s.id !== id));
+    } catch (error) {
+      console.error("Error al eliminar el estudiante:", error);
+    }
+  };
+
+  
 
   return (
     <StudentContext.Provider
-      value={{ students, createStudent, updateStudent, deleteStudent, getAllStudents }}
+      value={{
+        students,
+        fetchStudents,
+        createStudent,
+        updateStudent,
+        deleteStudent,
+      }}
     >
       {children}
     </StudentContext.Provider>

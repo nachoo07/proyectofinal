@@ -1,9 +1,13 @@
-import React from 'react'
+import React, { createContext, useState } from "react";
 
-const TeacherContext = () => {
+export const TeacherContext = createContext();
+
+export const TeacherProvider = ({ children }) => {
+  const [teachers, setTeachers] = useState([]);
+
   return (
-    <div>TeacherContext</div>
-  )
-}
-
-export default TeacherContext
+    <TeacherContext.Provider value={{ teachers, setTeachers }}>
+      {children}
+    </TeacherContext.Provider>
+  );
+};
