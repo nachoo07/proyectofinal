@@ -1,4 +1,5 @@
 
+<<<<<<< HEAD
 import { UserProvider } from './context/user/UserContext';
 import Routing from './routes/Routing';
 import { LoginProvider } from './context/login/LoginContext';
@@ -33,5 +34,19 @@ function App() {
     </>
   );
 }
+=======
+
+const App = () => {
+  return (
+>>>>>>> 49a6e17c4dc982d7477b854156224fdd17ca150d
+
+  );
+};
+
+// Vista principal con la tabla
+const Home = () => {
+  const { students, deleteStudent } = useContext(StudentContext);
+  return <StudentTable students={students} onDelete={deleteStudent} />;
+};
 
 export default App;
