@@ -1,4 +1,3 @@
-// src/components/teacher/Teacher.jsx
 import React, { useContext, useState, useEffect } from 'react';
 import {
   Box,
@@ -16,12 +15,18 @@ import {
   DialogContent,
   DialogActions,
   TextField,
+  Tooltip,
 } from '@mui/material';
 import { TeacherContext } from '../../context/teacher/TeacherContext';
 import { toast } from 'react-toastify';
 import Navigato from '../navbar/Navigato';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import SaveIcon from '@mui/icons-material/Save';
+import CancelIcon from '@mui/icons-material/Cancel';
+import SchoolIcon from '@mui/icons-material/School';
+import './teacher.css';
 
-// Componente para gestionar profesores
 const Teacher = ({ onBack }) => {
   const { teachers, loading, error, fetchTeachers, createTeacher, updateTeacher, deleteTeacher } = useContext(TeacherContext);
   const [openCreateDialog, setOpenCreateDialog] = useState(false);
@@ -46,18 +51,15 @@ const Teacher = ({ onBack }) => {
     fetchTeachers();
   }, [fetchTeachers]);
 
-  // Abrir diálogo de creación
   const handleOpenCreateDialog = () => {
     setNewTeacherData({ name: '', lastName: '', email: '', phone: '' });
     setOpenCreateDialog(true);
   };
 
-  // Cerrar diálogo de creación
   const handleCloseCreateDialog = () => {
     setOpenCreateDialog(false);
   };
 
-  // Guardar nuevo profesor
   const handleSaveNewTeacher = async (e) => {
     e.preventDefault();
     if (!newTeacherData.name || !newTeacherData.lastName || !newTeacherData.email) {
@@ -75,7 +77,6 @@ const Teacher = ({ onBack }) => {
     }
   };
 
-  // Abrir diálogo de edición
   const handleEditTeacher = (teacher) => {
     setEditingTeacher(teacher.id);
     setEditData({
@@ -87,14 +88,12 @@ const Teacher = ({ onBack }) => {
     setOpenEditDialog(true);
   };
 
-  // Cerrar diálogo de edición
   const handleCloseEditDialog = () => {
     setOpenEditDialog(false);
     setEditingTeacher(null);
     setEditData({ name: '', lastName: '', email: '', phone: '' });
   };
 
-  // Guardar cambios de edición
   const handleSaveEdit = async (e) => {
     e.preventDefault();
     if (!editData.name || !editData.lastName || !editData.email) {
@@ -112,19 +111,16 @@ const Teacher = ({ onBack }) => {
     }
   };
 
-  // Abrir diálogo de eliminación
   const handleOpenDeleteDialog = (teacherId) => {
     setTeacherToDelete(teacherId);
     setOpenDeleteDialog(true);
   };
 
-  // Cerrar diálogo de eliminación
   const handleCloseDeleteDialog = () => {
     setOpenDeleteDialog(false);
     setTeacherToDelete(null);
   };
 
-  // Confirmar eliminación
   const handleConfirmDelete = async () => {
     try {
       await deleteTeacher(teacherToDelete);
@@ -138,23 +134,56 @@ const Teacher = ({ onBack }) => {
   };
 
   return (
-    <Box sx={{ padding: '20px' }}>
+    <Box
+      sx={{
+        padding: { xs: '20px', md: '40px' },
+        mt: 4,
+        backgroundColor: '#E6F9EC',
+      }}
+      className="main-container"
+    >
       <Navigato />
-      <Typography variant="h4" gutterBottom>
-        Gestión de Profesores
-      </Typography>
-      <Box sx={{ mb: 2 }}>
-        <Button variant="contained" color="primary" onClick={handleOpenCreateDialog}>
-          Crear Nuevo Profesor
-        </Button>
-        <Button variant="outlined" onClick={onBack} sx={{ ml: 2 }}>
-          Volver
-        </Button>
+
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          mb: 6,
+          p: 2,
+          background: 'linear-gradient(90deg, #8eeab1, #007e32)',
+          borderRadius: '8px',
+          boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+          transition: 'transform 0.3s ease-in-out',
+          '&:hover': {
+            transform: 'scale(1.02)',
+          },
+        }}
+      >
+        <SchoolIcon sx={{ fontSize: 40, color: '#00335c', mr: 2 }} />
+        <Typography
+          variant="h4"
+          sx={{
+            fontWeight: 700,
+            color: '#00335c',
+            textShadow: '1px 1px 2px rgba(0, 0, 0, 0.2)',
+            letterSpacing: '0.05rem',
+          }}
+        >
+          Gestión de Profesores
+        </Typography>
       </Box>
 
-      <TableContainer component={Paper} sx={{ mb: 4 }}>
+      <TableContainer
+        component={Paper}
+        sx={{
+          mb: 4,
+          borderRadius: '8px',
+          boxShadow: 3,
+        }}
+      >
         <Table>
-          <TableHead>
+          <TableHead className="table-head">
             <TableRow>
               <TableCell>Nombre</TableCell>
               <TableCell>Apellido</TableCell>
@@ -166,49 +195,62 @@ const Teacher = ({ onBack }) => {
           </TableHead>
           <TableBody>
             {loading ? (
-              <TableRow>
-                <TableCell colSpan={6} sx={{ textAlign: 'center' }}>
+              <TableRow sx={{ '&:hover': { backgroundColor: '#37fa82' } }}>
+                <TableCell colSpan={6} className="table-cell" sx={{ textAlign: 'center' }}>
                   Cargando datos...
                 </TableCell>
               </TableRow>
             ) : error ? (
-              <TableRow>
-                <TableCell colSpan={6} sx={{ textAlign: 'center', color: 'error' }}>
+              <TableRow sx={{ '&:hover': { backgroundColor: '#37fa82' } }}>
+                <TableCell colSpan={6} className="table-cell" sx={{ textAlign: 'center', color: 'red' }}>
                   {error}
                 </TableCell>
               </TableRow>
             ) : teachers.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={6} sx={{ textAlign: 'center' }}>
+              <TableRow sx={{ '&:hover': { backgroundColor: '#37fa82' } }}>
+                <TableCell colSpan={6} className="table-cell" sx={{ textAlign: 'center' }}>
                   No hay profesores registrados
                 </TableCell>
               </TableRow>
             ) : (
-              teachers.map((teacher) => (
-                <TableRow key={teacher.id}>
-                  <TableCell>{teacher.name}</TableCell>
-                  <TableCell>{teacher.lastName}</TableCell>
-                  <TableCell>{teacher.email}</TableCell>
-                  <TableCell>{teacher.phone || '-'}</TableCell>
-                  <TableCell>{new Date(teacher.createdAt).toLocaleDateString()}</TableCell>
-                  <TableCell>
-                    <Button
-                      variant="outlined"
-                      color="primary"
-                      size="small"
-                      onClick={() => handleEditTeacher(teacher)}
-                      sx={{ mr: 1 }}
-                    >
-                      Editar
-                    </Button>
-                    <Button
-                      variant="outlined"
-                      color="error"
-                      size="small"
-                      onClick={() => handleOpenDeleteDialog(teacher.id)}
-                    >
-                      Eliminar
-                    </Button>
+              teachers.map((teacher, index) => (
+                <TableRow
+                  key={teacher.id}
+                  className="table-body-row"
+                  sx={{
+                    '&:hover': { backgroundColor: '#85E655' },
+                    backgroundColor: index % 2 === 0 ? '#f5f5f5' : '#ffffff',
+                    cursor: 'pointer',
+                  }}
+                >
+                  <TableCell className="table-cell">{teacher.name}</TableCell>
+                  <TableCell className="table-cell">{teacher.lastName}</TableCell>
+                  <TableCell className="table-cell">{teacher.email}</TableCell>
+                  <TableCell className="table-cell">{teacher.phone || '-'}</TableCell>
+                  <TableCell className="table-cell">{new Date(teacher.createdAt).toLocaleDateString()}</TableCell>
+                  <TableCell className="table-cell">
+                    <Tooltip title="Editar profesor">
+                      <Button
+                        variant="outlined"
+                        color="primary"
+                        size="small"
+                        onClick={() => handleEditTeacher(teacher)}
+                        sx={{ minWidth: 'auto', mr: 1, cursor: 'pointer' }}
+                      >
+                        <EditIcon />
+                      </Button>
+                    </Tooltip>
+                    <Tooltip title="Eliminar profesor">
+                      <Button
+                        variant="outlined"
+                        color="error"
+                        size="small"
+                        onClick={() => handleOpenDeleteDialog(teacher.id)}
+                        sx={{ minWidth: 'auto', cursor: 'pointer' }}
+                      >
+                        <DeleteIcon />
+                      </Button>
+                    </Tooltip>
                   </TableCell>
                 </TableRow>
               ))
@@ -217,18 +259,70 @@ const Teacher = ({ onBack }) => {
         </Table>
       </TableContainer>
 
-      {/* Diálogo de creación */}
-      <Dialog open={openCreateDialog} onClose={handleCloseCreateDialog}>
-        <DialogTitle>Crear Nuevo Profesor</DialogTitle>
-        <DialogContent>
+      <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, mb: 4 }}>
+        <Button
+          variant="contained"
+          color="success"
+          onClick={handleOpenCreateDialog}
+          sx={{ cursor: 'pointer' }}
+        >
+          Crear Nuevo Profesor
+        </Button>
+        <Button
+          variant="outlined"
+          color="success"
+          onClick={onBack}
+          sx={{ cursor: 'pointer' }}
+        >
+          Volver
+        </Button>
+      </Box>
+
+      {/* Diálogo de Creación */}
+      <Dialog
+        open={openCreateDialog}
+        onClose={handleCloseCreateDialog}
+        sx={{
+          '& .MuiDialog-paper': {
+            borderRadius: '12px',
+            boxShadow: '0 8px 16px rgba(0, 0, 0, 0.2)',
+            backgroundColor: '#E6F9EC',
+          },
+        }}
+      >
+        <DialogTitle
+          sx={{
+            background: 'linear-gradient(90deg, #8eeab1, #007e32)',
+            color: '#00335c',
+            display: 'flex',
+            alignItems: 'center',
+            fontWeight: 700,
+            borderTopLeftRadius: '12px',
+            borderTopRightRadius: '12px',
+            p: 2,
+          }}
+        >
+          <SchoolIcon sx={{ mr: 1, fontSize: 28, color: '#00335c' }} />
+          Crear Nuevo Profesor
+        </DialogTitle>
+        <DialogContent sx={{ p: 3, pt: 4 }}> {/* Aumentado pt de 3 a 4 */}
           <TextField
             label="Nombre"
             name="name"
             value={newTeacherData.name}
             onChange={(e) => setNewTeacherData((prev) => ({ ...prev, name: e.target.value }))}
             fullWidth
-            sx={{ mb: 2 }}
             required
+            sx={{
+              mb: 2,
+              '& .MuiOutlinedInput-root': {
+                '& fieldset': { borderColor: '#00335c' },
+                '&:hover fieldset': { borderColor: '#8eeab1' },
+                '&.Mui-focused fieldset': { borderColor: '#8eeab1' },
+              },
+              '& .MuiInputLabel-root': { color: '#00335c' },
+              '& .MuiInputLabel-root.Mui-focused': { color: '#8eeab1' },
+            }}
           />
           <TextField
             label="Apellido"
@@ -236,8 +330,17 @@ const Teacher = ({ onBack }) => {
             value={newTeacherData.lastName}
             onChange={(e) => setNewTeacherData((prev) => ({ ...prev, lastName: e.target.value }))}
             fullWidth
-            sx={{ mb: 2 }}
             required
+            sx={{
+              mb: 3,
+              '& .MuiOutlinedInput-root': {
+                '& fieldset': { borderColor: '#00335c' },
+                '&:hover fieldset': { borderColor: '#8eeab1' },
+                '&.Mui-focused fieldset': { borderColor: '#8eeab1' },
+              },
+              '& .MuiInputLabel-root': { color: '#00335c' },
+              '& .MuiInputLabel-root.Mui-focused': { color: '#8eeab1' },
+            }}
           />
           <TextField
             label="Email"
@@ -246,8 +349,17 @@ const Teacher = ({ onBack }) => {
             value={newTeacherData.email}
             onChange={(e) => setNewTeacherData((prev) => ({ ...prev, email: e.target.value }))}
             fullWidth
-            sx={{ mb: 2 }}
             required
+            sx={{
+              mb: 3,
+              '& .MuiOutlinedInput-root': {
+                '& fieldset': { borderColor: '#00335c' },
+                '&:hover fieldset': { borderColor: '#8eeab1' },
+                '&.Mui-focused fieldset': { borderColor: '#8eeab1' },
+              },
+              '& .MuiInputLabel-root': { color: '#00335c' },
+              '& .MuiInputLabel-root.Mui-focused': { color: '#8eeab1' },
+            }}
           />
           <TextField
             label="Teléfono"
@@ -255,31 +367,98 @@ const Teacher = ({ onBack }) => {
             value={newTeacherData.phone}
             onChange={(e) => setNewTeacherData((prev) => ({ ...prev, phone: e.target.value }))}
             fullWidth
-            sx={{ mb: 2 }}
+            sx={{
+              mb: 3,
+              '& .MuiOutlinedInput-root': {
+                '& fieldset': { borderColor: '#00335c' },
+                '&:hover fieldset': { borderColor: '#8eeab1' },
+                '&.Mui-focused fieldset': { borderColor: '#8eeab1' },
+              },
+              '& .MuiInputLabel-root': { color: '#00335c' },
+              '& .MuiInputLabel-root.Mui-focused': { color: '#8eeab1' },
+            }}
           />
         </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseCreateDialog} color="secondary">
+        <DialogActions sx={{ p: 2, justifyContent: 'space-between' }}>
+          <Button
+            onClick={handleCloseCreateDialog}
+            variant="outlined"
+            startIcon={<CancelIcon />}
+            sx={{
+              color: '#00335c',
+              borderColor: '#00335c',
+              cursor: 'pointer',
+              '&:hover': {
+                backgroundColor: 'rgba(142, 234, 177, 0.1)',
+                borderColor: '#8eeab1',
+              },
+            }}
+          >
             Cancelar
           </Button>
-          <Button onClick={handleSaveNewTeacher} color="primary">
+          <Button
+            onClick={handleSaveNewTeacher}
+            variant="contained"
+            startIcon={<SaveIcon />}
+            sx={{
+              backgroundColor: '#8eeab1',
+              color: '#00335c',
+              cursor: 'pointer',
+              '&:hover': {
+                backgroundColor: '#007e32',
+              },
+            }}
+          >
             Guardar
           </Button>
         </DialogActions>
       </Dialog>
 
-      {/* Diálogo de edición */}
-      <Dialog open={openEditDialog} onClose={handleCloseEditDialog}>
-        <DialogTitle>Editar Profesor</DialogTitle>
-        <DialogContent>
+      {/* Diálogo de Edición */}
+      <Dialog
+        open={openEditDialog}
+        onClose={handleCloseEditDialog}
+        sx={{
+          '& .MuiDialog-paper': {
+            borderRadius: '12px',
+            boxShadow: '0 8px 16px rgba(0, 0, 0, 0.2)',
+            backgroundColor: '#E6F9EC',
+          },
+        }}
+      >
+        <DialogTitle
+          sx={{
+            background: 'linear-gradient(90deg, #8eeab1, #007e32)',
+            color: '#00335c',
+            display: 'flex',
+            alignItems: 'center',
+            fontWeight: 700,
+            borderTopLeftRadius: '12px',
+            borderTopRightRadius: '12px',
+            p: 2,
+          }}
+        >
+          <EditIcon sx={{ mr: 1, fontSize: 28, color: '#00335c' }} />
+          Editar Profesor
+        </DialogTitle>
+        <DialogContent sx={{ p: 3, pt: 4 }}> {/* Aumentado pt de 3 a 4 */}
           <TextField
             label="Nombre"
             name="name"
             value={editData.name}
             onChange={(e) => setEditData((prev) => ({ ...prev, name: e.target.value }))}
             fullWidth
-            sx={{ mb: 2 }}
             required
+            sx={{
+              mb: 3,
+              '& .MuiOutlinedInput-root': {
+                '& fieldset': { borderColor: '#00335c' },
+                '&:hover fieldset': { borderColor: '#8eeab1' },
+                '&.Mui-focused fieldset': { borderColor: '#8eeab1' },
+              },
+              '& .MuiInputLabel-root': { color: '#00335c' },
+              '& .MuiInputLabel-root.Mui-focused': { color: '#8eeab1' },
+            }}
           />
           <TextField
             label="Apellido"
@@ -287,8 +466,17 @@ const Teacher = ({ onBack }) => {
             value={editData.lastName}
             onChange={(e) => setEditData((prev) => ({ ...prev, lastName: e.target.value }))}
             fullWidth
-            sx={{ mb: 2 }}
             required
+            sx={{
+              mb: 3,
+              '& .MuiOutlinedInput-root': {
+                '& fieldset': { borderColor: '#00335c' },
+                '&:hover fieldset': { borderColor: '#8eeab1' },
+                '&.Mui-focused fieldset': { borderColor: '#8eeab1' },
+              },
+              '& .MuiInputLabel-root': { color: '#00335c' },
+              '& .MuiInputLabel-root.Mui-focused': { color: '#8eeab1' },
+            }}
           />
           <TextField
             label="Email"
@@ -297,8 +485,17 @@ const Teacher = ({ onBack }) => {
             value={editData.email}
             onChange={(e) => setEditData((prev) => ({ ...prev, email: e.target.value }))}
             fullWidth
-            sx={{ mb: 2 }}
             required
+            sx={{
+              mb: 3,
+              '& .MuiOutlinedInput-root': {
+                '& fieldset': { borderColor: '#00335c' },
+                '&:hover fieldset': { borderColor: '#8eeab1' },
+                '&.Mui-focused fieldset': { borderColor: '#8eeab1' },
+              },
+              '& .MuiInputLabel-root': { color: '#00335c' },
+              '& .MuiInputLabel-root.Mui-focused': { color: '#8eeab1' },
+            }}
           />
           <TextField
             label="Teléfono"
@@ -306,30 +503,115 @@ const Teacher = ({ onBack }) => {
             value={editData.phone}
             onChange={(e) => setEditData((prev) => ({ ...prev, phone: e.target.value }))}
             fullWidth
-            sx={{ mb: 2 }}
+            sx={{
+              mb: 3,
+              '& .MuiOutlinedInput-root': {
+                '& fieldset': { borderColor: '#00335c' },
+                '&:hover fieldset': { borderColor: '#8eeab1' },
+                '&.Mui-focused fieldset': { borderColor: '#8eeab1' },
+              },
+              '& .MuiInputLabel-root': { color: '#00335c' },
+              '& .MuiInputLabel-root.Mui-focused': { color: '#8eeab1' },
+            }}
           />
         </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseEditDialog} color="secondary">
+        <DialogActions sx={{ p: 2, justifyContent: 'space-between' }}>
+          <Button
+            onClick={handleCloseEditDialog}
+            variant="outlined"
+            startIcon={<CancelIcon />}
+            sx={{
+              color: '#00335c',
+              borderColor: '#00335c',
+              cursor: 'pointer',
+              '&:hover': {
+                backgroundColor: 'rgba(142, 234, 177, 0.1)',
+                borderColor: '#8eeab1',
+              },
+            }}
+          >
             Cancelar
           </Button>
-          <Button onClick={handleSaveEdit} color="primary">
+          <Button
+            onClick={handleSaveEdit}
+            variant="contained"
+            startIcon={<SaveIcon />}
+            sx={{
+              backgroundColor: '#8eeab1',
+              color: '#00335c',
+              cursor: 'pointer',
+              '&:hover': {
+                backgroundColor: '#007e32',
+              },
+            }}
+          >
             Guardar
           </Button>
         </DialogActions>
       </Dialog>
 
-      {/* Diálogo de eliminación */}
-      <Dialog open={openDeleteDialog} onClose={handleCloseDeleteDialog}>
-        <DialogTitle>Confirmar Eliminación</DialogTitle>
-        <DialogContent>
-          <Typography>¿Estás seguro de que quieres eliminar este profesor? Esta acción no se puede deshacer.</Typography>
+      {/* Diálogo de Eliminación */}
+      <Dialog
+        open={openDeleteDialog}
+        onClose={handleCloseDeleteDialog}
+        sx={{
+          '& .MuiDialog-paper': {
+            borderRadius: '12px',
+            boxShadow: '0 8px 16px rgba(0, 0, 0, 0.2)',
+            backgroundColor: '#E6F9EC',
+          },
+        }}
+      >
+        <DialogTitle
+          sx={{
+            background: 'linear-gradient(90deg, #8eeab1, #007e32)',
+            color: '#00335c',
+            display: 'flex',
+            alignItems: 'center',
+            fontWeight: 700,
+            borderTopLeftRadius: '12px',
+            borderTopRightRadius: '12px',
+            p: 2,
+          }}
+        >
+          <DeleteIcon sx={{ mr: 1, fontSize: 28, color: '#00335c' }} />
+          Confirmar Eliminación
+        </DialogTitle>
+        <DialogContent sx={{ p: 3, pt: 4 }}> {/* Aumentado pt de 3 a 4 */}
+          <Typography sx={{ color: '#00335c', textAlign: 'center' }}>
+            ¿Estás seguro de que quieres eliminar este profesor? Esta acción no se puede deshacer.
+          </Typography>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseDeleteDialog} color="secondary">
+        <DialogActions sx={{ p: 2, justifyContent: 'space-between' }}>
+          <Button
+            onClick={handleCloseDeleteDialog}
+            variant="outlined"
+            startIcon={<CancelIcon />}
+            sx={{
+              color: '#00335c',
+              borderColor: '#00335c',
+              cursor: 'pointer',
+              '&:hover': {
+                backgroundColor: 'rgba(142, 234, 177, 0.1)',
+                borderColor: '#8eeab1',
+              },
+            }}
+          >
             Cancelar
           </Button>
-          <Button onClick={handleConfirmDelete} color="error">
+          <Button
+            onClick={handleConfirmDelete}
+            variant="contained"
+            startIcon={<DeleteIcon />}
+            sx={{
+              backgroundColor: '#d32f2f',
+              color: '#ffffff',
+              cursor: 'pointer',
+              '&:hover': {
+                backgroundColor: '#b71c1c',
+              },
+            }}
+          >
             Eliminar
           </Button>
         </DialogActions>

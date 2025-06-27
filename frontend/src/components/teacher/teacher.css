@@ -1,0 +1,33 @@
+.verde-claro {
+  color: #8eeab1; /* Corregido de #fa37f3 a verde claro para coherencia */
+}
+
+.verde-oscuro {
+  color: #007e32;
+}
+
+.azul-medio {
+  color: #00335c;
+}
+
+.main-container {
+  background-color: #E6F9EC; /* Verde muy claro para el fondo */
+}
+
+.table-head {
+  background-color: #00335c; /* Azul oscuro para el fondo del TableHead */
+}
+
+.table-head .MuiTableCell-root {
+  color: white !important; /* Verde claro para el texto */
+  font-weight: bold;
+}
+
+.table-cell {
+  background-color: transparent; /* Fondo transparente para las celdas */
+}
+
+/* Estilo adicional para el título */
+.title-container {
+  text-align: center;
+}
