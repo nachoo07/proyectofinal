@@ -1,49 +1,76 @@
-/* Contenedor principal */
-.container {
-  padding: 20px;
-  background-color: #f4f4f4;
+.user {
+  width: 100vw;
   min-height: 100vh;
-  position: relative;
+  height: 100vh;
+  margin: 0;
+  padding: 0; /* Elimina el padding lateral */
+  background: #f7f9fb;
+  border-radius: 0;
+  box-shadow: none;
+  display: flex;
+  flex-direction: column;
 }
 
-/* Título */
-.title {
-  font-size: 28px;
-  font-weight: bold;
-  color: #333;
-  margin-bottom: 20px;
+.table-container {
+  flex: 1;
+  min-height: 0;
+  margin: 24px 0 0 0;
+  overflow-x: auto; /* Permite scroll horizontal solo si es necesario */
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
+  padding: 18px 0;
 }
+
+.user-table {
+  width: 100%;
+  /* min-width: 900px;  <-- Elimina esta línea */
+  border-collapse: separate;
+  border-spacing: 0 8px;
+}
+
+.title {
+  margin-top: 24px;
+  margin-bottom: 32px;
+}
+
+.table-container {
+  flex: 1;
+  min-height: 0;
+  margin-bottom: 32px;
+  overflow-y: auto;
+}
+
+
 
 /* Fila de búsqueda y botón */
 .search-row {
   display: flex;
   align-items: center;
-  gap: 15px;
-  margin-bottom: 20px;
+  gap: 18px;
+  margin-bottom: 32px;
+  justify-content: space-between;
 }
 
 .search-input {
   flex: 1;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 16px;
-}
-
-.search-input:focus {
-  outline: none;
-  border-color: #007bff;
-  box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+  padding: 12px 16px;
+  border: 1.5px solid #bfc9d1;
+  border-radius: 6px;
+  font-size: 17px;
+  background: #fff;
 }
 
 .add-button {
-  padding: 10px 20px;
+  padding: 12px 28px;
   background-color: #007bff;
   color: white;
   border: none;
-  border-radius: 4px;
-  font-size: 16px;
+  border-radius: 6px;
+  font-size: 17px;
+  font-weight: 500;
   cursor: pointer;
+  transition: background 0.2s;
 }
 
 .add-button:hover {
@@ -53,44 +80,55 @@
 /* Contenedor de la tabla */
 .table-container {
   background-color: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
   overflow-x: auto;
+  padding: 18px 0;
+  margin-bottom: 32px;
 }
 
 /* Tabla */
 .user-table {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0 8px;
 }
 
 .user-table th,
 .user-table td {
-  padding: 12px;
+  padding: 14px 16px;
   text-align: left;
-  border-bottom: 1px solid #ddd;
+  border-bottom: 1px solid #e9ecef;
 }
 
 .user-table th {
-  background-color: #f8f9fa;
-  font-size: 14px;
+  background-color: #f1f3f6;
+  font-size: 15px;
   color: #555;
   text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .user-table td {
-  font-size: 14px;
+  font-size: 15px;
   color: #333;
+  background: #fff;
+}
+
+.user-table tr:last-child td {
+  border-bottom: none;
 }
 
 /* Botones de acción */
 .action-button {
-  padding: 6px 12px;
+  padding: 7px 15px;
   border: none;
-  border-radius: 4px;
+  border-radius: 5px;
   font-size: 14px;
   cursor: pointer;
-  margin-right: 8px;
+  margin-right: 7px;
+  margin-bottom: 2px;
+  transition: background 0.2s;
 }
 
 .edit-button {
@@ -124,4 +162,33 @@
 .error {
   color: #dc3545;
   margin-bottom: 10px;
+}
+
+/* Modal mejoras */
+.modal-content {
+  border-radius: 14px !important;
+  padding: 10px 0;
+}
+
+.modal-header {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.modal-title {
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.modal-body {
+  padding-top: 0;
+}
+
+.form-label {
+  font-weight: 500;
+  color: #222;
+}
+
+.d-flex.justify-content-end.gap-2 {
+  margin-top: 18px;
 }

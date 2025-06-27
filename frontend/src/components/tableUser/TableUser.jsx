@@ -160,7 +160,7 @@ const TableUser = () => {
   };
 
   return (
-    <div className="container">
+    <div className="user">
       <Navigato />
       <h1 className="title">Panel de Usuarios</h1>
       <div className="search-row">
