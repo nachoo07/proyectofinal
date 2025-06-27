@@ -13,6 +13,12 @@ import attendanceRoutes from './src/routes/attendance/attendance.router.js'; // 
 import notificationRouter from "./src/routes/notification/notification.routes.js";
 import cron from "node-cron";
 import schedules from "./src/cronjobs/schedules.js";
+import path from "path";
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const app = express();
 
@@ -71,3 +77,5 @@ process.on("uncaughtException", (err) => {
 process.on("unhandledRejection", (reason, promise) => {
   console.error("Unhandled Rejection at:", promise, "reason:", reason);
 });
+
+app.use("/uploads", express.static(path.join(__dirname, "src/uploads")));
