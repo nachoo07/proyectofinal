@@ -45,12 +45,12 @@ const NewStudent = () => {
         // Crear nuevo
         await createStudent(student);
       }
-      navigate("/"); // Volver a inicio después de guardar
+      navigate("/students"); // Volver a inicio después de guardar
     } catch (error) {
       alert("Error al guardar estudiante: " + error.message);
     }
   };
-
+ 
   return (
     <div>
       <h2>{id ? "Editar Estudiante" : "Nuevo Estudiante"}</h2>

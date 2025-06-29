@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import {
   Box,
   Typography,
@@ -10,9 +10,6 @@ import {
   TableRow,
   Paper,
   TextField,
-  List,
-  ListItem,
-  ListItemText,
   Button,
   FormControl,
   InputLabel,
@@ -22,350 +19,276 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  Switch,
 } from '@mui/material';
 import { SharesContext } from '../../context/share/ShareContext';
 import { toast } from 'react-toastify';
 import Navigato from '../navbar/Navigato';
+import { useNavigate } from 'react-router-dom';
 
-// Función para obtener los últimos tres meses
-const getLastThreeMonths = () => {
-  const today = new Date();
-  const months = [];
-  for (let i = 0; i < 3; i++) {
-    const date = new Date(today.getFullYear(), today.getMonth() - i, 1);
-    months.push(date.toISOString().slice(0, 7)); // Formato YYYY-MM
-  }
-  return months;
+// Función para formatear fecha a YYYY-MM-DD (elimina hora y zona)
+const formatDateForInput = (dateStr) => {
+  if (!dateStr) return '';
+  return dateStr.split('T')[0]; // Toma solo la parte YYYY-MM-DD
 };
 
 const Share = () => {
-  const { studentsWithShares, loading, error, createShare, updateShare, deleteShare, fetchStudentsWithShares } = useContext(SharesContext);
-  const [selectedStudent, setSelectedStudent] = useState('');
+  const { studentsWithShares, loading, error, fetchStudentsWithShares, createMassShare, updateStudentStatus } = useContext(SharesContext);
   const [searchQuery, setSearchQuery] = useState('');
-  const [paymentData, setPaymentData] = useState({
+  const [openMassShareDialog, setOpenMassShareDialog] = useState(false);
+  const [massShareData, setMassShareData] = useState({
+    quotaName: '',
     amount: '',
-    paymentdate: '',
-    paymentmethod: '',
-    state: 'Pagado',
+    dueDate: '', // Cambiamos paymentDate por dueDate
+    year: new Date().getFullYear(),
   });
-  const [editingShare, setEditingShare] = useState(null);
-  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
-  const [shareToDelete, setShareToDelete] = useState(null);
+  const [studentStatuses, setStudentStatuses] = useState({}); // Estado local para el Switch
+  const navigate = useNavigate();
 
-  // Obtener lista de alumnos únicos
+  // Obtener lista de alumnos únicos y ordenarlos alfabéticamente
   const students = [
     ...new Map(
       studentsWithShares.map((item) => [
         item.student_id,
-        { id: item.student_id, name: item.name, lastName: item.lastName },
+        { 
+          id: item.student_id, 
+          name: item.name, 
+          lastName: item.lastName, 
+          dni: item.dni || 'N/A', 
+          student_status: item.student_status || 'Activo' 
+        },
       ])
     ).values(),
-  ];
+  ].sort((a, b) => `${a.name} ${a.lastName}`.localeCompare(`${b.name} ${b.lastName}`));
+
+  // Sincronizar estados locales al cargar datos
+  useEffect(() => {
+    const initialStatuses = {};
+    students.forEach(student => {
+      initialStatuses[student.id] = student.student_status === 'Activo';
+    });
+    setStudentStatuses(initialStatuses);
+  }, [studentsWithShares]);
 
   // Filtrar alumnos según la búsqueda
   const filteredStudents = students.filter((student) =>
-    `${student.name} ${student.lastName}`
+    `${student.name} ${student.lastName} ${student.dni}`
       .toLowerCase()
       .includes(searchQuery.toLowerCase())
   );
 
-  // Filtrar cuotas de los últimos tres meses para el alumno seleccionado
-  const lastThreeMonths = getLastThreeMonths();
-  const filteredShares = studentsWithShares
-    .filter(
-      (share) =>
-        share.student_id === selectedStudent &&
-        share.date &&
-        lastThreeMonths.includes(share.date.slice(0, 7))
-    )
-    .sort((a, b) => new Date(b.date) - new Date(a.date));
+  // Cargar todos los estudiantes al montar el componente
+  useEffect(() => {
+    fetchStudentsWithShares().then(() => {
+      console.log('Datos iniciales de studentsWithShares:', studentsWithShares); // Depuración
+    });
+  }, []);
 
   // Manejar cambios en el campo de búsqueda
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
   };
 
-  // Manejar la selección de un alumno
-  const handleStudentSelect = (studentId) => {
-    setSelectedStudent(studentId);
-    setSearchQuery('');
+  // Manejar la redirección al hacer clic en "Ver Cuotas"
+  const handleViewShares = (studentId) => {
+    navigate(`/shares/student/${studentId}`);
   };
 
-  // Manejar cambios en el formulario
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setPaymentData((prev) => ({ ...prev, [name]: value }));
+  // Manejar el pop-up de cuota masiva
+  const handleOpenMassShareDialog = () => {
+    setOpenMassShareDialog(true);
   };
 
-  // Iniciar edición de una cuota
-  const handleEditShare = (share) => {
-    setEditingShare(share.share_id);
-    setPaymentData({
-      amount: share.amount.toString(),
-      paymentdate: share.paymentdate ? share.paymentdate.split('T')[0] : '',
-      paymentmethod: share.paymentmethod || '',
-      state: share.state || 'Pagado',
+  const handleCloseMassShareDialog = () => {
+    setOpenMassShareDialog(false);
+    setMassShareData({
+      quotaName: '',
+      amount: '',
+      dueDate: '',
+      year: new Date().getFullYear(),
     });
   };
 
-  // Cancelar edición
-  const handleCancelEdit = () => {
-    setEditingShare(null);
-    setPaymentData({ amount: '', paymentdate: '', paymentmethod: '', state: 'Pagado' });
+  const handleMassShareInputChange = (e) => {
+    const { name, value } = e.target;
+    setMassShareData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Manejar el envío del formulario (crear o actualizar)
-  const handleSubmit = async (e) => {
+  const handleMassShareSubmit = async (e) => {
     e.preventDefault();
-    if (!selectedStudent) {
-      toast.error('Por favor, selecciona un alumno');
-      return;
-    }
-    if (!paymentData.amount || !paymentData.paymentdate || !paymentData.paymentmethod || !paymentData.state) {
+    if (!massShareData.quotaName || !massShareData.amount || !massShareData.dueDate) {
       toast.error('Por favor, completa todos los campos');
       return;
     }
-    if (isNaN(parseFloat(paymentData.amount)) || parseFloat(paymentData.amount) <= 0) {
-      toast.error('El monto debe ser un número mayor a 0');
-      return;
-    }
-
     try {
-      const shareData = {
-        student_id: parseInt(selectedStudent),
-        date: editingShare
-          ? studentsWithShares.find((s) => s.share_id === editingShare)?.date.split('T')[0]
-          : new Date().toISOString().split('T')[0],
-        amount: parseFloat(paymentData.amount),
-        state: paymentData.state,
-        paymentmethod: paymentData.paymentmethod,
-        paymentdate: paymentData.paymentdate,
-      };
-      console.log('Datos enviados:', shareData);
-
-      if (editingShare) {
-        await updateShare(editingShare, shareData);
-        toast.success('Cuota actualizada exitosamente');
-        setEditingShare(null);
-      } else {
-        await createShare(shareData);
-        toast.success('Pago registrado exitosamente');
-      }
-
-      setPaymentData({ amount: '', paymentdate: '', paymentmethod: '', state: 'Pagado' });
+      await createMassShare({
+        quotaName: massShareData.quotaName,
+        amount: parseFloat(massShareData.amount),
+        dueDate: massShareData.dueDate,
+        year: massShareData.year,
+      });
+      toast.success('Cuota masiva creada exitosamente');
+      handleCloseMassShareDialog();
     } catch (err) {
-      console.error('Error al procesar la cuota:', err.response?.data || err.message);
-      toast.error(`Error al procesar la cuota: ${err.response?.data?.error || err.message || 'Desconocido'}`);
+      toast.error('Error al crear la cuota masiva');
+      console.error(err);
     }
   };
 
-  // Abrir diálogo de confirmación para eliminar
-  const handleOpenDeleteDialog = (shareId) => {
-    console.log('ID de cuota a eliminar:', shareId);
-    setShareToDelete(shareId);
-    setOpenDeleteDialog(true);
-  };
-
-  // Cerrar diálogo de confirmación
-  const handleCloseDeleteDialog = () => {
-    setOpenDeleteDialog(false);
-    setShareToDelete(null);
-  };
-
-  // Confirmar eliminación
-  const handleConfirmDelete = async () => {
+  // Manejar el cambio de estado del alumno
+  const handleToggleStudentStatus = async (studentId, currentStatus) => {
+    const isActive = !studentStatuses[studentId]; // Toggle local state
+    setStudentStatuses((prev) => ({ ...prev, [studentId]: isActive }));
+    const newStatus = isActive ? 'Activo' : 'Inactivo';
     try {
-      await fetchStudentsWithShares(); // Recargar datos para asegurar sincronización
-      await deleteShare(shareToDelete);
-      toast.success('Cuota eliminada exitosamente');
+      await updateStudentStatus(studentId, newStatus);
+      toast.success(`Estado del alumno actualizado a ${newStatus}`);
+      fetchStudentsWithShares(); // Refrescar la lista de alumnos
     } catch (err) {
-      console.error('Error al eliminar la cuota:', err.response?.data || err.message);
-      toast.error(`Error al eliminar la cuota: ${err.response?.data?.error || err.message || 'Desconocido'}`);
-    } finally {
-      handleCloseDeleteDialog();
+      // Revertir el estado local si falla
+      setStudentStatuses((prev) => ({ ...prev, [studentId]: !isActive }));
+      toast.error('Error al actualizar el estado del alumno');
+      console.error(err);
     }
   };
 
   return (
     <Box sx={{ padding: '20px' }}>
       <Navigato />
-      <Box sx={{ mb: 3 }}>
+      <Typography variant="h4" gutterBottom>
+        Panel de Cuotas
+      </Typography>
+
+      {/* Buscador y botón de cuota masiva */}
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 3 }}>
         <TextField
-          fullWidth
-          label="Buscar Alumno (Nombre o Apellido)"
+          sx={{ width: '70%' }}
+          label="Buscar por nombre, apellido o DNI"
           value={searchQuery}
           onChange={handleSearchChange}
           variant="outlined"
         />
-        {searchQuery && (
-          <Paper sx={{ mt: 1, maxHeight: 200, overflow: 'auto' }}>
-            <List>
-              {filteredStudents.length === 0 ? (
-                <ListItem>
-                  <ListItemText primary="No se encontraron alumnos" />
-                </ListItem>
-              ) : (
-                filteredStudents.map((student) => (
-                  <ListItem
-                    key={student.id}
-                    button={true}
-                    onClick={() => handleStudentSelect(student.id)}
-                  >
-                    <ListItemText primary={`${student.name} ${student.lastName}`} />
-                  </ListItem>
-                ))
-              )}
-            </List>
-          </Paper>
-        )}
+        <Button variant="contained" color="primary" onClick={handleOpenMassShareDialog}>
+          Crear Cuota Masiva
+        </Button>
       </Box>
 
-      {/* Mostrar nombre del alumno seleccionado */}
-      {selectedStudent && (
-        <Typography variant="subtitle1" sx={{ mb: 2 }}>
-          Alumno seleccionado:{' '}
-          {students.find((s) => s.id === selectedStudent)?.name}{' '}
-          {students.find((s) => s.id === selectedStudent)?.lastName}
-        </Typography>
-      )}
-
-      {/* Tabla de cuotas */}
-      {selectedStudent && (
-        <>
-          <TableContainer component={Paper} sx={{ mb: 4 }}>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Mes</TableCell>
-                  <TableCell>Monto</TableCell>
-                  <TableCell>Estado</TableCell>
-                  <TableCell>Fecha de Pago</TableCell>
-                  <TableCell>Método de Pago</TableCell>
-                  <TableCell>Acciones</TableCell>
+      {/* Tabla de alumnos */}
+      <TableContainer component={Paper} sx={{ mb: 4 }}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>#</TableCell>
+              <TableCell>Nombre</TableCell>
+              <TableCell>Apellido</TableCell>
+              <TableCell>DNI</TableCell>
+              <TableCell>Estado del Alumno</TableCell>
+              <TableCell>Acciones</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {filteredStudents.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={6} sx={{ textAlign: 'center' }}>
+                  No se encontraron alumnos
+                </TableCell>
+              </TableRow>
+            ) : (
+              filteredStudents.map((student, index) => (
+                <TableRow key={student.id}>
+                  <TableCell>{index + 1}</TableCell>
+                  <TableCell>{student.name}</TableCell>
+                  <TableCell>{student.lastName}</TableCell>
+                  <TableCell>{student.dni}</TableCell>
+                  <TableCell>
+                    <Switch
+                      checked={studentStatuses[student.id] || false} // Estado local
+                      onChange={() => handleToggleStudentStatus(student.id, student.student_status)}
+                      color="success" // Verde para Activo
+                      disabled={loading} // Deshabilitar mientras carga
+                      sx={{
+                        '& .MuiSwitch-switchBase.Mui-checked': {
+                          color: '#4caf50', // Verde para el thumb cuando está checked
+                          '& + .MuiSwitch-track': {
+                            backgroundColor: '#4caf50', // Verde para la pista cuando está checked
+                          },
+                        },
+                        '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
+                          backgroundColor: '#f44336', // Rojo para la pista cuando está unchecked
+                        },
+                      }}
+                    />
+                    {studentStatuses[student.id] ? 'Activo' : 'Inactivo'} {/* Estado basado en el Switch */}
+                  </TableCell>
+                  <TableCell>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={() => handleViewShares(student.id)}
+                      disabled={loading}
+                    >
+                      Ver Cuotas
+                    </Button>
+                  </TableCell>
                 </TableRow>
-              </TableHead>
-              <TableBody>
-                {filteredShares.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={6} sx={{ textAlign: 'center' }}>
-                      No hay cuotas para los últimos tres meses
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  filteredShares.map((share) => (
-                    <TableRow key={share.share_id}>
-                      <TableCell>{share.date.slice(0, 7)}</TableCell>
-                      <TableCell>${share.amount}</TableCell>
-                      <TableCell>{share.state}</TableCell>
-                      <TableCell>{share.paymentdate || '-'}</TableCell>
-                      <TableCell>{share.paymentmethod || '-'}</TableCell>
-                      <TableCell>
-                        <Button
-                          variant="outlined"
-                          color="primary"
-                          size="small"
-                          onClick={() => handleEditShare(share)}
-                          sx={{ mr: 1 }}
-                        >
-                          Editar
-                        </Button>
-                        <Button
-                          variant="outlined"
-                          color="error"
-                          size="small"
-                          onClick={() => handleOpenDeleteDialog(share.share_id)}
-                        >
-                          Eliminar
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
-          </TableContainer>
+              ))
+            )}
+          </TableBody>
+        </Table>
+      </TableContainer>
 
-          {/* Formulario de pago o edición */}
-          <Box component="form" onSubmit={handleSubmit} sx={{ maxWidth: '600px' }}>
-            <Typography variant="h6" gutterBottom>
-              {editingShare ? 'Editar Cuota' : 'Registrar Pago'}
-            </Typography>
-            <TextField
-              label="Monto"
-              name="amount"
-              type="number"
-              value={paymentData.amount}
-              onChange={handleInputChange}
-              fullWidth
-              sx={{ mb: 2 }}
-              required
-            />
-            <TextField
-              label="Fecha de Pago"
-              name="paymentdate"
-              type="date"
-              value={paymentData.paymentdate}
-              onChange={handleInputChange}
-              fullWidth
-              sx={{ mb: 2 }}
-              InputLabelProps={{ shrink: true }}
-              required
-            />
-            <FormControl fullWidth sx={{ mb: 2 }}>
-              <InputLabel>Método de Pago</InputLabel>
-              <Select
-                name="paymentmethod"
-                value={paymentData.paymentmethod}
-                onChange={handleInputChange}
-                label="Método de Pago"
-                required
-              >
-                <MenuItem value="Efectivo">Efectivo</MenuItem>
-                <MenuItem value="Transferencia">Transferencia</MenuItem>
-                <MenuItem value="Tarjeta">Tarjeta</MenuItem>
-                <MenuItem value="Otro">Otro</MenuItem>
-              </Select>
-            </FormControl>
-            <FormControl fullWidth sx={{ mb: 2 }}>
-              <InputLabel>Estado</InputLabel>
-              <Select
-                name="state"
-                value={paymentData.state}
-                onChange={handleInputChange}
-                label="Estado"
-                required
-              >
-                <MenuItem value="Pagado">Pagado</MenuItem>
-                <MenuItem value="Pendiente">Pendiente</MenuItem>
-                <MenuItem value="Vencido">Vencido</MenuItem>
-              </Select>
-            </FormControl>
-            <Box>
-              <Button type="submit" variant="contained" color="primary" sx={{ mr: 1 }}>
-                {editingShare ? 'Actualizar' : 'Registrar'}
-              </Button>
-              {editingShare && (
-                <Button variant="outlined" color="secondary" onClick={handleCancelEdit}>
-                  Cancelar
-                </Button>
-              )}
-            </Box>
-          </Box>
-        </>
-      )}
-
-      {/* Diálogo de confirmación para eliminar */}
-      <Dialog open={openDeleteDialog} onClose={handleCloseDeleteDialog}>
-        <DialogTitle>Confirmar Eliminación</DialogTitle>
+      {/* Pop-up para crear cuota masiva */}
+      <Dialog open={openMassShareDialog} onClose={handleCloseMassShareDialog}>
+        <DialogTitle>Crear Cuota Masiva</DialogTitle>
         <DialogContent>
-          <Typography>¿Estás seguro de que quieres eliminar esta cuota? Esta acción no se puede deshacer.</Typography>
+          <FormControl fullWidth sx={{ mt: 2, mb: 2 }}>
+            <InputLabel>Año</InputLabel>
+            <Select
+              name="year"
+              value={massShareData.year}
+              onChange={handleMassShareInputChange}
+              label="Año"
+            >
+              <MenuItem value={2025}>2025</MenuItem>
+              <MenuItem value={2024}>2024</MenuItem>
+              <MenuItem value={2023}>2023</MenuItem>
+            </Select>
+          </FormControl>
+          <TextField
+            label="Cuota"
+            name="quotaName"
+            value={massShareData.quotaName}
+            onChange={handleMassShareInputChange}
+            fullWidth
+            sx={{ mb: 2 }}
+            placeholder="Ej: Cuota Masiva - Semestre 1 - 2025"
+          />
+          <TextField
+            label="Monto"
+            name="amount"
+            type="number"
+            value={massShareData.amount}
+            onChange={handleMassShareInputChange}
+            fullWidth
+            sx={{ mb: 2 }}
+          />
+          <TextField
+            label="Fecha de Vencimiento"
+            name="dueDate"
+            type="date"
+            value={massShareData.dueDate}
+            onChange={handleMassShareInputChange}
+            fullWidth
+            sx={{ mb: 2 }}
+            InputLabelProps={{ shrink: true }}
+          />
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCloseDeleteDialog} color="secondary">
+          <Button onClick={handleCloseMassShareDialog} color="secondary">
             Cancelar
           </Button>
-          <Button onClick={handleConfirmDelete} color="error">
-            Eliminar
+          <Button onClick={handleMassShareSubmit} color="primary">
+            Guardar
           </Button>
         </DialogActions>
       </Dialog>

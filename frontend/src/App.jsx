@@ -12,24 +12,32 @@ import { ToastContainer } from 'react-toastify';
 
 function App() {
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <LoginProvider>
-        <UserProvider>
-          <NotificationProvider>
-            <SharesProvider>
-              <TeacherProvider>
-                <StudentProvider>
-                  <Routing />
-                  <ToastContainer />
-                </StudentProvider>
-              </TeacherProvider>
-            </SharesProvider>
-          </NotificationProvider>
-        </UserProvider>
-      </LoginProvider>
-    </ThemeProvider>
+    <>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <LoginProvider>
+          <UserProvider>
+            <NotificationProvider>
+              <SharesProvider>
+                <TeacherProvider>
+                  <StudentProvider>
+                    <Routing />
+                    <ToastContainer />
+                  </StudentProvider>
+                </TeacherProvider>
+              </SharesProvider>
+            </NotificationProvider>
+          </UserProvider>
+        </LoginProvider>
+      </ThemeProvider>
+    </>
   );
 }
+
+// Vista principal con la tabla
+const Home = () => {
+  const { students, deleteStudent } = useContext(StudentContext);
+  return <StudentTable students={students} onDelete={deleteStudent} />;
+};
 
 export default App;

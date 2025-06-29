@@ -25,6 +25,7 @@ import {
   Menu as MenuIcon
 } from '@mui/icons-material';
 import { useLocation, useNavigate } from 'react-router-dom';
+import PageTeacher from '../../pages/teacher/PageTeacher';
 
 // eslint-disable-next-line react/prop-types
 const NavBar = ({ onNotificationClick }) => {  // Recibimos una función desde el padre
@@ -51,6 +52,8 @@ const NavBar = ({ onNotificationClick }) => {  // Recibimos una función desde e
     { text: 'Settings', icon: <SettingsIcon />, url: '/settings' },
     { text: 'Reporte', icon: <ReportIcon />, url: '/reports' },
     { text: 'Notificaciones', icon: <PageNotification />, url: '/notifications' },
+    { text: 'Profesores', icon: <PageTeacher />, url: '/teachers' }
+    
   ];
 
   return (

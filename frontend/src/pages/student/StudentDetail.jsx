@@ -86,7 +86,7 @@ const StudentDetail = () => {
       }
       await fetchStudents();
 
-      navigate("/");
+      navigate("/students");
     } catch (err) {
       console.error("Error al guardar estudiante:", err);
     }
