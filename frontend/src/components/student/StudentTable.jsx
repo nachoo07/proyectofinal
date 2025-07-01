@@ -1,8 +1,15 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useContext } from "react";
+import { Link, useNavigate } from "react-router-dom";  // Importar useNavigate
+import { StudentContext } from "../../context/student/StudentContext";
 
-const StudentTable = ({ students, onDelete }) => {
+const StudentTable = () => {
+  const { students, deleteStudent } = useContext(StudentContext);
   const [searchTerm, setSearchTerm] = useState("");
+  const navigate = useNavigate();  // Hook para navegar programáticamente
+
+  if (!students) {
+    return <p>Cargando estudiantes...</p>;
+  }
 
   const filteredStudents = students.filter((student) =>
     `${student.name} ${student.address} ${student.category}`
@@ -13,6 +20,15 @@ const StudentTable = ({ students, onDelete }) => {
   return (
     <div>
       <h1>Panel de Alumnos</h1>
+
+      {/* Botón Volver */}
+      <button
+        className="btn btn-secondary mb-3"
+        onClick={() => navigate(-1)}
+        type="button"
+      >
+        Volver
+      </button>
 
       <div style={{ margin: "10px 0" }}>
         <input
@@ -50,8 +66,12 @@ const StudentTable = ({ students, onDelete }) => {
                 <Link to={`/students/${student.id}?edit=true`}>
                   <button>Editar</button>
                 </Link>
+                <Link to={`/students/${student.id}/shares`}>
+                  <button>Ver Cuotas</button>
+                </Link>
+
                 &nbsp;
-                <button onClick={() => onDelete(student.id)}>Eliminar</button>
+                <button onClick={() => deleteStudent(student.id)}>Eliminar</button>
               </td>
             </tr>
           ))}

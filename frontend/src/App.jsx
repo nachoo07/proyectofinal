@@ -9,6 +9,7 @@ import { ToastContainer } from 'react-toastify';
 import { UserProvider } from './context/user/UserContext';
 import { StudentProvider } from './context/student/StudentContext';
 import { SettingsProvider, useSettings } from './context/settings/settingsContext';
+import { LoginProvider } from './context/login/LoginContext';
 // Componente interno para usar el hook correctamente
 function AppContent() {
   const { themeMode, fontSize, getFontSize } = useSettings();
@@ -18,22 +19,24 @@ function AppContent() {
 
   // Crear temas dinámicamente con el tamaño de fuente
   const appliedTheme = themeMode === 'dark' ? darkTheme(fontSizeNumber) : lightTheme(fontSizeNumber)
-  
-   
+
+
   return (
     <ThemeProvider theme={appliedTheme}>
       <CssBaseline />
-      
-      <NotificationProvider>
-        <UserProvider>
-          <StudentProvider>
-            <SharesProvider>
-              <Routing />
-              <ToastContainer />
-            </SharesProvider>
-          </StudentProvider>
-        </UserProvider>
-      </NotificationProvider>
+
+      <LoginProvider>
+        <NotificationProvider>
+          <UserProvider>
+            <StudentProvider>
+              <SharesProvider>
+                <Routing />
+                <ToastContainer />
+              </SharesProvider>
+            </StudentProvider>
+          </UserProvider>
+        </NotificationProvider>
+      </LoginProvider>
     </ThemeProvider>
   );
 }

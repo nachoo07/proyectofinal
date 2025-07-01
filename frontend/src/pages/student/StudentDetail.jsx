@@ -2,154 +2,301 @@ import React, { useState, useEffect, useContext } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { StudentContext } from "../../context/student/StudentContext";
 
-const StudentDetail = ({ isNew }) => {
+const StudentDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
-
-  const { students, createStudent, updateStudent } = useContext(StudentContext);
-
+  const isNew = location.pathname.endsWith("/new");
   const isEdit = new URLSearchParams(location.search).get("edit") === "true";
+  const isView = !isNew && !isEdit && id;
+
+  const { students, createStudent, updateStudent, fetchStudents  } = useContext(StudentContext);
 
   const [student, setStudent] = useState({
     name: "",
-    lastname: "",
+    lastName: "",
     dni: "",
-    birthdate: "",
-    category: "",
+    birthDate: "",
     address: "",
-    tutor1_name: "",
-    tutor1_phone: "",
-    tutor2_name: "",
-    tutor2_phone: "",
-    observations: "",
+    motherName: "",
+    fatherName: "",
+    motherPhone: "",
+    fatherPhone: "",
+    category: "",
+    mail: "",
+    state: "Activo",
+    comment: "",
+    profileImage: "", // nombre de archivo o URL parcial
   });
 
+  const [imagePreview, setImagePreview] = useState(null);
+  const [file, setFile] = useState(null);
+
   useEffect(() => {
-    if (!isNew && id) {
-      const stud = students.find((s) => s.id.toString() === id.toString());
-      if (stud) {
-        setStudent({
-          name: stud.name || "",
-          lastname: stud.lastName || "",
-          dni: stud.dni || "",
-          birthdate: stud.birthDate || "",
-          category: stud.category || "",
-          address: stud.address || "",
-          tutor1_name: stud.motherName || "",
-          tutor1_phone: stud.motherPhone || "",
-          tutor2_name: stud.fatherName || "",
-          tutor2_phone: stud.fatherPhone || "",
-          observations: stud.comment || "",
-        });
+    if ((isEdit || isView) && id && students.length > 0) {
+      const found = students.find((s) => s.id === parseInt(id));
+      if (found) {
+        setStudent(found);
+        if (found.profileImage) {
+          setImagePreview(`http://localhost:4000/uploads/${found.profileImage}`);
+        }
       }
     }
-  }, [id, isNew, students]);
+  }, [id, isEdit, isView, students]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setStudent((prev) => ({ ...prev, [name]: value }));
+    setStudent({ ...student, [name]: value });
+  };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    setFile(file);
+    if (file) {
+      setImagePreview(URL.createObjectURL(file));
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const payload = {
-      name: student.name,
-      lastName: student.lastname,
-      dni: student.dni,
-      birthDate: student.birthdate,
-      category: student.category,
-      address: student.address,
-      motherName: student.tutor1_name,
-      motherPhone: student.tutor1_phone,
-      fatherName: student.tutor2_name,
-      fatherPhone: student.tutor2_phone,
-      comment: student.observations,
-    };
+    const formData = new FormData();
+
+    for (let key in student) {
+      formData.append(key, student[key]);
+    }
+
+    if (student.birthDate) {
+      const date = new Date(student.birthDate);
+      const formattedDate = date.toISOString().substring(0, 10); // yyyy-MM-dd
+      formData.set("birthDate", formattedDate); // <-- esta línea sobreescribe el valor anterior
+    }
+
+    if (file) {
+      formData.append("profileImage", file);
+    }
 
     try {
-      if (isNew) {
-        await createStudent(payload);
-        alert("Estudiante creado con éxito");
+      if (isEdit) {
+        await updateStudent(id, formData);
+        alert("Estudiante actualizado");
       } else {
-        await updateStudent(id, payload);
-        alert("Estudiante actualizado con éxito");
+        await createStudent(formData);
+        alert("Estudiante creado");
       }
-      navigate("/");
-    } catch (error) {
-      alert("Error al guardar el estudiante: " + error.message);
-      console.error(error);
+      await fetchStudents();
+
+      navigate("/students");
+    } catch (err) {
+      console.error("Error al guardar estudiante:", err);
     }
   };
+  const baseURL = "http://localhost:4000";
 
   return (
-    <div style={{ maxWidth: "600px", margin: "0 auto" }}>
-      <h1 style={{ textAlign: "center" }}>
-        {isNew
-          ? "Nuevo Estudiante"
-          : isEdit
-          ? "Editar Estudiante"
-          : "Detalle del Estudiante"}
-      </h1>
+    <div className="container mt-4">
+      <h2>{isNew ? "Nuevo Estudiante" : isView ? "Detalle del Estudiante" : "Editar Estudiante"}</h2>
 
       <form onSubmit={handleSubmit}>
-        {[
-          { label: "Nombre", name: "name" },
-          { label: "Apellido", name: "lastname" },
-          { label: "DNI", name: "dni" },
-          { label: "Fecha de Nacimiento", name: "birthdate", type: "date" },
-          { label: "Categoría", name: "category" },
-          { label: "Dirección", name: "address" },
-          { label: "Nombre del Tutor 1", name: "tutor1_name" },
-          { label: "Teléfono del Tutor 1", name: "tutor1_phone" },
-          { label: "Nombre del Tutor 2", name: "tutor2_name" },
-          { label: "Teléfono del Tutor 2", name: "tutor2_phone" },
-        ].map(({ label, name, type = "text" }) => (
-          <div key={name} style={{ marginBottom: "10px" }}>
-            <label style={{ display: "block", fontWeight: "bold" }}>{label}</label>
-            <input
-              type={type}
-              name={name}
-              value={
-                name === "birthdate" && student.birthdate
-                  ? student.birthdate.slice(0, 10)
-                  : student[name] || ""
-              }
-              onChange={handleChange}
-              disabled={!isNew && !isEdit}
-              style={{ width: "100%", padding: "8px", boxSizing: "border-box" }}
-            />
-          </div>
-        ))}
-
-        <div style={{ marginBottom: "10px" }}>
-          <label style={{ display: "block", fontWeight: "bold" }}>Observaciones</label>
-          <textarea
-            name="observations"
-            value={student.observations || ""}
+        <div className="mb-3">
+          <label>Nombre</label>
+          <input
+            type="text"
+            className="form-control"
+            name="name"
+            value={student.name}
             onChange={handleChange}
-            disabled={!isNew && !isEdit}
-            rows="4"
-            style={{ width: "100%", padding: "8px", boxSizing: "border-box" }}
+            disabled={isView}
           />
         </div>
 
-        <div style={{ display: "flex", justifyContent: "space-between" }}>
-          <button type="button" onClick={() => navigate("/")}>
-            Volver
-          </button>
-          {(isNew || isEdit) ? (
-            <button type="submit">Guardar</button>
+        <div className="mb-3">
+          <label>Apellido</label>
+          <input
+            type="text"
+            className="form-control"
+            name="lastName"
+            value={student.lastName}
+            onChange={handleChange}
+            disabled={isView}
+          />
+        </div>
+
+        <div className="mb-3">
+          <label>DNI</label>
+          <input
+            type="text"
+            className="form-control"
+            name="dni"
+            value={student.dni}
+            onChange={handleChange}
+            disabled={isView}
+          />
+        </div>
+
+        <div className="mb-3">
+          <label>Fecha de nacimiento</label>
+          <input
+            type="date"
+            className="form-control"
+            name="birthDate"
+            value={student.birthDate ? student.birthDate.substring(0, 10) : ""}
+            onChange={handleChange}
+            disabled={isView}
+          />
+        </div>
+
+        <div className="mb-3">
+          <label>Dirección</label>
+          <input
+            type="text"
+            className="form-control"
+            name="address"
+            value={student.address}
+            onChange={handleChange}
+            disabled={isView}
+          />
+        </div>
+
+        <div className="mb-3">
+          <label>Nombre de la madre</label>
+          <input
+            type="text"
+            className="form-control"
+            name="motherName"
+            value={student.motherName}
+            onChange={handleChange}
+            disabled={isView}
+          />
+        </div>
+
+        <div className="mb-3">
+          <label>Nombre del padre</label>
+          <input
+            type="text"
+            className="form-control"
+            name="fatherName"
+            value={student.fatherName}
+            onChange={handleChange}
+            disabled={isView}
+          />
+        </div>
+
+        <div className="mb-3">
+          <label>Teléfono madre</label>
+          <input
+            type="text"
+            className="form-control"
+            name="motherPhone"
+            value={student.motherPhone}
+            onChange={handleChange}
+            disabled={isView}
+          />
+        </div>
+
+        <div className="mb-3">
+          <label>Teléfono padre</label>
+          <input
+            type="text"
+            className="form-control"
+            name="fatherPhone"
+            value={student.fatherPhone}
+            onChange={handleChange}
+            disabled={isView}
+          />
+        </div>
+
+        <div className="mb-3">
+          <label>Categoría</label>
+          <input
+            type="text"
+            className="form-control"
+            name="category"
+            value={student.category}
+            onChange={handleChange}
+            disabled={isView}
+          />
+        </div>
+
+        <div className="mb-3">
+          <label>Email</label>
+          <input
+            type="email"
+            className="form-control"
+            name="mail"
+            value={student.mail}
+            onChange={handleChange}
+            disabled={isView}
+          />
+        </div>
+
+        <div className="mb-3">
+          <label>Estado</label>
+          <select
+            name="state"
+            className="form-select"
+            value={student.state}
+            onChange={handleChange}
+            disabled={isView}
+          >
+            <option value="Activo">Activo</option>
+            <option value="Inactivo">Inactivo</option>
+          </select>
+        </div>
+
+        <div className="mb-3">
+          <label>Comentario</label>
+          <textarea
+            name="comment"
+            className="form-control"
+            value={student.comment}
+            onChange={handleChange}
+            disabled={isView}
+          ></textarea>
+        </div>
+
+        <div className="mb-3">
+        <div className="mb-3">
+          <label>Foto de perfil</label>
+          <br />
+          {student.profileImage && !student.profileImage.includes("pinimg.com") ? (
+            // Imagen cargada desde el servidor (ruta relativa tipo /uploads/...)
+            <img
+              src={`http://localhost:4000${student.profileImage}`}
+              alt="Imagen de perfil"
+              style={{ maxWidth: "250px", borderRadius: "8px" }}
+            />
           ) : (
-            <button
-              type="button"
-              onClick={() => navigate(`/students/${id}?edit=true`)}
-            >
-              Editar
-            </button>
+            // Imagen por defecto (si no hay imagen cargada o es la por defecto desde la DB)
+            <img
+              src="https://i.pinimg.com/736x/24/f2/25/24f22516ec47facdc2dc114f8c3de7db.jpg"
+              alt="Imagen por defecto"
+              style={{ maxWidth: "150px", borderRadius: "8px" }}
+            />
           )}
         </div>
+
+        
+        
+  
+
+          {/* Input solo si no está en modo visualización */}
+          {!isView && (
+            <input
+              type="file"
+              className="form-control"
+              accept="image/*"
+              onChange={handleImageChange}
+            />
+          )}
+        </div>
+
+
+        {!isView && (
+          <button type="submit" className="btn btn-primary">
+            {isEdit ? "Actualizar" : "Crear"}
+          </button>
+        )}
       </form>
     </div>
   );

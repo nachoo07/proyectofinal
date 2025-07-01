@@ -22,6 +22,7 @@ import {
   Settings as SettingsIcon,
   Report as ReportIcon,
   Notifications as PageNotification,
+  SportsSoccer as SportsSoccerIcon,
   Menu as MenuIcon
 } from '@mui/icons-material';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -52,6 +53,7 @@ const NavBar = ({ onNotificationClick }) => {
     { text: 'Reporte', icon: <ReportIcon />, url: '/reports' },
     { text: 'Notificaciones', icon: <PageNotification />, url: '/notifications' },
     { text: 'Settings', icon: <SettingsIcon />, url: '/settings' },
+    { text: 'Profesores', icon: <SportsSoccerIcon />, url: '/teachers' }
   ];
 
   return (

@@ -11,26 +11,40 @@ import ErrorBoundary from '../components/ErrorBoundary/errorBoundary'
 import PageStudent from '../pages/student/PageStudent'
 import PageSettings from '../pages/settings/PageSettings'
 
+import PageTeacher from '../pages/teacher/PageTeacher';
+import PageStudentShares from '../pages/share/PageStudentShares'; // Nueva página
+import PageEditStudent from '../pages/student/PageEditStudent';
+import StudentDetail from '../pages/student/StudentDetail';
+
+
 const Routing = () => {
   return (
     <>
-    <NavBar/>
-    <ErrorBoundary>
-      
-      <Routes>
-        <Route path="/user" element={<PageUser />} />
-        <Route path="/" element={<PageHomeAdmin />} />
-        <Route path="/login" element={<PageLogin />} />
-        <Route path="/motions" element={<PageMotion />} />
-        <Route path="/students" element={<PageStudent/>}/>
-        <Route path="/notifications" element={<PageNotification />} />
-        <Route path="/reports" element={<PageReport />} />
-        <Route path="/shares" element={<SharesPage />} />
-        <Route path='/settings' element={<PageSettings/>}/>
-      </Routes>
+      <NavBar />
+      <ErrorBoundary>
+
+        <Routes>
+          <Route path="/user" element={<PageUser />} />
+          <Route path="/" element={<PageHomeAdmin />} />
+          <Route path="/login" element={<PageLogin />} />
+          <Route path="/motions" element={<PageMotion />} />
+          <Route path="/students" element={<PageStudent />} />
+          <Route path="/notifications" element={<PageNotification />} />
+          <Route path="/reports" element={<PageReport />} />
+          <Route path="/shares" element={<SharesPage />} />
+          <Route path='/settings' element={<PageSettings />} />
+          <Route path="/teachers" element={<PageTeacher />} />
+
+          <Route path="/students/:id/edit" element={<PageEditStudent />} />
+          <Route path="/students/:id" element={<StudentDetail />} />
+          <Route path="/shares/student/:studentId" element={<PageStudentShares />} /> {/* Actualizamos a la nueva página */}
+
+          <Route path="/students" element={<PageStudent />} />
+        </Routes>
       </ErrorBoundary>
     </>
-  )
-}
+  );
+};
 
-export default Routing
+
+export default Routing;
