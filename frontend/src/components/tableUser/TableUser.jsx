@@ -3,7 +3,6 @@ import { UserContext } from '../../context/user/UserContext';
 import Swal from 'sweetalert2';
 import { Modal, Button, Form } from 'react-bootstrap';
 import './tableUser.css';
-import Navigato from '../navbar/Navigato';
 
 const TableUser = () => {
   const { users, loading, error, fetchUsers, deleteUser, updateUserState, createUser, updateUser } = useContext(UserContext);
@@ -161,7 +160,6 @@ const TableUser = () => {
 
   return (
     <div className="container">
-      <Navigato />
       <h1 className="title">Panel de Usuarios</h1>
       <div className="search-row">
         <input

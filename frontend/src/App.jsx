@@ -1,43 +1,52 @@
-import { UserProvider } from './context/user/UserContext';
-import Routing from './routes/Routing';
-import { LoginProvider } from './context/login/LoginContext';
 import { ThemeProvider, CssBaseline } from '@mui/material';
-import theme from './theme';
-import { NotificationProvider } from "./context/notification/notificationContext";
-import { SharesProvider } from "./context/share/ShareContext";
-import { TeacherProvider } from "./context/teacher/TeacherContext";
-import { StudentProvider } from "./context/student/StudentContext";
+import lightTheme from './lighttheme';
+import darkTheme from './darktheme';
+import { NotificationProvider } from './context/notification/notificationContext';
+import Routing from './routes/Routing';
+import { SharesProvider } from './context/share/ShareContext';
 import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer } from 'react-toastify';
+import { UserProvider } from './context/user/UserContext';
+import { StudentProvider } from './context/student/StudentContext';
+import { SettingsProvider, useSettings } from './context/settings/settingsContext';
+import { LoginProvider } from './context/login/LoginContext';
+// Componente interno para usar el hook correctamente
+function AppContent() {
+  const { themeMode, fontSize, getFontSize } = useSettings();
 
-function App() {
+  const remValue = getFontSize(fontSize); // ej. "1rem", "1.125rem"
+  const fontSizeNumber = parseFloat(remValue) * 16; // pasa rem a px base 16
+
+  // Crear temas dinámicamente con el tamaño de fuente
+  const appliedTheme = themeMode === 'dark' ? darkTheme(fontSizeNumber) : lightTheme(fontSizeNumber)
+
+
   return (
-    <>
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
-        <LoginProvider>
+    <ThemeProvider theme={appliedTheme}>
+      <CssBaseline />
+
+      <LoginProvider>
+        <NotificationProvider>
           <UserProvider>
-            <NotificationProvider>
+            <StudentProvider>
               <SharesProvider>
-                <TeacherProvider>
-                  <StudentProvider>
-                    <Routing />
-                    <ToastContainer />
-                  </StudentProvider>
-                </TeacherProvider>
+                <Routing />
+                <ToastContainer />
               </SharesProvider>
-            </NotificationProvider>
+            </StudentProvider>
           </UserProvider>
-        </LoginProvider>
-      </ThemeProvider>
-    </>
+        </NotificationProvider>
+      </LoginProvider>
+    </ThemeProvider>
   );
 }
 
-// Vista principal con la tabla
-const Home = () => {
-  const { students, deleteStudent } = useContext(StudentContext);
-  return <StudentTable students={students} onDelete={deleteStudent} />;
-};
+function App() {
+  return (
+    <SettingsProvider>
+      <AppContent />
+    </SettingsProvider>
+  );
+}
 
 export default App;

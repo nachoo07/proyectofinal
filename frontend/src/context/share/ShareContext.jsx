@@ -1,5 +1,5 @@
 // src/context/share/SharesProvider.jsx
-import React, { createContext, useState, useEffect, useCallback } from 'react';
+import { createContext, useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 
 export const SharesContext = createContext();

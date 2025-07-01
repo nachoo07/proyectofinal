@@ -21,7 +21,7 @@ import {
   CircularProgress,
 } from '@mui/material';
 import { useMotions } from '../../context/motion/MotionContext.jsx';
-import Navigato from '../navbar/Navigato.jsx';
+
 // Función para procesar datos para el gráfico
 const processChartData = (motions, selectedYear) => {
   const months = [
@@ -40,10 +40,10 @@ const processChartData = (motions, selectedYear) => {
       month,
       ingresos: monthMotions
         .filter((m) => m.incomeType === 'ingreso')
-        .reduce((sum, m) => sum + m.amount, 0),
+        .reduce((sum, m) => sum + (parseFloat(m.amount) || 0), 0),
       egresos: monthMotions
         .filter((m) => m.incomeType === 'egreso')
-        .reduce((sum, m) => sum + m.amount, 0),
+        .reduce((sum, m) => sum + (parseFloat(m.amount) || 0), 0),
     };
   });
   return data;
@@ -54,14 +54,13 @@ const calculateMetrics = (motions, selectedYear) => {
   const yearMotions = motions.filter(
     (m) => new Date(m.date).getFullYear() === selectedYear
   );
-  console.log(yearMotions);
-  console.log(motions);
+  console.log("Motions del año:", yearMotions);
   const totalIngresos = yearMotions
     .filter((m) => m.incomeType === 'ingreso')
-    .reduce((sum, m) => sum + m.amount, 0);
+    .reduce((sum, m) => sum + (parseFloat(m.amount) || 0), 0);
   const totalEgresos = yearMotions
     .filter((m) => m.incomeType === 'egreso')
-    .reduce((sum, m) => sum + m.amount, 0);
+    .reduce((sum, m) => sum + (parseFloat(m.amount) || 0), 0);
   return {
     totalIngresos,
     totalEgresos,
@@ -70,11 +69,11 @@ const calculateMetrics = (motions, selectedYear) => {
 };
 
 const formatAsCurrency = (number, currencyCode = 'ARS', locale = 'es-AR') => {
-    return new Intl.NumberFormat(locale, {
-      style: 'currency',
-      currency: currencyCode,
-    }).format(number);
-  }
+  return new Intl.NumberFormat(locale, {
+    style: 'currency',
+    currency: currencyCode,
+  }).format(number);
+};
 
 const ReportComponent = () => {
   const {
@@ -96,8 +95,8 @@ const ReportComponent = () => {
   const metrics = calculateMetrics(motions, selectedYear);
 
   useEffect(() => {
-    fetchMotions(); // Cargar movimientos al montar el componente
-  }, []);
+    fetchMotions({ year: selectedYear }); // Ajusta según la API
+  }, [selectedYear]);
 
   if (loading) {
     return (
@@ -125,7 +124,6 @@ const ReportComponent = () => {
 
   return (
     <Box sx={{ p: 4, bgcolor: 'background.paper' }} className="min-h-screen">
-      <Navigato/>
       <Typography variant="h4" gutterBottom className="text-center">
         Reporte Financiero
       </Typography>
@@ -135,7 +133,7 @@ const ReportComponent = () => {
         <InputLabel>Año</InputLabel>
         <Select
           value={selectedYear}
-          onChange={(e) => setSelectedYear(Number(e.target.value))} // Convertir a número
+          onChange={(e) => setSelectedYear(Number(e.target.value))}
           label="Año"
         >
           {years.map((year) => (
@@ -149,7 +147,7 @@ const ReportComponent = () => {
       {/* Métricas */}
       <Grid container spacing={2} sx={{ mb: 4 }}>
         <Grid item xs={12} sm={4}>
-          <Card>
+          <Card sx={{ boxShadow: '0px 8px 16px rgba(0, 0, 0, 0.3)' }}>
             <CardContent>
               <Typography color="textSecondary">Total Ingresos</Typography>
               <Typography variant="h5" color="green">
@@ -159,7 +157,7 @@ const ReportComponent = () => {
           </Card>
         </Grid>
         <Grid item xs={12} sm={4}>
-          <Card>
+          <Card sx={{ boxShadow: '0px 8px 16px rgba(0, 0, 0, 0.3)' }}>
             <CardContent>
               <Typography color="textSecondary">Total Egresos</Typography>
               <Typography variant="h5" color="red">
@@ -169,7 +167,7 @@ const ReportComponent = () => {
           </Card>
         </Grid>
         <Grid item xs={12} sm={4}>
-          <Card>
+          <Card sx={{ boxShadow: '0px 8px 16px rgba(0, 0, 0, 0.3)' }}>
             <CardContent>
               <Typography color="textSecondary">Balance</Typography>
               <Typography
@@ -191,7 +189,7 @@ const ReportComponent = () => {
           indexBy="month"
           margin={{ top: 50, right: 130, bottom: 50, left: 60 }}
           padding={0.3}
-          colors={['green', 'red']} // Verde para ingresos, rojo para egresos
+          colors={['green', 'red']}
           axisBottom={{
             tickSize: 5,
             tickPadding: 5,
@@ -207,6 +205,7 @@ const ReportComponent = () => {
             legend: 'Monto ($)',
             legendPosition: 'middle',
             legendOffset: -40,
+            domain: [0, Math.max(...chartData.flatMap(d => [d.ingresos, d.egresos])) * 1.1],
           }}
           labelSkipWidth={12}
           labelSkipHeight={12}
@@ -270,7 +269,7 @@ const ReportComponent = () => {
                   <TableCell
                     sx={{ color: row.ingresos - row.egresos >= 0 ? 'green' : 'red' }}
                   >
-                    {formatAsCurrency((row.ingresos - row.egresos))}
+                    {formatAsCurrency(row.ingresos - row.egresos)}
                   </TableCell>
                 </TableRow>
               ))}

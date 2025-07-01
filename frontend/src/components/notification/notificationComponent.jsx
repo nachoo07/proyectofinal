@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { 
   Box, 
   Typography, 
@@ -34,7 +34,6 @@ import {
 } from '@mui/icons-material';
 import { format, parseISO, isBefore } from 'date-fns';
 import { useNotifications } from '../../context/notification/notificationContext';
-import Navigato from '../navbar/Navigato';
 
 const NotificationComponent = () => {
   const [activeTab, setActiveTab] = useState('all');
@@ -47,7 +46,6 @@ const NotificationComponent = () => {
   const [notificationToDelete, setNotificationToDelete] = useState(null);
   const context = useNotifications();
   
-  
   const [newNotification, setNewNotification] = useState({
     message: '',
     type: 'reminder',
@@ -58,17 +56,18 @@ const NotificationComponent = () => {
     setActiveTab(newValue);
   };
 
-  const filteredNotifications = context.notifications.filter(notification => {
-    console.log(notification);
-    const isExpired = isBefore(parseISO(notification.expirationDate), new Date());
-    
-    if (activeTab === 'all') return !isExpired;
-    if (activeTab === 'events') return notification.type === 'event' && !isExpired;
-    if (activeTab === 'reminders') return notification.type === 'reminder' && !isExpired;
-    if (activeTab === 'expired') return isExpired;
-    
-    return true;
-  });
+  const filteredNotifications = useMemo(() => {
+    return context.notifications.filter(notification => {
+      const isExpired = isBefore(parseISO(notification.expirationDate), new Date());
+      
+      if (activeTab === 'all') return !isExpired;
+      if (activeTab === 'events') return notification.type === 'event' && !isExpired;
+      if (activeTab === 'reminders') return notification.type === 'reminder' && !isExpired;
+      if (activeTab === 'expired') return isExpired;
+      
+      return true;
+    });
+  }, [context.notifications, activeTab]);
 
   const handleCreateNotification = async () => {
     try {
@@ -111,7 +110,7 @@ const NotificationComponent = () => {
     }
   };
 
-  if (context.Alertloading) {
+  if (context.loading) {
     return (
       <Box display="flex" justifyContent="center" p={4}>
         <CircularProgress />
@@ -143,8 +142,6 @@ const NotificationComponent = () => {
 
   return (
     <Box sx={{ width: '100%' }}>
-      {/* Encabezado y pestañas horizontales */}
-      <Navigato />
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
         <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
           <Typography variant="h1">Notificaciones</Typography>
@@ -209,7 +206,6 @@ const NotificationComponent = () => {
         </Tabs>
       </Box>
 
-      {/* Contenido principal */}
       <Box mt={2}>
         <Typography variant="h5" gutterBottom>
           {activeTab === 'all' && 'Todas las notificaciones'}
@@ -313,7 +309,6 @@ const NotificationComponent = () => {
         )}
       </Box>
 
-      {/* Modal para nueva notificación */}
       <Dialog open={newNotificationOpen} onClose={() => setNewNotificationOpen(false)}>
         <DialogTitle>Crear Nueva Notificación</DialogTitle>
         <DialogContent>
@@ -356,7 +351,6 @@ const NotificationComponent = () => {
         </DialogActions>
       </Dialog>
 
-      {/* Modal para editar notificación */}
       <Dialog open={editModalOpen} onClose={() => setEditModalOpen(false)}>
         <DialogTitle>Editar Notificación</DialogTitle>
         <DialogContent>
@@ -401,7 +395,6 @@ const NotificationComponent = () => {
         </DialogActions>
       </Dialog>
 
-      {/* Modal de confirmación de eliminación */}
       <Dialog open={deleteModalOpen} onClose={() => setDeleteModalOpen(false)}>
         <DialogTitle>Confirmar Eliminación</DialogTitle>
         <DialogContent>
@@ -419,7 +412,6 @@ const NotificationComponent = () => {
         </DialogActions>
       </Dialog>
 
-      {/* Modal de éxito */}
       <Dialog open={successModalOpen} onClose={() => setSuccessModalOpen(false)}>
         <DialogTitle>Operación Exitosa</DialogTitle>
         <DialogContent>

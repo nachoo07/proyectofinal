@@ -23,9 +23,16 @@ import {
 } from '@mui/material';
 import { SharesContext } from '../../context/share/ShareContext';
 import { toast } from 'react-toastify';
-import Navigato from '../navbar/Navigato';
-import { useNavigate } from 'react-router-dom';
-
+// Función para obtener los últimos tres meses
+const getLastThreeMonths = () => {
+  const today = new Date();
+  const months = [];
+  for (let i = 0; i < 3; i++) {
+    const date = new Date(today.getFullYear(), today.getMonth() - i, 1);
+    months.push(date.toISOString().slice(0, 7)); // Formato YYYY-MM
+  }
+  return months;
+}
 // Función para formatear fecha a YYYY-MM-DD (elimina hora y zona)
 const formatDateForInput = (dateStr) => {
   if (!dateStr) return '';
@@ -50,12 +57,12 @@ const Share = () => {
     ...new Map(
       studentsWithShares.map((item) => [
         item.student_id,
-        { 
-          id: item.student_id, 
-          name: item.name, 
-          lastName: item.lastName, 
-          dni: item.dni || 'N/A', 
-          student_status: item.student_status || 'Activo' 
+        {
+          id: item.student_id,
+          name: item.name,
+          lastName: item.lastName,
+          dni: item.dni || 'N/A',
+          student_status: item.student_status || 'Activo'
         },
       ])
     ).values(),
@@ -154,13 +161,7 @@ const Share = () => {
 
   return (
     <Box sx={{ padding: '20px' }}>
-      <Navigato />
-      <Typography variant="h4" gutterBottom>
-        Panel de Cuotas
-      </Typography>
-
-      {/* Buscador y botón de cuota masiva */}
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 3 }}>
+      <Box sx={{ mb: 3 }}>
         <TextField
           sx={{ width: '70%' }}
           label="Buscar por nombre, apellido o DNI"
@@ -237,9 +238,77 @@ const Share = () => {
         </Table>
       </TableContainer>
 
-      {/* Pop-up para crear cuota masiva */}
-      <Dialog open={openMassShareDialog} onClose={handleCloseMassShareDialog}>
-        <DialogTitle>Crear Cuota Masiva</DialogTitle>
+      {/* Formulario de pago o edición */}
+      <Box component="form" onSubmit={handleSubmit} sx={{ maxWidth: '600px' }}>
+        <Typography variant="h6" gutterBottom>
+          {editingShare ? 'Editar Cuota' : 'Registrar Pago'}
+        </Typography>
+        <TextField
+          label="Monto"
+          name="amount"
+          type="number"
+          value={paymentData.amount}
+          onChange={handleInputChange}
+          fullWidth
+          sx={{ mb: 2 }}
+          required
+        />
+        <TextField
+          label="Fecha de Pago"
+          name="paymentdate"
+          type="date"
+          value={paymentData.paymentdate}
+          onChange={handleInputChange}
+          fullWidth
+          sx={{ mb: 2 }}
+          InputLabelProps={{ shrink: true }}
+          required
+        />
+        <FormControl fullWidth sx={{ mb: 2 }}>
+          <InputLabel>Método de Pago</InputLabel>
+          <Select
+            name="paymentmethod"
+            value={paymentData.paymentmethod}
+            onChange={handleInputChange}
+            label="Método de Pago"
+            required
+          >
+            <MenuItem value="Efectivo">Efectivo</MenuItem>
+            <MenuItem value="Transferencia">Transferencia</MenuItem>
+
+          </Select>
+        </FormControl>
+        <FormControl fullWidth sx={{ mb: 2 }}>
+          <InputLabel>Estado</InputLabel>
+          <Select
+            name="state"
+            value={paymentData.state}
+            onChange={handleInputChange}
+            label="Estado"
+            required
+          >
+            <MenuItem value="Pagado">Pagado</MenuItem>
+            <MenuItem value="Pendiente">Pendiente</MenuItem>
+            <MenuItem value="Vencido">Vencido</MenuItem>
+          </Select>
+        </FormControl>
+        <Box>
+          <Button type="submit" variant="contained" color="primary" sx={{ mr: 1 }}>
+            {editingShare ? 'Actualizar' : 'Registrar'}
+          </Button>
+          {editingShare && (
+            <Button variant="outlined" color="secondary" onClick={handleCancelEdit}>
+              Cancelar
+            </Button>
+          )}
+        </Box>
+      </Box>
+      <Box />
+
+
+      {/* Diálogo de confirmación para eliminar */}
+      <Dialog open={openDeleteDialog} onClose={handleCloseDeleteDialog}>
+        <DialogTitle>Confirmar Eliminación</DialogTitle>
         <DialogContent>
           <FormControl fullWidth sx={{ mt: 2, mb: 2 }}>
             <InputLabel>Año</InputLabel>
@@ -294,17 +363,21 @@ const Share = () => {
       </Dialog>
 
       {/* Mensajes de carga o error */}
-      {loading && (
-        <Typography variant="body1" sx={{ textAlign: 'center', my: 2 }}>
-          Cargando datos...
-        </Typography>
-      )}
-      {error && (
-        <Typography variant="body1" color="error" sx={{ textAlign: 'center', my: 2 }}>
-          {error}
-        </Typography>
-      )}
-    </Box>
+      {
+        loading && (
+          <Typography variant="body1" sx={{ textAlign: 'center', my: 2 }}>
+            Cargando datos...
+          </Typography>
+        )
+      }
+      {
+        error && (
+          <Typography variant="body1" color="error" sx={{ textAlign: 'center', my: 2 }}>
+            {error}
+          </Typography>
+        )
+      }
+    </Box >
   );
 };
 

@@ -1,4 +1,3 @@
-import React from 'react'
 import HomeAdmin from '../../components/homeAdmin/HomeAdmin'
 
 const PageHomeAdmin = () => {
