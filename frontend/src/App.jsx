@@ -1,18 +1,29 @@
 import { ThemeProvider, CssBaseline } from '@mui/material';
-import theme from './theme';
-import { NotificationProvider } from "./context/notification/notificationContext";
+import lightTheme from './lighttheme';
+import darkTheme from './darktheme';
+import { NotificationProvider } from './context/notification/notificationContext';
 import Routing from './routes/Routing';
 import { SharesProvider } from './context/share/ShareContext';
 import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer } from 'react-toastify';
 import { UserProvider } from './context/user/UserContext';
 import { StudentProvider } from './context/student/StudentContext';
+import { SettingsProvider, useSettings } from './context/settings/settingsContext';
+// Componente interno para usar el hook correctamente
+function AppContent() {
+  const { themeMode, fontSize, getFontSize } = useSettings();
 
-//NO SE Borra, POR QUE SINO NO ANDA LA NAVEGACION!!!!! 
-function App() {
+  const remValue = getFontSize(fontSize); // ej. "1rem", "1.125rem"
+  const fontSizeNumber = parseFloat(remValue) * 16; // pasa rem a px base 16
+
+  // Crear temas dinámicamente con el tamaño de fuente
+  const appliedTheme = themeMode === 'dark' ? darkTheme(fontSizeNumber) : lightTheme(fontSizeNumber)
+  
+   
   return (
-    <ThemeProvider theme={theme}>
+    <ThemeProvider theme={appliedTheme}>
       <CssBaseline />
+      
       <NotificationProvider>
         <UserProvider>
           <StudentProvider>
@@ -24,6 +35,14 @@ function App() {
         </UserProvider>
       </NotificationProvider>
     </ThemeProvider>
+  );
+}
+
+function App() {
+  return (
+    <SettingsProvider>
+      <AppContent />
+    </SettingsProvider>
   );
 }
 

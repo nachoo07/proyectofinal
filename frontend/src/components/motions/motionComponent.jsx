@@ -71,11 +71,13 @@ const MotionComponent = () => {
   };
 
   const handleSubmit = async (motion) => {
+    console.log("AAAAAAAAAAAAAAAAAAAAA")
   try {
     const formattedData = {
       ...motion,
       date: formatDateToYYYYMMDD(motion.date),
     };
+    console.log(formattedData)
     if (motion.id) {
       await updateMotion(motion.id, formattedData);
     } else {
@@ -246,9 +248,7 @@ const MotionComponent = () => {
         </>
       )}
       <Box sx={{ mt: 4 }}>
-  <Typography variant="h5" gutterBottom>
-    Resumen Mensual
-  </Typography>
+ 
   {/* Placeholder para el chart, reemplazar con confirmación */}
   <Box sx={{ height: 300 }}>
     {/* Aquí irá el chart si confirmas */}

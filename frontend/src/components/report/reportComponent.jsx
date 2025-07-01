@@ -147,7 +147,7 @@ const ReportComponent = () => {
       {/* Métricas */}
       <Grid container spacing={2} sx={{ mb: 4 }}>
         <Grid item xs={12} sm={4}>
-          <Card>
+          <Card sx={{ boxShadow: '0px 8px 16px rgba(0, 0, 0, 0.3)' }}>
             <CardContent>
               <Typography color="textSecondary">Total Ingresos</Typography>
               <Typography variant="h5" color="green">
@@ -157,7 +157,7 @@ const ReportComponent = () => {
           </Card>
         </Grid>
         <Grid item xs={12} sm={4}>
-          <Card>
+          <Card sx={{ boxShadow: '0px 8px 16px rgba(0, 0, 0, 0.3)' }}>
             <CardContent>
               <Typography color="textSecondary">Total Egresos</Typography>
               <Typography variant="h5" color="red">
@@ -167,7 +167,7 @@ const ReportComponent = () => {
           </Card>
         </Grid>
         <Grid item xs={12} sm={4}>
-          <Card>
+          <Card sx={{ boxShadow: '0px 8px 16px rgba(0, 0, 0, 0.3)' }}>
             <CardContent>
               <Typography color="textSecondary">Balance</Typography>
               <Typography

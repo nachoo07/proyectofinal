@@ -27,6 +27,7 @@ const Formulario = ({ formData, setFormData, handleSubmit, incomeType, isEditing
   };
 
   const handleDateChange = (newDate) => {
+    console.log("Fecha seleccionada:", newDate); // Depuración de la selección de fecha
     setFormData((prevData) => ({
       ...prevData,
       date: newDate,
@@ -34,49 +35,61 @@ const Formulario = ({ formData, setFormData, handleSubmit, incomeType, isEditing
   };
 
   const validateForm = () => {
+    console.log("Validando formulario con datos:", formData); // Depuración de datos del formulario
     if (!formData.concept.trim()) {
       setLocalError("La descripción es obligatoria");
+      console.log("Validación fallida: Descripción vacía");
       return false;
     }
     if (!formData.amount || formData.amount <= 0) {
       setLocalError("El monto debe ser un número positivo");
+      console.log("Validación fallida: Monto inválido");
       return false;
     }
-    if (!formData.date) {
-      setLocalError("La fecha es obligatoria");
+    if (!formData.date || isNaN(new Date(formData.date).getTime())) {
+      setLocalError("La fecha es obligatoria y debe ser válida");
+      console.log("Validación fallida: Fecha inválida");
       return false;
     }
     if (!formData.paymentMethod) {
       setLocalError("El método de pago es obligatorio");
+      console.log("Validación fallida: Método de pago faltante");
       return false;
     }
     if (!["ingreso", "egreso"].includes(formData.incomeType)) {
       setLocalError("El tipo de movimiento no es válido");
+      console.log("Validación fallida: incomeType inválido");
       return false;
     }
+    setLocalError(""); // Limpiar error si la validación pasa
     return true;
   };
-const submit = (e) => {
-  e.preventDefault();
-  setLocalError("");
-  if (!validateForm()) return;
 
-  try {
-    handleSubmit(formData);
-    // Solo restablecer el formulario si handleSubmit tiene éxito
-    setFormData({
-      id: null,
-      concept: "",
-      amount: "",
-      date: null,
-      paymentMethod: "",
-      incomeType: incomeType,
-    });
-  } catch (err) {
-    setLocalError("Error al enviar el formulario");
-    console.error(err);
-  }
-};
+  const submit = async (e) => {
+    e.preventDefault();
+    console.log("Formulario enviado con datos:", formData); // Depuración de envío
+    setLocalError("");
+    if (!validateForm()) {
+      console.log("Validación del formulario fallida");
+      return;
+    }
+
+    try {
+      await handleSubmit(formData);
+      console.log("Envío del formulario exitoso");
+      setFormData({
+        id: null,
+        concept: "",
+        amount: "",
+        date: null,
+        paymentMethod: "",
+        incomeType: incomeType,
+      });
+    } catch (err) {
+      console.error("Error en el envío del formulario:", err);
+      setLocalError(err.message || "Error al enviar el formulario");
+    }
+  };
 
   return (
     <Box component="form" onSubmit={submit} sx={{ mb: 4 }}>
@@ -121,7 +134,7 @@ const submit = (e) => {
           </LocalizationProvider>
         </Grid>
         <Grid item xs={12} sm={6}>
-          <FormControl fullWidth>
+          <FormControl fullWidth sx={{ minWidth: 165}} >
             <InputLabel>Método de Pago</InputLabel>
             <Select
               label="Método de Pago"
@@ -133,13 +146,11 @@ const submit = (e) => {
               <MenuItem value="">
                 <em>Seleccione un método</em>
               </MenuItem>
-              <MenuItem value="Efectivo">Efectivo</MenuItem>
-              <MenuItem value="Transferencia">Transferencia</MenuItem>
-            
+              <MenuItem value="efectivo">Efectivo</MenuItem>
+              <MenuItem value="transferencia">Transferencia</MenuItem>
             </Select>
           </FormControl>
         </Grid>
-       
         <Grid item xs={12}>
           <Box sx={{ display: "flex", gap: 2 }}>
             <Button type="submit" variant="contained" color="primary">

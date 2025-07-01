@@ -25,9 +25,10 @@ import {
   Menu as MenuIcon
 } from '@mui/icons-material';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { useSettings } from '../../context/settings/settingsContext';  // Importante para leer el themeMode
 
-// eslint-disable-next-line react/prop-types
-const NavBar = ({ onNotificationClick }) => {  // Recibimos una función desde el padre
+const NavBar = ({ onNotificationClick }) => {
+  const { themeMode } = useSettings();  // Obtenemos el modo actual
   const [mobileMenuAnchorEl, setMobileMenuAnchorEl] = useState(null);
   const isMobileMenuOpen = Boolean(mobileMenuAnchorEl);
 
@@ -44,138 +45,159 @@ const NavBar = ({ onNotificationClick }) => {  // Recibimos una función desde e
 
   const navItems = [
     { text: 'Inicio', icon: <HomeAdmin />, url: '/home' },
+    { text: 'Usuarios', icon: <UserIcon />, url: '/user' },
     { text: 'Alumnos', icon: <PeopleIcon />, url: '/students' },
     { text: 'Cuotas', icon: <AttachMoneyIcon />, url: '/shares' },
     { text: 'Movimientos', icon: <MovimientosIcon />, url: '/motions' },
-    { text: 'Usuarios', icon: <UserIcon />, url: '/user' },
-    { text: 'Settings', icon: <SettingsIcon />, url: '/settings' },
     { text: 'Reporte', icon: <ReportIcon />, url: '/reports' },
     { text: 'Notificaciones', icon: <PageNotification />, url: '/notifications' },
+    { text: 'Settings', icon: <SettingsIcon />, url: '/settings' },
   ];
 
   return (
-    <>
-      <AppBar position="static" color="default" elevation={3} sx={{
-        backgroundColor: '#007F5F',
-        overflowX: 'auto',
-      }}>
-        <Toolbar sx={{
+    <AppBar
+      position="static"
+      color="default"
+      elevation={3}
+      sx={{
+        backgroundColor: (theme) =>
+          themeMode === 'dark'
+            ? theme.palette.background.paper
+            : '#007F5F',
+        color: (theme) =>
+          themeMode === 'dark'
+            ? theme.palette.text.primary
+            : 'white',
+      }}
+    >
+      <Toolbar
+        sx={{
           display: 'flex',
           justifyContent: 'center',
           minHeight: '64px !important',
           px: 0,
-        }}>
-          {/* Mobile menu button */}
-          <IconButton
-            edge="start"
-            color="inherit"
-            aria-label="menu"
-            onClick={handleMobileMenuOpen}
-            sx={{ mr: 2, display: { xs: 'flex', md: 'none' } }}
-          >
-            <MenuIcon />
-          </IconButton>
+        }}
+      >
+        <IconButton
+          edge="start"
+          aria-label="menu"
+          onClick={handleMobileMenuOpen}
+          sx={{
+            mr: 2,
+            display: { xs: 'flex', md: 'none' },
+            color: 'inherit'
+          }}
+        >
+          <MenuIcon />
+        </IconButton>
 
-          {/* Title - hidden on mobile */}
-          <Typography
-            variant="h6"
-            component="div"
-            sx={{
-              fontWeight: 'bold',
-              display: { xs: 'none', md: 'block' },
-              mr: 4
-            }}
-          >
-            Golazo
-          
-          </Typography>
+        <Typography
+          variant="h6"
+          component="div"
+          sx={{
+            fontWeight: 'bold',
+            display: { xs: 'none', md: 'block' },
+            mr: 4,
+            color: 'inherit'
+          }}
+        >
+          Golazo
+        </Typography>
 
-          {/* Desktop nav items */}
-          <Box sx={{
+        <Box
+          sx={{
             display: { xs: 'none', md: 'flex' },
             alignItems: 'center',
             gap: 1
-          }}>
-            <List sx={{
+          }}
+        >
+          <List
+            sx={{
               display: 'flex',
               padding: 0,
               '& .MuiListItem-root': {
                 width: 'auto',
                 padding: '8px 16px',
-              }
-            }}>
-              {navItems.map((item, index) => (
-                <ListItem
-                  button
-                  key={index}
-                  selected={location.pathname === item.url}
-                  sx={{
-                    '&.Mui-selected': {
-                      backgroundColor: 'rgba(25, 118, 210, 0.08)',
-                    },
-                    '&.Mui-selected:hover': {
-                      backgroundColor: 'rgba(25, 118, 210, 0.12)',
-                    }
-                  }}
-                  onClick={() => {
-                    navigate(item.url);
-                  }}
-                >
-                  <ListItemIcon>
-                    {item.icon}
-                  </ListItemIcon>
-                  <ListItemText
-                    primary={item.text}
-                    primaryTypographyProps={{
-                      fontWeight: item.selected ? 'medium' : 'normal',
-                      whiteSpace: 'nowrap'
-                    }}
-                  />
-                </ListItem>
-              ))}
-            </List>
-          </Box>
-
-          {/* Mobile menu */}
-          <Menu
-            anchorEl={mobileMenuAnchorEl}
-            open={isMobileMenuOpen}
-            onClose={handleMobileMenuClose}
-            PaperProps={{
-              style: {
-                width: 250,
+                color: 'inherit',
               },
+              '& .MuiListItemIcon-root': {
+                color: 'inherit',
+                minWidth: '36px'
+              },
+              '& .Mui-selected': {
+                backgroundColor: 'rgba(255, 255, 255, 0.16)',
+              },
+              '& .Mui-selected:hover': {
+                backgroundColor: 'rgba(255, 255, 255, 0.24)',
+              }
             }}
           >
-            <Box sx={{ p: 2, textAlign: 'center' }}>
-              <Typography variant="h6" component="div" sx={{ fontWeight: 'bold' }}>
-                Menú Principal
-              </Typography>
-            </Box>
-            <Divider />
             {navItems.map((item, index) => (
-              <MenuItem
+              <ListItem
+                button
                 key={index}
-                selected={item.selected}
-                onClick={handleMobileMenuClose}
+                selected={location.pathname === item.url}
+                onClick={() => navigate(item.url)}
               >
                 <ListItemIcon>
                   {item.icon}
                 </ListItemIcon>
-                <ListItemText primary={item.text} />
-              </MenuItem>
+                <ListItemText
+                  primary={item.text}
+                  primaryTypographyProps={{
+                    fontWeight: location.pathname === item.url ? 'medium' : 'normal',
+                    whiteSpace: 'nowrap'
+                  }}
+                />
+              </ListItem>
             ))}
-            <Divider />
-            <MenuItem onClick={onNotificationClick}>  {/* También en móvil */}
+          </List>
+        </Box>
+
+        <Menu
+          anchorEl={mobileMenuAnchorEl}
+          open={isMobileMenuOpen}
+          onClose={handleMobileMenuClose}
+          PaperProps={{
+            style: {
+              width: 250,
+            },
+          }}
+        >
+          <Box sx={{ p: 2, textAlign: 'center' }}>
+            <Typography variant="h6" component="div" sx={{ fontWeight: 'bold' }}>
+              Menú Principal
+            </Typography>
+          </Box>
+          <Divider />
+          {navItems.map((item, index) => (
+            <MenuItem
+              key={index}
+              selected={location.pathname === item.url}
+              onClick={() => {
+                handleMobileMenuClose();
+                navigate(item.url);
+              }}
+            >
               <ListItemIcon>
-                <PageNotification />
+                {item.icon}
               </ListItemIcon>
-              <ListItemText primary="Notificaciones" />
+              <ListItemText primary={item.text} />
             </MenuItem>
-          </Menu>
-        </Toolbar>
-      </AppBar>
-    </>
+          ))}
+          <Divider />
+          <MenuItem onClick={() => {
+            handleMobileMenuClose();
+            onNotificationClick();
+          }}>
+            <ListItemIcon>
+              <PageNotification />
+            </ListItemIcon>
+            <ListItemText primary="Notificaciones" />
+          </MenuItem>
+        </Menu>
+      </Toolbar>
+    </AppBar>
   );
 };
 

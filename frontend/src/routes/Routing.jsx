@@ -9,6 +9,7 @@ import SharesPage from '../pages/share/PageShare'
 import NavBar from '../components/NavBar/NavBar'
 import ErrorBoundary from '../components/ErrorBoundary/errorBoundary'
 import PageStudent from '../pages/student/PageStudent'
+import PageSettings from '../pages/settings/PageSettings'
 
 const Routing = () => {
   return (
@@ -25,6 +26,7 @@ const Routing = () => {
         <Route path="/notifications" element={<PageNotification />} />
         <Route path="/reports" element={<PageReport />} />
         <Route path="/shares" element={<SharesPage />} />
+        <Route path='/settings' element={<PageSettings/>}/>
       </Routes>
       </ErrorBoundary>
     </>
