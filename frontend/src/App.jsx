@@ -10,6 +10,7 @@ import { UserProvider } from './context/user/UserContext';
 import { StudentProvider } from './context/student/StudentContext';
 import { SettingsProvider, useSettings } from './context/settings/settingsContext';
 import { LoginProvider } from './context/login/LoginContext';
+import { TeacherProvider } from './context/teacher/TeacherContext';
 // Componente interno para usar el hook correctamente
 function AppContent() {
   const { themeMode, fontSize, getFontSize } = useSettings();
@@ -24,13 +25,14 @@ function AppContent() {
   return (
     <ThemeProvider theme={appliedTheme}>
       <CssBaseline />
-
       <LoginProvider>
         <NotificationProvider>
           <UserProvider>
-            <StudentProvider>
+            <StudentProvider> 
               <SharesProvider>
+                <TeacherProvider>
                 <Routing />
+                </TeacherProvider>
                 <ToastContainer />
               </SharesProvider>
             </StudentProvider>

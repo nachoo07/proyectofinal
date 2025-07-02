@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from 'react';
+import{ useContext, useState, useEffect } from 'react';
 import {
   Box,
   Typography,
@@ -19,7 +19,7 @@ import {
 } from '@mui/material';
 import { TeacherContext } from '../../context/teacher/TeacherContext';
 import { toast } from 'react-toastify';
-import Navigato from '../navbar/Navigato';
+// import Navigato from '../navbar/Navigato';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import SaveIcon from '@mui/icons-material/Save';
@@ -142,7 +142,7 @@ const Teacher = ({ onBack }) => {
       }}
       className="main-container"
     >
-      <Navigato />
+      {/* <Navigato /> */}
 
       <Box
         sx={{

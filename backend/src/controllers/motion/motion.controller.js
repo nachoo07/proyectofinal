@@ -47,131 +47,167 @@ export const getMotionByMotion = async(request, response) => {
 
 // Create new motion
 export const createMotion = async (req, res) => {
-    const { concept, date, amount, paymentMethod, incomeType } = req.body;
-  
-    // Asegúrate de validar los valores según los tipos de datos (enum 'efectivo' o 'transferencia')
-    if (!["efectivo", "transferencia"].includes(paymentMethod)) {
-      return res
-        .status(400)
-        .json({ error: "El tipo debe ser 'efectivo' o 'transferencia'" });
-    }
-    if (!["ingreso", "egreso"].includes(incomeType)) {
-        return res.status(400).json({ 
-            error: "El tipo debe ser 'ingreso' o 'egreso'" 
-        });
-    }
-    if (isNaN(amount) || amount <= 0) {
-        return res.status(400).json({ 
-            error: "El monto debe ser un número positivo" 
-        });
-    }
+  const { concept, date, amount, paymentMethod, incomeType, id_shares } = req.body;
 
-    // Validación de longitud de concept
-    if (concept.length > 255) {
-        return res.status(400).json({ 
-            error: "El concepto debe tener menos de 255 caracteres" 
-        });
-    }
+  // Validar paymentMethod
+  if (!["efectivo", "transferencia"].includes(paymentMethod)) {
+    return res
+      .status(400)
+      .json({ error: "El tipo debe ser 'efectivo' o 'transferencia'" });
+  }
 
-    // Validación de formato de fecha
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || isNaN(Date.parse(date))) {
-        return res.status(400).json({ 
-            error: "La fecha debe estar en formato YYYY-MM-DD y ser válida" 
-        });
-    }
-    // Definir la consulta SQL
-    const query = `INSERT INTO motions (concept, date, amount, paymentMethod, incomeType) 
-                     VALUES (?, ?, ?, ?,?)`;
-  
-    try {
-      // Ejecutar la consulta con parámetros
-      const [result] = await connection.execute(query, [
+  // Validar incomeType
+  if (!["ingreso", "egreso"].includes(incomeType)) {
+    return res.status(400).json({
+      error: "El tipo debe ser 'ingreso' o 'egreso'",
+    });
+  }
+
+  // Validar amount
+  if (isNaN(amount) || amount <= 0) {
+    return res.status(400).json({
+      error: "El monto debe ser un número positivo",
+    });
+  }
+
+  // Validar concept length
+  if (concept.length > 255) {
+    return res.status(400).json({
+      error: "El concepto debe tener menos de 255 caracteres",
+    });
+  }
+
+  // Validar formato de fecha
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || isNaN(Date.parse(date))) {
+    return res.status(400).json({
+      error: "La fecha debe estar en formato YYYY-MM-DD y ser válida",
+    });
+  }
+
+  // Validar id_shares (opcional, puede ser nulo)
+  if (id_shares && (isNaN(id_shares) || id_shares <= 0)) {
+    return res.status(400).json({
+      error: "id_shares debe ser un número positivo o nulo",
+    });
+  }
+
+  // Definir la consulta SQL
+  const query = `INSERT INTO motions (concept, date, amount, paymentMethod, incomeType, id_shares) 
+                 VALUES (?, ?, ?, ?, ?, ?)`;
+
+  try {
+    // Ejecutar la consulta
+    const [result] = await connection.execute(query, [
+      concept,
+      date,
+      amount,
+      paymentMethod,
+      incomeType,
+      id_shares || null,
+    ]);
+
+    // Devolver respuesta
+    res.status(201).json({
+      message: "Movimiento creado correctamente",
+      motion: {
+        id: result.insertId,
         concept,
         date,
         amount,
         paymentMethod,
         incomeType,
-      ]);
-  
-      // Devolver la respuesta con los detalles de la notificación creada
-      res.status(201).json({
-        message: "Movimiento creado correctamente",
-        motion: {
-          id: result.insertId, // El ID generado automáticamente
-          concept,
-          date,
-          amount,
-          paymentMethod,
-          incomeType,
-        },
-      });
-    } catch (error) {
-      console.error("Error creando el Movimiento:", error);
-      res.status(500).json({ error: "Error interno del servidor" });
-    }
+        id_shares: id_shares || null,
+      },
+    });
+  } catch (error) {
+    console.error("Error creando el Movimiento:", error);
+    res.status(500).json({ error: "Error interno del servidor" });
   }
+};
 
 // Edit existing motion
-export const updateMotion = async (request, response) => {
-    const id = request.params.id
-    const { concept, date, amount, paymentMethod, incomeType } = request.body
-    console.log('a')
-    
-    // Basic validation
-    if (!concept || !date || !amount || !paymentMethod || !incomeType) {
-        return response.status(400).send({ error: 'All fields are required' })
-    }
-    
-    // Validate enums
-    if (!['efectivo', 'transferencia'].includes(paymentMethod)) {
-        return response.status(400).send({ error: 'Invalid payment method' })
-    }
-    if (!['ingreso', 'egreso'].includes(incomeType)) {
-        return response.status(400).send({ error: 'Invalid income type' })
+export const updateMotion = async (req, res) => {
+  const id = req.params.id;
+  const { concept, date, amount, paymentMethod, incomeType, id_shares } = req.body;
+
+  // Validaciones básicas
+  if (!concept || !date || !amount || !paymentMethod || !incomeType) {
+    return res.status(400).json({ error: "Todos los campos son obligatorios" });
+  }
+
+  // Validar paymentMethod
+  if (!["efectivo", "transferencia"].includes(paymentMethod)) {
+    return res.status(400).json({ error: "El tipo debe ser 'efectivo' o 'transferencia'" });
+  }
+
+  // Validar incomeType
+  if (!["ingreso", "egreso"].includes(incomeType)) {
+    return res.status(400).json({ error: "El tipo debe ser 'ingreso' o 'egreso'" });
+  }
+
+  // Validar amount
+  if (isNaN(amount) || amount <= 0) {
+    return res.status(400).json({ error: "El monto debe ser un número positivo" });
+  }
+
+  // Validar concept length
+  if (concept.length > 255) {
+    return res.status(400).json({ error: "El concepto debe tener menos de 255 caracteres" });
+  }
+
+  // Validar formato de fecha
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || isNaN(Date.parse(date))) {
+    return res.status(400).json({
+      error: "La fecha debe estar en formato YYYY-MM-DD y ser válida",
+    });
+  }
+
+  // Validar id_shares (opcional, puede ser nulo)
+  if (id_shares && (isNaN(id_shares) || id_shares <= 0)) {
+    return res.status(400).json({
+      error: "id_shares debe ser un número positivo o nulo",
+    });
+  }
+
+  // Definir la consulta SQL
+  const query = `UPDATE motions 
+                 SET concept = ?, 
+                     date = ?, 
+                     amount = ?, 
+                     paymentMethod = ?, 
+                     incomeType = ?,
+                     id_shares = ?
+                 WHERE id = ?`;
+
+  try {
+    const [result] = await connection.execute(query, [
+      concept,
+      date,
+      amount,
+      paymentMethod,
+      incomeType,
+      id_shares || null,
+      id,
+    ]);
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: "Movimiento no encontrado" });
     }
 
-    // Validate amount
-    if (isNaN(amount) || amount < 0) {
-        return response.status(400).send({ error: 'Amount must be a positive number' })
-    }
-
-    // Validate concept length
-    if (concept.length > 255) {
-        return response.status(400).send({ error: 'Concept must be less than 255 characters' })
-    }
-
-    console.log('b')
-
-    const query = `UPDATE motions 
-                  SET concept = ?, 
-                      date = ?, 
-                      amount = ?, 
-                      paymentMethod = ?, 
-                      incomeType = ?
-                  WHERE id = ?`
-    try{
-        const result = await connection.execute(query, [concept, date, amount, paymentMethod, incomeType, id])
-        const affectedRows = result[0].affectedRows
-
-        if(affectedRows === 0){
-            response.status(404).send({ error: 'Motion not found' })
-        }
-        else {
-            response.send({ 
-                id,
-                concept,
-                date,
-                amount,
-                paymentMethod,
-                incomeType
-            })
-        }
-    }catch(error){
-        console.error('Error updating motion:', error)
-        response.status(500).send({ error: 'Error updating motion' })
-    }
-    
-}
+    res.json({
+      id,
+      concept,
+      date,
+      amount,
+      paymentMethod,
+      incomeType,
+      id_shares: id_shares || null,
+    });
+  } catch (error) {
+    console.error("Error actualizando el movimiento:", error);
+    res.status(500).json({ error: "Error actualizando el movimiento" });
+  }
+};
 
 // Delete motion
 export const deleteMotion = async (req, res) => {

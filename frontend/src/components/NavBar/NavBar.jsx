@@ -46,14 +46,15 @@ const NavBar = ({ onNotificationClick }) => {
 
   const navItems = [
     { text: 'Inicio', icon: <HomeAdmin />, url: '/home' },
-    { text: 'Usuarios', icon: <UserIcon />, url: '/user' },
+    { text: 'Usuarios', icon: <UserIcon />, url: '/user' },  
+    { text: 'Profesores', icon: <SportsSoccerIcon />, url: '/teachers' },
     { text: 'Alumnos', icon: <PeopleIcon />, url: '/students' },
     { text: 'Cuotas', icon: <AttachMoneyIcon />, url: '/shares' },
     { text: 'Movimientos', icon: <MovimientosIcon />, url: '/motions' },
     { text: 'Reporte', icon: <ReportIcon />, url: '/reports' },
     { text: 'Notificaciones', icon: <PageNotification />, url: '/notifications' },
     { text: 'Settings', icon: <SettingsIcon />, url: '/settings' },
-    { text: 'Profesores', icon: <SportsSoccerIcon />, url: '/teachers' }
+  
   ];
 
   return (
