@@ -1,60 +1,52 @@
-import { createContext, useState, useEffect } from "react";
-import axios from "axios";
+import { createContext, useState, useEffect, useContext } from 'react';
+import axios from 'axios';
+import { LoginContext } from '../login/LoginContext';
 
 export const StudentContext = createContext();
 
 export const StudentProvider = ({ children }) => {
+  const { auth, loading: authLoading } = useContext(LoginContext);
   const [students, setStudents] = useState([]);
 
   const fetchStudents = async () => {
+    if (authLoading || !auth || auth !== 'admin') return; // Solo admins
+
     try {
-      const response = await axios.get("http://localhost:4000/api/student", {
+      const response = await axios.get('http://localhost:4000/api/student', {
         withCredentials: true,
       });
       setStudents(response.data);
     } catch (error) {
-      console.error("Error al obtener estudiantes:", error);
+      console.error('Error al obtener estudiantes:', error.response?.data || error.message);
     }
   };
-  
 
   useEffect(() => {
     fetchStudents();
-  }, []);
+  }, [auth, authLoading]);
 
   const createStudent = async (formData) => {
     try {
-      const response = await axios.post(
-        "http://localhost:4000/api/student",
-        formData,
-        {
-          withCredentials: true,
-          headers: { "Content-Type": "multipart/form-data" },
-        }
-      );
+      const response = await axios.post('http://localhost:4000/api/student', formData, {
+        withCredentials: true,
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
       setStudents([...students, response.data]);
     } catch (error) {
-      console.error("Error al crear el estudiante:", error);
+      console.error('Error al crear el estudiante:', error.response?.data || error.message);
       throw error;
     }
   };
 
   const updateStudent = async (id, formData) => {
     try {
-      const response = await axios.put(
-        `http://localhost:4000/api/student/${id}`,
-        formData,
-        {
-          withCredentials: true,
-          headers: { "Content-Type": "multipart/form-data" },
-        }
-      );
-      const updated = students.map((s) =>
-        s.id === parseInt(id) ? response.data : s
-      );
-      setStudents(updated);
+      const response = await axios.put(`http://localhost:4000/api/student/${id}`, formData, {
+        withCredentials: true,
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      setStudents(students.map((s) => (s.id === parseInt(id) ? response.data : s)));
     } catch (error) {
-      console.error("Error al actualizar el estudiante:", error);
+      console.error('Error al actualizar el estudiante:', error.response?.data || error.message);
       throw error;
     }
   };
@@ -66,22 +58,12 @@ export const StudentProvider = ({ children }) => {
       });
       setStudents(students.filter((s) => s.id !== id));
     } catch (error) {
-      console.error("Error al eliminar el estudiante:", error);
+      console.error('Error al eliminar el estudiante:', error.response?.data || error.message);
     }
   };
 
-  
-
   return (
-    <StudentContext.Provider
-      value={{
-        students,
-        fetchStudents,
-        createStudent,
-        updateStudent,
-        deleteStudent,
-      }}
-    >
+    <StudentContext.Provider value={{ students, fetchStudents, createStudent, updateStudent, deleteStudent }}>
       {children}
     </StudentContext.Provider>
   );

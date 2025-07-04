@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { UserContext } from '../../context/user/UserContext';
 import Swal from 'sweetalert2';
 import { Modal, Button, Form } from 'react-bootstrap';
+import 'bootstrap/dist/css/bootstrap.min.css';
 import './tableUser.css';
 
 const TableUser = () => {

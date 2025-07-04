@@ -19,7 +19,7 @@ import {
 } from '@mui/material';
 import { TeacherContext } from '../../context/teacher/TeacherContext';
 import { toast } from 'react-toastify';
-import Navigato from '../navbar/Navigato';
+import Navbar from '../navbar/Navbar';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import SaveIcon from '@mui/icons-material/Save';

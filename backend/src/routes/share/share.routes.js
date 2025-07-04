@@ -4,13 +4,13 @@ import { allShares, singleShare, createShare, updateShare, eraseShare, getShares
 
 const router = express.Router();
 
-router.get('/', allShares); // Obtener todos los shares
-router.get('/:id', singleShare); // Obtener un share por ID
-router.get('/student/:studentId', getSharesByStudent); // Nueva ruta: Obtener cuotas de un alumno específico
-router.post('/', createShare); // Crear un nuevo share
-router.post('/mass', createMassShare); // Nueva ruta: Crear cuotas masivas
-router.put('/update/:id', updateShare); // Editar un share
-router.delete('/delete/:id', eraseShare); // Eliminar un share
-router.put('/students/:studentId/status', updateStudentStatus); // Actualizar estado del alumno
+router.get('/', authenticate, authorizeRole(['admin']), allShares); // Obtener todos los shares
+router.get('/:id', authenticate, authorizeRole(['admin']), singleShare); // Obtener un share por ID
+router.get('/student/:studentId', authenticate, authorizeRole(['admin']), getSharesByStudent); // Nueva ruta: Obtener cuotas de un alumno específico
+router.post('/', authenticate, authorizeRole(['admin']), createShare); // Crear un nuevo share
+router.post('/mass', authenticate, authorizeRole(['admin']), createMassShare); // Nueva ruta: Crear cuotas masivas
+router.put('/update/:id', authenticate, authorizeRole(['admin']), updateShare); // Editar un share
+router.delete('/delete/:id', authenticate, authorizeRole(['admin']), eraseShare); // Eliminar un share
+router.put('/students/:studentId/status', authenticate, authorizeRole(['admin']), updateStudentStatus); // Actualizar estado del alumno
 
 export default router;

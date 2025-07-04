@@ -1,17 +1,32 @@
 import jwt from 'jsonwebtoken';
 
-const JWT_SECRET = process.env.JWT_SECRET || '12345678'; // Usa una variable de entorno en producción
+const JWT_SECRET = process.env.JWT_SECRET || 'your_jwt_secret'; // Usa una variable de entorno en producción
+const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET || 'your_refresh_secret'; // Usa una variable de entorno
 
-// Generar un JWT
-export const generateToken = (user) => {
-    return jwt.sign(
-        { id: user.id, role: user.role }, // Payload con ID y rol
-        JWT_SECRET,
-        { expiresIn: '15m' } // Token expira en 15 minutos
-    );
+// Generar Access Token
+export const generateAccessToken = (user) => {
+  const payload = {
+    userId: user.id,
+    name: user.name,
+    mail: user.mail,
+    role: user.role,
+  };
+  return jwt.sign(payload, JWT_SECRET, { expiresIn: '2h' });
 };
 
-// Verificar un JWT
-export const verifyToken = (token) => {
-    return jwt.verify(token, JWT_SECRET);
+// Generar Refresh Token
+export const generateRefreshToken = (user) => {
+  const payload = {
+    userId: user.id,
+    name: user.name,
+    mail: user.mail,
+    role: user.role,
+  };
+  return jwt.sign(payload, JWT_REFRESH_SECRET, { expiresIn: '7d' });
+};
+
+// Verificar Token
+export const verifyToken = (token, isRefresh = false) => {
+  const secret = isRefresh ? JWT_REFRESH_SECRET : JWT_SECRET;
+  return jwt.verify(token, secret);
 };

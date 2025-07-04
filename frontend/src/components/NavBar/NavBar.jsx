@@ -28,7 +28,7 @@ import {
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useSettings } from '../../context/settings/settingsContext';  // Importante para leer el themeMode
 
-const NavBar = ({ onNotificationClick }) => {
+const NavBar = ({ onNotificationClick = () => {} }) => {
   const { themeMode } = useSettings();  // Obtenemos el modo actual
   const [mobileMenuAnchorEl, setMobileMenuAnchorEl] = useState(null);
   const isMobileMenuOpen = Boolean(mobileMenuAnchorEl);
@@ -136,7 +136,7 @@ const NavBar = ({ onNotificationClick }) => {
           >
             {navItems.map((item, index) => (
               <ListItem
-                button
+                component="button"
                 key={index}
                 selected={location.pathname === item.url}
                 onClick={() => navigate(item.url)}

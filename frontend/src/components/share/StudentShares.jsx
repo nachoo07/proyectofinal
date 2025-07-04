@@ -23,7 +23,7 @@ import {
 } from '@mui/material';
 import { SharesContext } from '../../context/share/ShareContext';
 import { toast } from 'react-toastify';
-import Navigato from '../navbar/Navigato';
+import Navbar from '../navbar/Navbar';
 
 // Función para formatear fecha a YYYY-MM-DD (elimina hora y zona)
 const formatDateForInput = (dateStr) => {
