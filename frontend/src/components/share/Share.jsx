@@ -11,49 +11,42 @@ import {
   Paper,
   TextField,
   Button,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
   Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
   Switch,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { SharesContext } from '../../context/share/ShareContext';
 import { toast } from 'react-toastify';
-// Función para obtener los últimos tres meses
-const getLastThreeMonths = () => {
-  const today = new Date();
-  const months = [];
-  for (let i = 0; i < 3; i++) {
-    const date = new Date(today.getFullYear(), today.getMonth() - i, 1);
-    months.push(date.toISOString().slice(0, 7)); // Formato YYYY-MM
-  }
-  return months;
-}
-// Función para formatear fecha a YYYY-MM-DD (elimina hora y zona)
-const formatDateForInput = (dateStr) => {
-  if (!dateStr) return '';
-  return dateStr.split('T')[0]; // Toma solo la parte YYYY-MM-DD
-};
+import { useNavigate } from 'react-router-dom';
 
 const Share = () => {
-  const { studentsWithShares, loading, error, fetchStudentsWithShares, createMassShare, updateStudentStatus } = useContext(SharesContext);
+  const {
+    studentsWithShares,
+    loading,
+    error,
+    fetchStudentsWithShares,
+    createMassShare,
+    updateStudentStatus,
+  } = useContext(SharesContext);
+
   const [searchQuery, setSearchQuery] = useState('');
   const [openMassShareDialog, setOpenMassShareDialog] = useState(false);
   const [massShareData, setMassShareData] = useState({
     quotaName: '',
     amount: '',
-    dueDate: '', // Cambiamos paymentDate por dueDate
+    dueDate: '',
     year: new Date().getFullYear(),
   });
-  const [studentStatuses, setStudentStatuses] = useState({}); // Estado local para el Switch
+  const [studentStatuses, setStudentStatuses] = useState({});
   const navigate = useNavigate();
 
-  // Obtener lista de alumnos únicos y ordenarlos alfabéticamente
   const students = [
     ...new Map(
       studentsWithShares.map((item) => [
@@ -63,50 +56,33 @@ const Share = () => {
           name: item.name,
           lastName: item.lastName,
           dni: item.dni || 'N/A',
-          student_status: item.student_status || 'Activo'
+          student_status: item.student_status || 'Activo',
         },
       ])
     ).values(),
   ].sort((a, b) => `${a.name} ${a.lastName}`.localeCompare(`${b.name} ${b.lastName}`));
 
-  // Sincronizar estados locales al cargar datos
   useEffect(() => {
     const initialStatuses = {};
-    students.forEach(student => {
+    students.forEach((student) => {
       initialStatuses[student.id] = student.student_status === 'Activo';
     });
     setStudentStatuses(initialStatuses);
   }, [studentsWithShares]);
 
-  // Filtrar alumnos según la búsqueda
   const filteredStudents = students.filter((student) =>
-    `${student.name} ${student.lastName} ${student.dni}`
-      .toLowerCase()
-      .includes(searchQuery.toLowerCase())
+    `${student.name} ${student.lastName} ${student.dni}`.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  // Cargar todos los estudiantes al montar el componente
   useEffect(() => {
-    fetchStudentsWithShares().then(() => {
-      console.log('Datos iniciales de studentsWithShares:', studentsWithShares); // Depuración
-    });
+    fetchStudentsWithShares();
   }, []);
 
-  // Manejar cambios en el campo de búsqueda
-  const handleSearchChange = (e) => {
-    setSearchQuery(e.target.value);
-  };
+  const handleSearchChange = (e) => setSearchQuery(e.target.value);
 
-  // Manejar la redirección al hacer clic en "Ver Cuotas"
-  const handleViewShares = (studentId) => {
-    navigate(`/shares/student/${studentId}`);
-  };
+  const handleViewShares = (studentId) => navigate(`/shares/student/${studentId}`);
 
-  // Manejar el pop-up de cuota masiva
-  const handleOpenMassShareDialog = () => {
-    setOpenMassShareDialog(true);
-  };
-
+  const handleOpenMassShareDialog = () => setOpenMassShareDialog(true);
   const handleCloseMassShareDialog = () => {
     setOpenMassShareDialog(false);
     setMassShareData({
@@ -124,17 +100,13 @@ const Share = () => {
 
   const handleMassShareSubmit = async (e) => {
     e.preventDefault();
-    if (!massShareData.quotaName || !massShareData.amount || !massShareData.dueDate) {
+    const { quotaName, amount, dueDate, year } = massShareData;
+    if (!quotaName || !amount || !dueDate) {
       toast.error('Por favor, completa todos los campos');
       return;
     }
     try {
-      await createMassShare({
-        quotaName: massShareData.quotaName,
-        amount: parseFloat(massShareData.amount),
-        dueDate: massShareData.dueDate,
-        year: massShareData.year,
-      });
+      await createMassShare({ quotaName, amount: parseFloat(amount), dueDate, year });
       toast.success('Cuota masiva creada exitosamente');
       handleCloseMassShareDialog();
     } catch (err) {
@@ -143,28 +115,25 @@ const Share = () => {
     }
   };
 
-  // Manejar el cambio de estado del alumno
   const handleToggleStudentStatus = async (studentId, currentStatus) => {
-    const isActive = !studentStatuses[studentId]; // Toggle local state
+    const isActive = !studentStatuses[studentId];
     setStudentStatuses((prev) => ({ ...prev, [studentId]: isActive }));
     const newStatus = isActive ? 'Activo' : 'Inactivo';
     try {
       await updateStudentStatus(studentId, newStatus);
       toast.success(`Estado del alumno actualizado a ${newStatus}`);
-      fetchStudentsWithShares(); // Refrescar la lista de alumnos
+      fetchStudentsWithShares();
     } catch (err) {
-      // Revertir el estado local si falla
       setStudentStatuses((prev) => ({ ...prev, [studentId]: !isActive }));
       toast.error('Error al actualizar el estado del alumno');
-      console.error(err);
     }
   };
 
   return (
     <Box sx={{ padding: '20px' }}>
-      <Box sx={{ mb: 3 }}>
+      <Box sx={{ mb: 3, display: 'flex', flexWrap: 'wrap', gap: 2 }}>
         <TextField
-          sx={{ width: '70%' }}
+          sx={{ flex: 1, minWidth: '250px' }}
           label="Buscar por nombre, apellido o DNI"
           value={searchQuery}
           onChange={handleSearchChange}
@@ -175,7 +144,6 @@ const Share = () => {
         </Button>
       </Box>
 
-      {/* Tabla de alumnos */}
       <TableContainer component={Paper} sx={{ mb: 4 }}>
         <Table>
           <TableHead>
@@ -204,23 +172,11 @@ const Share = () => {
                   <TableCell>{student.dni}</TableCell>
                   <TableCell>
                     <Switch
-                      checked={studentStatuses[student.id] || false} // Estado local
+                      checked={studentStatuses[student.id] || false}
                       onChange={() => handleToggleStudentStatus(student.id, student.student_status)}
-                      color="success" // Verde para Activo
-                      disabled={loading} // Deshabilitar mientras carga
-                      sx={{
-                        '& .MuiSwitch-switchBase.Mui-checked': {
-                          color: '#4caf50', // Verde para el thumb cuando está checked
-                          '& + .MuiSwitch-track': {
-                            backgroundColor: '#4caf50', // Verde para la pista cuando está checked
-                          },
-                        },
-                        '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
-                          backgroundColor: '#f44336', // Rojo para la pista cuando está unchecked
-                        },
-                      }}
+                      color="success"
                     />
-                    {studentStatuses[student.id] ? 'Activo' : 'Inactivo'} {/* Estado basado en el Switch */}
+                    {studentStatuses[student.id] ? 'Activo' : 'Inactivo'}
                   </TableCell>
                   <TableCell>
                     <Button
@@ -239,77 +195,8 @@ const Share = () => {
         </Table>
       </TableContainer>
 
-      {/* Formulario de pago o edición */}
-      <Box component="form" onSubmit={handleSubmit} sx={{ maxWidth: '600px' }}>
-        <Typography variant="h6" gutterBottom>
-          {editingShare ? 'Editar Cuota' : 'Registrar Pago'}
-        </Typography>
-        <TextField
-          label="Monto"
-          name="amount"
-          type="number"
-          value={paymentData.amount}
-          onChange={handleInputChange}
-          fullWidth
-          sx={{ mb: 2 }}
-          required
-        />
-        <TextField
-          label="Fecha de Pago"
-          name="paymentdate"
-          type="date"
-          value={paymentData.paymentdate}
-          onChange={handleInputChange}
-          fullWidth
-          sx={{ mb: 2 }}
-          InputLabelProps={{ shrink: true }}
-          required
-        />
-        <FormControl fullWidth sx={{ mb: 2 }}>
-          <InputLabel>Método de Pago</InputLabel>
-          <Select
-            name="paymentmethod"
-            value={paymentData.paymentmethod}
-            onChange={handleInputChange}
-            label="Método de Pago"
-            required
-          >
-            <MenuItem value="Efectivo">Efectivo</MenuItem>
-            <MenuItem value="Transferencia">Transferencia</MenuItem>
-
-          </Select>
-        </FormControl>
-        <FormControl fullWidth sx={{ mb: 2 }}>
-          <InputLabel>Estado</InputLabel>
-          <Select
-            name="state"
-            value={paymentData.state}
-            onChange={handleInputChange}
-            label="Estado"
-            required
-          >
-            <MenuItem value="Pagado">Pagado</MenuItem>
-            <MenuItem value="Pendiente">Pendiente</MenuItem>
-            <MenuItem value="Vencido">Vencido</MenuItem>
-          </Select>
-        </FormControl>
-        <Box>
-          <Button type="submit" variant="contained" color="primary" sx={{ mr: 1 }}>
-            {editingShare ? 'Actualizar' : 'Registrar'}
-          </Button>
-          {editingShare && (
-            <Button variant="outlined" color="secondary" onClick={handleCancelEdit}>
-              Cancelar
-            </Button>
-          )}
-        </Box>
-      </Box>
-      <Box />
-
-
-      {/* Diálogo de confirmación para eliminar */}
-      <Dialog open={openDeleteDialog} onClose={handleCloseDeleteDialog}>
-        <DialogTitle>Confirmar Eliminación</DialogTitle>
+      <Dialog open={openMassShareDialog} onClose={handleCloseMassShareDialog}>
+        <DialogTitle>Crear Cuota Masiva</DialogTitle>
         <DialogContent>
           <FormControl fullWidth sx={{ mt: 2, mb: 2 }}>
             <InputLabel>Año</InputLabel>
@@ -319,9 +206,11 @@ const Share = () => {
               onChange={handleMassShareInputChange}
               label="Año"
             >
-              <MenuItem value={2025}>2025</MenuItem>
-              <MenuItem value={2024}>2024</MenuItem>
-              <MenuItem value={2023}>2023</MenuItem>
+              {[2025, 2024, 2023].map((year) => (
+                <MenuItem key={year} value={year}>
+                  {year}
+                </MenuItem>
+              ))}
             </Select>
           </FormControl>
           <TextField
@@ -363,22 +252,17 @@ const Share = () => {
         </DialogActions>
       </Dialog>
 
-      {/* Mensajes de carga o error */}
-      {
-        loading && (
-          <Typography variant="body1" sx={{ textAlign: 'center', my: 2 }}>
-            Cargando datos...
-          </Typography>
-        )
-      }
-      {
-        error && (
-          <Typography variant="body1" color="error" sx={{ textAlign: 'center', my: 2 }}>
-            {error}
-          </Typography>
-        )
-      }
-    </Box >
+      {loading && (
+        <Typography variant="body1" sx={{ textAlign: 'center', mt: 2 }}>
+          Cargando datos...
+        </Typography>
+      )}
+      {error && (
+        <Typography variant="body1" color="error" sx={{ textAlign: 'center', mt: 2 }}>
+          {error}
+        </Typography>
+      )}
+    </Box>
   );
 };
 

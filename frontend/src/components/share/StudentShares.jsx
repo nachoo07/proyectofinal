@@ -209,7 +209,7 @@ const StudentShares = ({ studentId, onBack }) => {
 
   return (
     <Box sx={{ padding: '20px' }}>
-      <Navigato />
+      
       <Typography variant="h4" gutterBottom>
         Cuotas de {student?.name} {student?.lastName}
       </Typography>

@@ -137,13 +137,12 @@ const Teacher = ({ onBack }) => {
     <Box
       sx={{
         padding: { xs: '20px', md: '40px' },
-        mt: 4,
+        mt: 8, // Aumentado para dejar espacio al NavBar fijo
         backgroundColor: '#E6F9EC',
+        minHeight: '100vh', // Asegura que el contenido ocupe toda la altura
       }}
       className="main-container"
     >
-      <Navigato />
-
       <Box
         sx={{
           display: 'flex',
@@ -305,7 +304,7 @@ const Teacher = ({ onBack }) => {
           <SchoolIcon sx={{ mr: 1, fontSize: 28, color: '#00335c' }} />
           Crear Nuevo Profesor
         </DialogTitle>
-        <DialogContent sx={{ p: 3, pt: 4 }}> {/* Aumentado pt de 3 a 4 */}
+        <DialogContent sx={{ p: 3, pt: 4 }}>
           <TextField
             label="Nombre"
             name="name"
@@ -441,7 +440,7 @@ const Teacher = ({ onBack }) => {
           <EditIcon sx={{ mr: 1, fontSize: 28, color: '#00335c' }} />
           Editar Profesor
         </DialogTitle>
-        <DialogContent sx={{ p: 3, pt: 4 }}> {/* Aumentado pt de 3 a 4 */}
+        <DialogContent sx={{ p: 3, pt: 4 }}>
           <TextField
             label="Nombre"
             name="name"
@@ -577,7 +576,7 @@ const Teacher = ({ onBack }) => {
           <DeleteIcon sx={{ mr: 1, fontSize: 28, color: '#00335c' }} />
           Confirmar Eliminación
         </DialogTitle>
-        <DialogContent sx={{ p: 3, pt: 4 }}> {/* Aumentado pt de 3 a 4 */}
+        <DialogContent sx={{ p: 3, pt: 4 }}>
           <Typography sx={{ color: '#00335c', textAlign: 'center' }}>
             ¿Estás seguro de que quieres eliminar este profesor? Esta acción no se puede deshacer.
           </Typography>

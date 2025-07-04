@@ -99,7 +99,7 @@ const Formulario = ({ formData, setFormData, handleSubmit, incomeType, isEditing
         </Alert>
       )}
       <Grid container spacing={2}>
-        <Grid item xs={12}>
+        <Grid xs={12}>
           <TextField
             fullWidth
             label="Descripción"
@@ -110,7 +110,7 @@ const Formulario = ({ formData, setFormData, handleSubmit, incomeType, isEditing
             required
           />
         </Grid>
-        <Grid item xs={12} sm={6}>
+        <Grid xs={12} sm={6}>
           <TextField
             fullWidth
             label="Monto"
@@ -123,18 +123,24 @@ const Formulario = ({ formData, setFormData, handleSubmit, incomeType, isEditing
             inputProps={{ min: 0, step: "0.01" }}
           />
         </Grid>
-        <Grid item xs={12} sm={6}>
+        <Grid xs={12} sm={6}>
           <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={es}>
             <DatePicker
               label="Fecha"
               value={formData.date}
               onChange={handleDateChange}
-              renderInput={(params) => <TextField fullWidth {...params} required />}
+              slotProps={{
+                textField: {
+                  fullWidth: true,
+                  required: true,
+                  variant: "outlined",
+                },
+              }}
             />
           </LocalizationProvider>
         </Grid>
-        <Grid item xs={12} sm={6}>
-          <FormControl fullWidth sx={{ minWidth: 165}} >
+        <Grid xs={12} sm={6}>
+          <FormControl fullWidth sx={{ minWidth: 165 }}>
             <InputLabel>Método de Pago</InputLabel>
             <Select
               label="Método de Pago"
@@ -151,7 +157,7 @@ const Formulario = ({ formData, setFormData, handleSubmit, incomeType, isEditing
             </Select>
           </FormControl>
         </Grid>
-        <Grid item xs={12}>
+        <Grid xs={12}>
           <Box sx={{ display: "flex", gap: 2 }}>
             <Button type="submit" variant="contained" color="primary">
               {isEditing ? "Actualizar" : "Agregar"}
