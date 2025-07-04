@@ -30,7 +30,7 @@ export const SharesProvider = ({ children }) => {
         paymentdate_actual: formatDateForInput(item.paymentdate_actual),
       }));
       setStudentsWithShares(normalizedData);
-      console.log('Datos normalizados de studentsWithShares:', normalizedData); // Depuración
+      //console.log('Datos normalizados de studentsWithShares:', normalizedData); // Depuración
     } catch (err) {
       setError('Error al cargar las cuotas. Verifica que el servidor esté corriendo en el puerto 4000.');
       console.error('Error:', err);
