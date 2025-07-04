@@ -23,7 +23,6 @@ import {
 } from '@mui/material';
 import { SharesContext } from '../../context/share/ShareContext';
 import { toast } from 'react-toastify';
-import Navigato from '../navbar/Navigato';
 
 // Función para formatear fecha a YYYY-MM-DD (elimina hora y zona)
 const formatDateForInput = (dateStr) => {
@@ -209,7 +208,7 @@ const StudentShares = ({ studentId, onBack }) => {
 
   return (
     <Box sx={{ padding: '20px' }}>
-      <Navigato />
+      
       <Typography variant="h4" gutterBottom>
         Cuotas de {student?.name} {student?.lastName}
       </Typography>
