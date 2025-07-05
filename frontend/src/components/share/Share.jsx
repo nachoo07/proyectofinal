@@ -24,7 +24,6 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { SharesContext } from '../../context/share/ShareContext';
 import { toast } from 'react-toastify';
-import { useNavigate } from 'react-router-dom';
 
 const Share = () => {
   const {
