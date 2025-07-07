@@ -32,17 +32,11 @@ function AppContent() {
             <StudentProvider>
               <TeacherProvider>
                 <SharesProvider>
-                  {/* Contenedor global para layout centrado y responsive */}
-                  <Box
-                    sx={{
-                      maxWidth: '1440px',
-                      mx: 'auto',      // margin-left & margin-right auto => centra
-                      px: { xs: 1, sm: 2, md: 4 }, // padding lateral según tamaño
-                    }}
-                  >
+              
+                
                     <Routing />
                     <ToastContainer />
-                  </Box>
+                  
                 </SharesProvider>
               </TeacherProvider>
             </StudentProvider>

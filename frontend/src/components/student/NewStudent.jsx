@@ -65,7 +65,6 @@ const NewStudent = () => {
   return (
     <Box
       sx={{
-        padding: { xs: '20px', md: '40px' },
         mt: 8,
         backgroundColor: '#E6F9EC',
         minHeight: '100vh',
@@ -79,7 +78,6 @@ const NewStudent = () => {
         sx={{
           maxWidth: 500,
           width: '100%',
-          padding: 4,
           borderRadius: '12px',
           backgroundColor: '#ffffff',
         }}

@@ -136,7 +136,6 @@ const Teacher = ({ onBack }) => {
   return (
     <Box
       sx={{
-        padding: { xs: '20px', md: '40px' },
         mt: 8, // Aumentado para dejar espacio al NavBar fijo
         backgroundColor: '#E6F9EC',
         minHeight: '100vh', // Asegura que el contenido ocupe toda la altura

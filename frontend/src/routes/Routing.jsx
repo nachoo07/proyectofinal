@@ -15,6 +15,7 @@ import PageTeacher from '../pages/teacher/PageTeacher';
 import PageStudentShares from '../pages/share/PageStudentShares';
 import PageEditStudent from '../pages/student/PageEditStudent';
 import StudentDetail from '../pages/student/StudentDetail';
+import PageAttendance from '../pages/attendance/PageAttendance';
 const Routing = () => {
   return (
     <>
@@ -23,7 +24,7 @@ const Routing = () => {
         <Routes>
           <Route path="/login" element={<PageLogin />} />
           <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
-            <Route path="/home" element={<PageHomeAdmin />} />
+            <Route path="/" element={<PageHomeAdmin />} />
             <Route path="/user" element={<PageUser />} />
             <Route path="/motions" element={<PageMotion />} />
             <Route path="/students" element={<PageStudent />} />
@@ -38,6 +39,7 @@ const Routing = () => {
             <Route path="/homeuser" element={<PageUser />} />
             <Route path="/notifications" element={<PageNotification />} />
             <Route path="/shares/student/:studentId" element={<PageStudentShares />} />
+            <Route path="/attendance" element={<PageAttendance />} />
           </Route>
         </Routes>
       </ErrorBoundary>

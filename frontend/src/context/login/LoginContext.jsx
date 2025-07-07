@@ -59,7 +59,7 @@ export const LoginProvider = ({ children }) => {
         name: response.data.user.name,
         mail: response.data.user.mail,
       });
-      navigate(response.data.user.role === 'admin' ? '/home' : '/homeuser', { replace: true });
+      navigate(response.data.user.role === 'admin' ? '/' : '/homeuser', { replace: true });
       return response.data.user.role;
     } catch (error) {
       throw error.response?.data?.message || 'Error al iniciar sesión';

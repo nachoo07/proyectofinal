@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import {
   AppBar,
   Toolbar,
@@ -13,6 +13,7 @@ import {
   Menu,
   MenuItem,
   ListItemButton,
+  Button,
 } from '@mui/material';
 import {
   Home as HomeAdmin,
@@ -25,15 +26,18 @@ import {
   Notifications as PageNotification,
   SportsSoccer as SportsSoccerIcon,
   Menu as MenuIcon,
+  Logout as LogoutIcon,
 } from '@mui/icons-material';
+import './navbar.css'; // Import your custom CSS for NavBar
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useSettings } from '../../context/settings/settingsContext';
+import { LoginContext } from '../../context/login/LoginContext';
 
 const NavBar = ({ onNotificationClick }) => {
   const { themeMode } = useSettings();
   const [mobileMenuAnchorEl, setMobileMenuAnchorEl] = useState(null);
   const isMobileMenuOpen = Boolean(mobileMenuAnchorEl);
-
+  const { logout } = useContext(LoginContext);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -45,11 +49,17 @@ const NavBar = ({ onNotificationClick }) => {
     setMobileMenuAnchorEl(null);
   };
 
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
+
   const navItems = [
-    { text: 'Inicio', icon: <HomeAdmin />, url: '/home' },
+    { text: 'Inicio', icon: <HomeAdmin />, url: '/' },
     { text: 'Usuarios', icon: <UserIcon />, url: '/user' },
     { text: 'Alumnos', icon: <PeopleIcon />, url: '/students' },
     { text: 'Cuotas', icon: <AttachMoneyIcon />, url: '/shares' },
+    { text: 'Asistencia', icon: <AttachMoneyIcon />, url: '/attendance' },
     { text: 'Movimientos', icon: <MovimientosIcon />, url: '/motions' },
     { text: 'Reporte', icon: <ReportIcon />, url: '/reports' },
     { text: 'Notificaciones', icon: <PageNotification />, url: '/notifications' },
@@ -109,11 +119,8 @@ const NavBar = ({ onNotificationClick }) => {
 
         {/* Navegación desktop */}
         <Box
-          sx={{
-            display: { xs: 'none', md: 'flex' },
-            alignItems: 'center',
-            gap: 1,
-          }}
+        className="mi-clase-personalizada"
+          sx={{}}
         >
           <List
             sx={{
@@ -124,7 +131,7 @@ const NavBar = ({ onNotificationClick }) => {
                 padding: 0,
               },
               '& .MuiListItemButton-root': {
-                padding: '8px 16px',
+               
                 color: 'inherit',
               },
               '& .Mui-selected': {
@@ -155,6 +162,16 @@ const NavBar = ({ onNotificationClick }) => {
               </ListItem>
             ))}
           </List>
+          {/* Botón cerrar sesión (solo desktop) */}
+          <Button
+            color="inherit"
+            variant="outlined"
+            sx={{ ml: 2, display: { xs: 'none', md: 'inline-flex' } }}
+            startIcon={<LogoutIcon />}
+            onClick={handleLogout}
+          >
+            Cerrar Sesión
+          </Button>
         </Box>
       </Toolbar>
 
@@ -185,6 +202,17 @@ const NavBar = ({ onNotificationClick }) => {
           </MenuItem>
         ))}
         <Divider />
+        <MenuItem
+          onClick={() => {
+            handleMobileMenuClose();
+            handleLogout();
+          }}
+        >
+          <ListItemIcon>
+            <LogoutIcon />
+          </ListItemIcon>
+          <ListItemText primary="Cerrar Sesión" />
+        </MenuItem>
         <MenuItem
           onClick={() => {
             handleMobileMenuClose();

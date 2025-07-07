@@ -129,7 +129,7 @@ const Share = () => {
   };
 
   return (
-    <Box sx={{ padding: '20px' }}>
+    <Box sx={{}}>
       <Box sx={{ mb: 3, display: 'flex', flexWrap: 'wrap', gap: 2 }}>
         <TextField
           sx={{ flex: 1, minWidth: '250px' }}

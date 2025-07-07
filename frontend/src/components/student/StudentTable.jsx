@@ -37,7 +37,6 @@ const StudentTable = () => {
     return (
       <Box
         sx={{
-          padding: { xs: '20px', md: '40px' },
           mt: 8,
           backgroundColor: '#E6F9EC',
           minHeight: '100vh',
@@ -81,7 +80,6 @@ const StudentTable = () => {
   return (
     <Box
       sx={{
-        padding: { xs: '20px', md: '40px' },
         mt: 8, // Espacio para el NavBar fijo
         backgroundColor: '#E6F9EC',
         minHeight: '100vh',
