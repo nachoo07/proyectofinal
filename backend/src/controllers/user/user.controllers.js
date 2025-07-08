@@ -3,11 +3,10 @@ import bcrypt from 'bcrypt';
 
 // Obtener todos los usuarios
 export const getAllUsers = async (req, res, next) => {
-    console.log('Entrando a getAllUsers, usuario:', req.user);
     try {
-        console.log('Ejecutando query a la base de datos');
+   
         const [users] = await connection.query('SELECT id, name, mail, role, state, createdAt, updatedAt FROM users');
-        console.log('Query ejecutado, enviando respuesta:', users);
+  
         res.status(200).json(users);
     } catch (error) {
         console.error('Error en getAllUsers:', error);

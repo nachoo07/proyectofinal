@@ -1,11 +1,3 @@
-/* Contenedor principal */
-.container {
-  padding: 20px;
-  background-color: #f4f4f4;
-  min-height: 100vh;
-  position: relative;
-}
-
 /* Título */
 .title {
   font-size: 28px;

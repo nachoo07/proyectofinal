@@ -1,4 +1,4 @@
-import { ThemeProvider, CssBaseline } from '@mui/material';
+import { ThemeProvider, CssBaseline, Box } from '@mui/material';
 import lightTheme from './lighttheme';
 import darkTheme from './darktheme';
 import { NotificationProvider } from './context/notification/notificationContext';
@@ -11,6 +11,7 @@ import { StudentProvider } from './context/student/StudentContext';
 import { SettingsProvider, useSettings } from './context/settings/settingsContext';
 import { LoginProvider } from './context/login/LoginContext';
 import { TeacherProvider } from './context/teacher/TeacherContext';
+
 // Componente interno para usar el hook correctamente
 function AppContent() {
   const { themeMode, fontSize, getFontSize } = useSettings();
@@ -18,9 +19,9 @@ function AppContent() {
   const remValue = getFontSize(fontSize); // ej. "1rem", "1.125rem"
   const fontSizeNumber = parseFloat(remValue) * 16; // pasa rem a px base 16
 
-  // Crear temas dinámicamente con el tamaño de fuente
-  const appliedTheme = themeMode === 'dark' ? darkTheme(fontSizeNumber) : lightTheme(fontSizeNumber)
-
+  const appliedTheme = themeMode === 'dark'
+    ? darkTheme(fontSizeNumber)
+    : lightTheme(fontSizeNumber);
 
   return (
     <ThemeProvider theme={appliedTheme}>
@@ -28,13 +29,16 @@ function AppContent() {
       <LoginProvider>
         <NotificationProvider>
           <UserProvider>
-            <StudentProvider> 
-              <SharesProvider>
-                <TeacherProvider>
-                <Routing />
-                </TeacherProvider>
-                <ToastContainer />
-              </SharesProvider>
+            <StudentProvider>
+              <TeacherProvider>
+                <SharesProvider>
+              
+                
+                    <Routing />
+                    <ToastContainer />
+                  
+                </SharesProvider>
+              </TeacherProvider>
             </StudentProvider>
           </UserProvider>
         </NotificationProvider>

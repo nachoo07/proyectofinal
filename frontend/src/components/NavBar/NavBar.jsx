@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import {
   AppBar,
   Toolbar,
@@ -11,7 +11,9 @@ import {
   Typography,
   IconButton,
   Menu,
-  MenuItem
+  MenuItem,
+  ListItemButton,
+  Button,
 } from '@mui/material';
 import {
   Home as HomeAdmin,
@@ -23,16 +25,19 @@ import {
   Report as ReportIcon,
   Notifications as PageNotification,
   SportsSoccer as SportsSoccerIcon,
-  Menu as MenuIcon
+  Menu as MenuIcon,
+  Logout as LogoutIcon,
 } from '@mui/icons-material';
+import './navbar.css'; // Import your custom CSS for NavBar
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useSettings } from '../../context/settings/settingsContext';  // Importante para leer el themeMode
+import { useSettings } from '../../context/settings/settingsContext';
+import { LoginContext } from '../../context/login/LoginContext';
 
 const NavBar = ({ onNotificationClick }) => {
-  const { themeMode } = useSettings();  // Obtenemos el modo actual
+  const { themeMode } = useSettings();
   const [mobileMenuAnchorEl, setMobileMenuAnchorEl] = useState(null);
   const isMobileMenuOpen = Boolean(mobileMenuAnchorEl);
-
+  const { logout, userData } = useContext(LoginContext);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -44,15 +49,21 @@ const NavBar = ({ onNotificationClick }) => {
     setMobileMenuAnchorEl(null);
   };
 
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
+
   const navItems = [
-    { text: 'Inicio', icon: <HomeAdmin />, url: '/home' },
-    { text: 'Usuarios', icon: <UserIcon />, url: '/user' },  
-    { text: 'Profesores', icon: <SportsSoccerIcon />, url: '/teachers' },
+    { text: 'Inicio', icon: <HomeAdmin />, url: '/' },
+    { text: 'Usuarios', icon: <UserIcon />, url: '/user' },
     { text: 'Alumnos', icon: <PeopleIcon />, url: '/students' },
     { text: 'Cuotas', icon: <AttachMoneyIcon />, url: '/shares' },
+    { text: 'Asistencia', icon: <AttachMoneyIcon />, url: '/attendance' },
     { text: 'Movimientos', icon: <MovimientosIcon />, url: '/motions' },
     { text: 'Reporte', icon: <ReportIcon />, url: '/reports' },
     { text: 'Notificaciones', icon: <PageNotification />, url: '/notifications' },
+    { text: 'Profesores', icon: <SportsSoccerIcon />, url: '/teachers' },
     { text: 'Settings', icon: <SettingsIcon />, url: '/settings' },
   
   ];
@@ -60,7 +71,6 @@ const NavBar = ({ onNotificationClick }) => {
   return (
     <AppBar
       position="static"
-      color="default"
       elevation={3}
       sx={{
         backgroundColor: (theme) =>
@@ -76,130 +86,150 @@ const NavBar = ({ onNotificationClick }) => {
       <Toolbar
         sx={{
           display: 'flex',
-          justifyContent: 'center',
-          minHeight: '64px !important',
-          px: 0,
+          justifyContent: 'space-between',
+          px: { xs: 1, sm: 2 },
         }}
       >
+        {/* Icono para abrir menú en mobile */}
         <IconButton
           edge="start"
           aria-label="menu"
           onClick={handleMobileMenuOpen}
           sx={{
-            mr: 2,
             display: { xs: 'flex', md: 'none' },
-            color: 'inherit'
+            color: 'inherit',
           }}
         >
           <MenuIcon />
         </IconButton>
 
+        {/* Logo */}
         <Typography
           variant="h6"
           component="div"
           sx={{
             fontWeight: 'bold',
-            display: { xs: 'none', md: 'block' },
-            mr: 4,
-            color: 'inherit'
+            color: 'inherit',
+            textAlign: 'center',
+            flexGrow: { xs: 1, md: 0 },
+            display: 'block',
           }}
         >
           Golazo
         </Typography>
 
-        <Box
-          sx={{
-            display: { xs: 'none', md: 'flex' },
-            alignItems: 'center',
-            gap: 1
-          }}
-        >
-          <List
-            sx={{
-              display: 'flex',
-              padding: 0,
-              '& .MuiListItem-root': {
-                width: 'auto',
-                padding: '8px 16px',
-                color: 'inherit',
-              },
-              '& .MuiListItemIcon-root': {
-                color: 'inherit',
-                minWidth: '36px'
-              },
-              '& .Mui-selected': {
-                backgroundColor: 'rgba(255, 255, 255, 0.16)',
-              },
-              '& .Mui-selected:hover': {
-                backgroundColor: 'rgba(255, 255, 255, 0.24)',
-              }
-            }}
+        {/* Navegación desktop */}
+        {userData &&
+          <Box
+            className="mi-clase-personalizada"
+            sx={{}}
           >
-            {navItems.map((item, index) => (
-              <ListItem
-                button
-                key={index}
-                selected={location.pathname === item.url}
-                onClick={() => navigate(item.url)}
-              >
-                <ListItemIcon>
-                  {item.icon}
-                </ListItemIcon>
-                <ListItemText
-                  primary={item.text}
-                  primaryTypographyProps={{
-                    fontWeight: location.pathname === item.url ? 'medium' : 'normal',
-                    whiteSpace: 'nowrap'
-                  }}
-                />
-              </ListItem>
-            ))}
-          </List>
-        </Box>
+            <List
+              sx={{
+                display: 'flex',
+                padding: 0,
+                '& .MuiListItem-root': {
+                  width: 'auto',
+                  padding: 0,
+                },
+                '& .MuiListItemButton-root': {
 
+                  color: 'inherit',
+                },
+                '& .Mui-selected': {
+                  backgroundColor: 'rgba(255, 255, 255, 0.16)',
+                },
+                '& .Mui-selected:hover': {
+                  backgroundColor: 'rgba(255, 255, 255, 0.24)',
+                },
+              }}
+            >
+              {navItems.map((item, index) => (
+                <ListItem key={index} disablePadding>
+                  <ListItemButton
+                    selected={location.pathname === item.url}
+                    onClick={() => navigate(item.url)}
+                  >
+                    <ListItemIcon sx={{ color: 'inherit', minWidth: 36 }}>
+                      {item.icon}
+                    </ListItemIcon>
+                    <ListItemText
+                      primary={item.text}
+                      primaryTypographyProps={{
+                        fontWeight: location.pathname === item.url ? 'medium' : 'normal',
+                        whiteSpace: 'nowrap',
+                      }}
+                    />
+                  </ListItemButton>
+                </ListItem>
+              ))}
+            </List>
+            {/* Botón cerrar sesión (solo desktop) */}
+            <Button
+              color="inherit"
+              variant="outlined"
+              sx={{ ml: 2, display: { xs: 'none', md: 'inline-flex' } }}
+              startIcon={<LogoutIcon />}
+              onClick={handleLogout}
+            >
+              Cerrar Sesión
+            </Button>
+          </Box>
+        }
+      </Toolbar>
+
+      {/* Menú móvil */}
+      {userData &&
         <Menu
           anchorEl={mobileMenuAnchorEl}
           open={isMobileMenuOpen}
           onClose={handleMobileMenuClose}
           PaperProps={{
-            style: {
-              width: 250,
+            sx: {
+              width: '100%',
+              maxWidth: '100%',
             },
           }}
+          sx={{ display: { xs: 'block', md: 'none' } }}
         >
-          <Box sx={{ p: 2, textAlign: 'center' }}>
-            <Typography variant="h6" component="div" sx={{ fontWeight: 'bold' }}>
-              Menú Principal
-            </Typography>
-          </Box>
-          <Divider />
           {navItems.map((item, index) => (
             <MenuItem
               key={index}
               selected={location.pathname === item.url}
               onClick={() => {
-                handleMobileMenuClose();
                 navigate(item.url);
+                handleMobileMenuClose();
               }}
             >
-              <ListItemIcon>
-                {item.icon}
-              </ListItemIcon>
+              <ListItemIcon>{item.icon}</ListItemIcon>
               <ListItemText primary={item.text} />
             </MenuItem>
           ))}
           <Divider />
-          <MenuItem onClick={() => {
-            handleMobileMenuClose();
-            onNotificationClick();
-          }}>
+          <MenuItem
+            onClick={() => {
+              handleMobileMenuClose();
+              handleLogout();
+            }}
+          >
+            <ListItemIcon>
+              <LogoutIcon />
+            </ListItemIcon>
+            <ListItemText primary="Cerrar Sesión" />
+          </MenuItem>
+          <MenuItem
+            onClick={() => {
+              handleMobileMenuClose();
+              onNotificationClick && onNotificationClick();
+            }}
+          >
             <ListItemIcon>
               <PageNotification />
             </ListItemIcon>
             <ListItemText primary="Notificaciones" />
           </MenuItem>
         </Menu>
-      </Toolbar>
+      }
     </AppBar>
   );
 };

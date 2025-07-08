@@ -1,53 +1,54 @@
-// src/context/share/SharesProvider.jsx
-import { createContext, useState, useEffect, useCallback } from 'react';
+import { createContext, useState, useEffect, useCallback, useContext } from 'react';
 import axios from 'axios';
+import { LoginContext } from '../login/LoginContext';
 
 export const SharesContext = createContext();
 
 export const SharesProvider = ({ children }) => {
+  const { auth, userData, loading: authLoading } = useContext(LoginContext);
   const [studentsWithShares, setStudentsWithShares] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Función para formatear fecha a YYYY-MM-DD (elimina hora y zona)
   const formatDateForInput = (dateStr) => {
     if (!dateStr) return '';
-    return dateStr.split('T')[0]; // Toma solo la parte YYYY-MM-DD
+    return dateStr.split('T')[0];
   };
 
   const fetchStudentsWithShares = useCallback(async () => {
+    if (authLoading || !auth || auth !== 'admin') return; // Solo admins
+
     setLoading(true);
     setError(null);
     try {
       const response = await axios.get('http://localhost:4000/api/shares', {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+        withCredentials: true,
       });
-      // Normalizar fechas si es necesario
-      const normalizedData = response.data.map(item => ({
+      const normalizedData = response.data.map((item) => ({
         ...item,
         date: formatDateForInput(item.date),
         paymentdate: formatDateForInput(item.paymentdate),
         paymentdate_actual: formatDateForInput(item.paymentdate_actual),
       }));
       setStudentsWithShares(normalizedData);
-      console.log('Datos normalizados de studentsWithShares:', normalizedData); // Depuración
     } catch (err) {
-      setError('Error al cargar las cuotas. Verifica que el servidor esté corriendo en el puerto 4000.');
-      console.error('Error:', err);
+      setError('Error al cargar las cuotas.');
+      console.error('Error:', err.response?.data || err.message);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [auth, authLoading]);
 
   const fetchSharesByStudent = useCallback(async (studentId) => {
+    if (authLoading || !auth) return; // Esperar autenticación
+
     setLoading(true);
     setError(null);
     try {
       const response = await axios.get(`http://localhost:4000/api/shares/student/${studentId}`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+        withCredentials: true,
       });
-      // Normalizar fechas si es necesario
-      const normalizedData = response.data.map(item => ({
+      const normalizedData = response.data.map((item) => ({
         ...item,
         date: formatDateForInput(item.date),
         paymentdate: formatDateForInput(item.paymentdate),
@@ -56,16 +57,16 @@ export const SharesProvider = ({ children }) => {
       setStudentsWithShares(normalizedData);
     } catch (err) {
       setError('Error al cargar las cuotas del alumno.');
-      console.error('Error:', err);
+      console.error('Error:', err.response?.data || err.message);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [auth, authLoading]);
 
   const createShare = async (shareData) => {
     try {
       const response = await axios.post('http://localhost:4000/api/shares/create', shareData, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+        withCredentials: true,
       });
       const newShare = {
         ...shareData,
@@ -81,7 +82,7 @@ export const SharesProvider = ({ children }) => {
       return response.data;
     } catch (err) {
       setError('Error al crear la cuota');
-      console.error('Error:', err);
+      console.error('Error:', err.response?.data || err.message);
       throw err;
     }
   };
@@ -89,32 +90,29 @@ export const SharesProvider = ({ children }) => {
   const createMassShare = async (massShareData) => {
     try {
       const response = await axios.post('http://localhost:4000/api/shares/create-mass', massShareData, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+        withCredentials: true,
       });
       await fetchStudentsWithShares();
       return response.data;
     } catch (err) {
       setError('Error al crear cuotas masivas');
-      console.error('Error:', err);
+      console.error('Error:', err.response?.data || err.message);
       throw err;
     }
   };
 
   const updateShare = async (shareId, updatedData) => {
     try {
-      console.log('Enviando datos a update:', updatedData); // Depuración
       const response = await axios.put(`http://localhost:4000/api/shares/update/${shareId}`, updatedData, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+        withCredentials: true,
       });
       setStudentsWithShares((prev) =>
-        prev.map((item) =>
-          item.share_id === shareId ? { ...item, ...updatedData } : item
-        )
+        prev.map((item) => (item.share_id === shareId ? { ...item, ...updatedData } : item))
       );
       return response.data;
     } catch (err) {
       setError('Error al actualizar la cuota');
-      console.error('Error detallado:', err);
+      console.error('Error:', err.response?.data || err.message);
       throw err;
     }
   };
@@ -122,12 +120,12 @@ export const SharesProvider = ({ children }) => {
   const deleteShare = async (shareId) => {
     try {
       await axios.delete(`http://localhost:4000/api/shares/delete/${shareId}`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+        withCredentials: true,
       });
       setStudentsWithShares((prev) => prev.filter((item) => item.share_id !== shareId));
     } catch (err) {
       setError('Error al eliminar la cuota');
-      console.error('Error:', err);
+      console.error('Error:', err.response?.data || err.message);
       throw err;
     }
   };
@@ -135,25 +133,26 @@ export const SharesProvider = ({ children }) => {
   const updateStudentStatus = async (studentId, status) => {
     try {
       await axios.put(`http://localhost:4000/api/shares/students/${studentId}/status`, { status }, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+        withCredentials: true,
       });
-      // Actualizar el estado local inmediatamente
       setStudentsWithShares((prev) =>
-        prev.map((item) =>
-          item.student_id === studentId ? { ...item, student_status: status } : item
-        )
+        prev.map((item) => (item.student_id === studentId ? { ...item, student_status: status } : item))
       );
-      await fetchStudentsWithShares(); // Refrescar para asegurar consistencia
+      await fetchStudentsWithShares();
     } catch (err) {
       setError('Error al actualizar el estado del alumno');
-      console.error('Error:', err);
+      console.error('Error:', err.response?.data || err.message);
       throw err;
     }
   };
 
   useEffect(() => {
-    fetchStudentsWithShares();
-  }, [fetchStudentsWithShares]);
+    if (auth === 'admin') {
+      fetchStudentsWithShares();
+    } else if (auth === 'user' && userData) {
+      fetchSharesByStudent(userData.id);
+    }
+  }, [auth, userData, fetchStudentsWithShares, fetchSharesByStudent]);
 
   return (
     <SharesContext.Provider
