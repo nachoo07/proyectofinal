@@ -22,7 +22,6 @@ import {
   MenuItem,
   Switch,
 } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
 import { SharesContext } from '../../context/share/ShareContext';
 import { toast } from 'react-toastify';
 
