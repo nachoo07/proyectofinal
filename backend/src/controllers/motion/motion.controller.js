@@ -1,4 +1,26 @@
-import connection from "../../db/db.connection.js"
+import connection from "../../db/db.connection.js";
+
+// Función auxiliar para crear un ingreso automático
+const createAutomaticIncome = async (concept, date, amount, paymentMethod, id_shares) => {
+  const incomeQuery = `INSERT INTO motions (concept, date, amount, paymentMethod, incomeType, id_shares) 
+                      VALUES (?, ?, ?, ?, ?, ?)`;
+  const incomeConcept = `Ingreso automático por cuota: ${concept}`;
+  try {
+    const [result] = await connection.execute(incomeQuery, [
+      incomeConcept,
+      date,
+      amount,
+      paymentMethod,
+      "ingreso",
+      id_shares,
+    ]);
+    return result.insertId;
+  } catch (error) {
+    console.error("Error creando ingreso automático:", error);
+    throw new Error("Error creando ingreso automático");
+  }
+};
+
 // Get all motions
 export const getAllMotion = async (request, response) => {
   try {
@@ -91,12 +113,10 @@ export const createMotion = async (req, res) => {
     });
   }
 
-  // Definir la consulta SQL
-  const query = `INSERT INTO motions (concept, date, amount, paymentMethod, incomeType, id_shares) 
-                 VALUES (?, ?, ?, ?, ?, ?)`;
-
   try {
-    // Ejecutar la consulta
+    // Crear el movimiento original
+    const query = `INSERT INTO motions (concept, date, amount, paymentMethod, incomeType, id_shares) 
+                   VALUES (?, ?, ?, ?, ?, ?)`;
     const [result] = await connection.execute(query, [
       concept,
       date,
@@ -105,6 +125,11 @@ export const createMotion = async (req, res) => {
       incomeType,
       id_shares || null,
     ]);
+
+    // Si el movimiento tiene id_shares y es un egreso, crear un ingreso automático
+    if (id_shares && incomeType === "egreso") {
+      await createAutomaticIncome(concept, date, amount, paymentMethod, id_shares);
+    }
 
     // Devolver respuesta
     res.status(201).json({
@@ -169,17 +194,16 @@ export const updateMotion = async (req, res) => {
     });
   }
 
-  // Definir la consulta SQL
-  const query = `UPDATE motions 
-                 SET concept = ?, 
-                     date = ?, 
-                     amount = ?, 
-                     paymentMethod = ?, 
-                     incomeType = ?,
-                     id_shares = ?
-                 WHERE id = ?`;
-
   try {
+    // Actualizar el movimiento original
+    const query = `UPDATE motions 
+                   SET concept = ?, 
+                       date = ?, 
+                       amount = ?, 
+                       paymentMethod = ?, 
+                       incomeType = ?,
+                       id_shares = ?
+                   WHERE id = ?`;
     const [result] = await connection.execute(query, [
       concept,
       date,
@@ -192,6 +216,11 @@ export const updateMotion = async (req, res) => {
 
     if (result.affectedRows === 0) {
       return res.status(404).json({ error: "Movimiento no encontrado" });
+    }
+
+    // Si el movimiento tiene id_shares y es un egreso, crear un ingreso automático
+    if (id_shares && incomeType === "egreso") {
+      await createAutomaticIncome(concept, date, amount, paymentMethod, id_shares);
     }
 
     res.json({
@@ -211,25 +240,23 @@ export const updateMotion = async (req, res) => {
 
 // Delete motion
 export const deleteMotion = async (req, res) => {
-    const { id } = req.params; // Obtenemos el ID desde los parámetros de la URL
-  
-    const query = `DELETE FROM motions WHERE id = ?`;
-  
-    try {
-      // Ejecutar la consulta para eliminar la notificación
-      const [result] = await connection.execute(query, [id]);
-  
-      if (result.affectedRows === 0) {
-        // Si no se encontró la notificación con ese ID
-        return res.status(404).json({ error: "Movimiento no encontrado" });
-      }
-  
-      // Si la eliminación fue exitosa
-      res.json({ message: "Movimiento eliminado correctamente" });
-    } catch (error) {
-      console.error("Error eliminando  Movimiento:", error);
-      res.status(500).json({ error: "Error interno del servidor" });
+  const { id } = req.params; // Obtenemos el ID desde los parámetros de la URL
+
+  const query = `DELETE FROM motions WHERE id = ?`;
+
+  try {
+    // Ejecutar la consulta para eliminar la notificación
+    const [result] = await connection.execute(query, [id]);
+
+    if (result.affectedRows === 0) {
+      // Si no se encontró la notificación con ese ID
+      return res.status(404).json({ error: "Movimiento no encontrado" });
     }
-  };
 
-
+    // Si la eliminación fue exitosa
+    res.json({ message: "Movimiento eliminado correctamente" });
+  } catch (error) {
+    console.error("Error eliminando Movimiento:", error);
+    res.status(500).json({ error: "Error interno del servidor" });
+  }
+};
