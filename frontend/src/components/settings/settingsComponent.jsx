@@ -10,72 +10,27 @@ import {
   InputLabel,
   Divider,
   Paper,
-  Snackbar,
-  Alert,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
 } from '@mui/material';
 import { useSettings } from '../../context/settings/settingsContext';
+import { useContext } from 'react';
+import { LoginContext } from '../../context/login/LoginContext';
 
 const SettingsComponent = () => {
   const { themeMode, toggleTheme, fontSize, setFontSize } = useSettings();
 
-  const [openSnackbar, setOpenSnackbar] = useState(false);
-  const [openDialog, setOpenDialog] = useState(false);
-  const [alertMessage, setAlertMessage] = useState({ severity: 'info', text: '' });
-
-  const showAlert = (severity, message) => {
-    setAlertMessage({ severity, text: message });
-    setOpenSnackbar(true);
-  };
-
-  const handleCloseSnackbar = () => setOpenSnackbar(false);
-  const handleCloseDialog = () => setOpenDialog(false);
+  const { logout } = useContext(LoginContext)
 
   const handleLogout = () => {
-    localStorage.removeItem('userToken');
-    window.location.href = '/login';
-    showAlert('success', 'Sesión cerrada correctamente');
+    logout();
   };
 
-  const handleChangeUser = () => {
-    localStorage.removeItem('userToken');
-    window.location.href = '/login';
-    showAlert('info', 'Preparando cambio de usuario...');
-  };
-
-  const handleForgotPassword = () => {
-    setOpenDialog(true);
-  };
-
-  const confirmPasswordReset = async () => {
-    try {
-      const response = await fetch('/api/reset-password', {
-        method: 'POST',
-        body: JSON.stringify({ email: 'user@example.com' }),
-        headers: { 'Content-Type': 'application/json' },
-      });
-      if (response.ok) {
-        showAlert('success', 'Enlace para restablecer contraseña enviado a tu email');
-      } else {
-        showAlert('error', 'Error al enviar el enlace. Intenta de nuevo.');
-      }
-    } catch (error) {
-      showAlert('error', 'Error de red. Por favor, intenta de nuevo.');
-    }
-    handleCloseDialog();
-  };
-
-  const handleTutorial = () => {
-    window.location.href = '/tutorial';
-    showAlert('info', 'Iniciando tutorial...');
-  };
-
-  const handleProfile = () => {
-    window.location.href = '/profile/edit';
-    showAlert('info', 'Redirigiendo a edición de perfil');
+  const handleDownload = () => {
+    const link = document.createElement('a');
+    link.href = '/manualDeUsuario.pdf'; // ruta relativa desde public
+    link.download = 'manualDeUsuario.pdf';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   return (
@@ -120,38 +75,13 @@ const SettingsComponent = () => {
           <Divider sx={{ my: 3 }} />
 
           <Button
-            onClick={handleForgotPassword}
+            onClick={handleDownload}
             variant="contained"
             color="warning"
             fullWidth
             sx={{ mb: 2 }}
           >
-            Olvidaste tu contraseña
-          </Button>
-          <Button
-            onClick={handleTutorial}
-            variant="contained"
-            color="success"
-            fullWidth
-            sx={{ mb: 2 }}
-          >
-            Ver Tutorial
-          </Button>
-          <Button
-            onClick={handleProfile}
-            variant="contained"
-            sx={{ backgroundColor: 'purple', '&:hover': { backgroundColor: 'purple.dark' }, mb: 2 }}
-            fullWidth
-          >
-            Editar Perfil
-          </Button>
-          <Button
-            onClick={handleChangeUser}
-            variant="contained"
-            sx={{ backgroundColor: 'orange', '&:hover': { backgroundColor: 'orange.dark' }, mb: 2 }}
-            fullWidth
-          >
-            Cambiar de usuario
+            Descargar Manual de Usuario
           </Button>
           <Button
             onClick={handleLogout}
@@ -163,34 +93,6 @@ const SettingsComponent = () => {
           </Button>
         </Paper>
       </Container>
-
-      <Snackbar
-        open={openSnackbar}
-        autoHideDuration={6000}
-        onClose={handleCloseSnackbar}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-      >
-        <Alert
-          onClose={handleCloseSnackbar}
-          severity={alertMessage.severity}
-          sx={{ width: '100%' }}
-        >
-          {alertMessage.text}
-        </Alert>
-      </Snackbar>
-
-      <Dialog open={openDialog} onClose={handleCloseDialog}>
-        <DialogTitle>¿Olvidaste tu contraseña?</DialogTitle>
-        <DialogContent>
-          Se enviará un enlace para restablecer tu contraseña al email asociado a tu cuenta.
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseDialog}>Cancelar</Button>
-          <Button onClick={confirmPasswordReset} color="primary" variant="contained">
-            Enviar enlace
-          </Button>
-        </DialogActions>
-      </Dialog>
     </Box>
   );
 };

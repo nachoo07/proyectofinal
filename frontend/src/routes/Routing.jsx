@@ -1,4 +1,4 @@
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import NavBar from '../components/NavBar/NavBar';
 import ErrorBoundary from '../components/ErrorBoundary/ErrorBoundary';
 import ProtectedRoute from '../routes/protectRoutes/ProtectedRoute';
@@ -16,10 +16,15 @@ import PageStudentShares from '../pages/share/PageStudentShares';
 import PageEditStudent from '../pages/student/PageEditStudent';
 import StudentDetail from '../pages/student/StudentDetail';
 import PageAttendance from '../pages/attendance/PageAttendance';
+import NotFound from '../pages/notFound/NotFound';
 const Routing = () => {
+  const location = useLocation();
+  const currentRoute = location.pathname.replace('/', '');
   return (
     <>
-      <NavBar />
+      {
+        currentRoute && <NavBar />
+      }
       <ErrorBoundary>
         <Routes>
           <Route path="/login" element={<PageLogin />} />
@@ -41,6 +46,7 @@ const Routing = () => {
             <Route path="/shares/student/:studentId" element={<PageStudentShares />} />
             <Route path="/attendance" element={<PageAttendance />} />
           </Route>
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </ErrorBoundary>
     </>
