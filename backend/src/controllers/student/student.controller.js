@@ -27,6 +27,13 @@ export const createStudent = async (req, res) => {
       return res.status(400).json({ error: 'Faltan campos obligatorios' });
     }
 
+    // 🔎 VALIDAR SI EL DNI YA EXISTE
+const [existing] = await connection.query('SELECT id FROM students WHERE dni = ?', [dni]);
+if (existing.length > 0) {
+  return res.status(400).json({ error: 'El estudiante con ese DNI ya existe' });
+}
+
+
     // Insertamos en la DB con la ruta de la imagen o la URL por defecto
     const [result] = await connection.query(
       `INSERT INTO students 
@@ -58,7 +65,6 @@ export const createStudent = async (req, res) => {
     res.status(500).json({ error: 'Error al crear el estudiante', details: err.message });
   }
 };
-
 
 // Listar todos los estudiantes (GET)
 export const getAllStudents = async (req, res) => {
@@ -115,6 +121,14 @@ export const updateStudent = async (req, res) => {
 
     const currentImage = rows[0].profileImage;
 
+     // 🔍 VALIDACIÓN PARA QUE EL DNI NO ESTÉ REPETIDO EN OTRO ESTUDIANTE
+    const [existing] = await connection.query('SELECT id FROM students WHERE dni = ? AND id != ?', [dni, id]);
+    if (existing.length > 0) {
+      return res.status(400).json({ error: 'Ya existe otro estudiante con ese DNI' });
+    }
+
+
+
     // Si no subieron nueva imagen, mantenemos la anterior
     const newImage = profileImage || currentImage || 'https://i.pinimg.com/736x/24/f2/25/24f22516ec47facdc2dc114f8c3de7db.jpg';
 
@@ -150,7 +164,6 @@ export const updateStudent = async (req, res) => {
     res.status(500).json({ error: 'Error al actualizar el estudiante', details: err.message });
   }
 };
-
 
 
 
