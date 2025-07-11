@@ -7,7 +7,6 @@ const PageStudent = () => {
   const { students, loading, deleteStudent } = useContext(StudentContext);
 
   if (loading) return <p>Cargando estudiantes...</p>;
-
   return (
     <div>
       <StudentTable students={students} onDelete={deleteStudent} />
