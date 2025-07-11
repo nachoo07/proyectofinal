@@ -65,6 +65,7 @@ const NavBar = ({ onNotificationClick }) => {
     { text: 'Notificaciones', icon: <PageNotification />, url: '/notifications' },
     { text: 'Profesores', icon: <SportsSoccerIcon />, url: '/teachers' },
     { text: 'Settings', icon: <SettingsIcon />, url: '/settings' },
+  
   ];
 
   return (

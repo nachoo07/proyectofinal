@@ -1,4 +1,5 @@
-import React, { useContext, useState, useEffect } from 'react';
+import { useContext, useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Box,
   Typography,
@@ -21,7 +22,6 @@ import {
   MenuItem,
   Switch,
 } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
 import { SharesContext } from '../../context/share/ShareContext';
 import { toast } from 'react-toastify';
 
