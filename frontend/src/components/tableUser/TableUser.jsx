@@ -255,13 +255,14 @@ const TableUser = () => {
               />
             </Form.Group>
             <Form.Group className="mb-3">
-              <Form.Label>Contraseña {modalMode === 'edit' && '(opcional)'}</Form.Label>
+              <Form.Label>Contraseña {modalMode === 'edit'}</Form.Label>
               <Form.Control
                 type="password"
                 name="password"
                 value={formData.password}
                 onChange={handleInputChange}
                 required={modalMode === 'create'}
+                disabled={modalMode === 'edit'}
               />
             </Form.Group>
             <Form.Group className="mb-3">
