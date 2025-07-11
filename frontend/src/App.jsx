@@ -11,6 +11,7 @@ import { StudentProvider } from './context/student/StudentContext';
 import { SettingsProvider, useSettings } from './context/settings/settingsContext';
 import { LoginProvider } from './context/login/LoginContext';
 import { TeacherProvider } from './context/teacher/TeacherContext';
+import { AttendanceProvider } from './context/attendance/AttendanceContext';
 
 // Componente interno para usar el hook correctamente
 function AppContent() {
@@ -32,11 +33,10 @@ function AppContent() {
             <StudentProvider>
               <TeacherProvider>
                 <SharesProvider>
-              
-                
+                  <AttendanceProvider>
                     <Routing />
                     <ToastContainer />
-                  
+                  </AttendanceProvider>
                 </SharesProvider>
               </TeacherProvider>
             </StudentProvider>

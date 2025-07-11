@@ -13,7 +13,7 @@ const router = Router();
 
 router.get("/", authenticate, authorizeRole(['admin']), getAllStudents);
 router.get("/:id", authenticate, authorizeRole(['admin']), getStudentById);
-router.post("/", authenticate, authorizeRole(['admin']), upload.single("profileImage"), createStudent);
+router.post("/create", authenticate, authorizeRole(['admin']), upload.single("profileImage"), createStudent);
 router.put("/:id", authenticate, authorizeRole(['admin']), upload.single("profileImage"), updateStudent);
 router.delete("/:id", authenticate, authorizeRole(['admin']), deleteStudent);
 
