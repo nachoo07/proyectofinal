@@ -35,10 +35,16 @@ function AppContent() {
                   {/* Contenedor global para layout centrado y responsive */}
                   <Box
                     sx={{
-                      maxWidth: '1440px',
-                      mx: 'auto',      // margin-left & margin-right auto => centra
-                      px: { xs: 1, sm: 2, md: 4 }, // padding lateral según tamaño
+                      display: 'flex',
+                      flexDirection: 'column',
+                      minHeight: '100vh',
+                      width: '100%',
+                    
+                      margin: '0 auto',
+                    
+                      boxSizing: 'border-box',
                     }}
+                    className="app-container"
                   >
                     <Routing />
                     <ToastContainer />

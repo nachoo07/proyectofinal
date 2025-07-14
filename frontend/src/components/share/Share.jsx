@@ -19,11 +19,13 @@ import {
   InputLabel,
   Select,
   MenuItem,
-  Switch,
+  Checkbox,
+  FormControlLabel,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { SharesContext } from '../../context/share/ShareContext';
 import { toast } from 'react-toastify';
+import { calculateDueDate } from '../../utils/dateUtils';
 
 const Share = () => {
   const {
@@ -32,7 +34,6 @@ const Share = () => {
     error,
     fetchStudentsWithShares,
     createMassShare,
-    updateStudentStatus,
   } = useContext(SharesContext);
 
   const [searchQuery, setSearchQuery] = useState('');
@@ -40,11 +41,27 @@ const Share = () => {
   const [massShareData, setMassShareData] = useState({
     quotaName: '',
     amount: '',
-    dueDate: '',
+    date: '', // Nuevo campo para la fecha
     year: new Date().getFullYear(),
   });
-  const [studentStatuses, setStudentStatuses] = useState({});
+  const [filters, setFilters] = useState({
+    all: true, // Nuevo checkbox "Todos"
+    pendiente: true,
+    vencido: true,
+    pagado: true,
+    sinCuotas: true,
+  });
   const navigate = useNavigate();
+
+  // Obtener la última cuota de cada alumno
+  const getLatestShareStatus = (studentId) => {
+    const studentShares = studentsWithShares.filter((share) => share.student_id === studentId);
+    if (studentShares.length === 0) return 'Sin Cuota';
+    const latestShare = studentShares.reduce((latest, current) =>
+      new Date(latest.date) > new Date(current.date) ? latest : current
+    );
+    return latestShare.state || 'Sin Cuota';
+  };
 
   const students = [
     ...new Map(
@@ -55,23 +72,23 @@ const Share = () => {
           name: item.name,
           lastName: item.lastName,
           dni: item.dni || 'N/A',
-          student_status: item.student_status || 'Activo',
         },
       ])
     ).values(),
   ].sort((a, b) => `${a.name} ${a.lastName}`.localeCompare(`${b.name} ${b.lastName}`));
 
-  useEffect(() => {
-    const initialStatuses = {};
-    students.forEach((student) => {
-      initialStatuses[student.id] = student.student_status === 'Activo';
-    });
-    setStudentStatuses(initialStatuses);
-  }, [studentsWithShares]);
-
-  const filteredStudents = students.filter((student) =>
-    `${student.name} ${student.lastName} ${student.dni}`.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredStudents = students.filter((student) => {
+    const status = getLatestShareStatus(student.id);
+    const matchesSearch = `${student.name} ${student.lastName} ${student.dni}`
+      .toLowerCase()
+      .includes(searchQuery.toLowerCase());
+    const matchesFilter =
+      (filters.all || filters.pendiente && status === 'Pendiente') ||
+      (filters.all || filters.vencido && status === 'Vencido') ||
+      (filters.all || filters.pagado && status === 'Pagado') ||
+      (filters.all || filters.sinCuotas && status === 'Sin Cuota');
+    return matchesSearch && matchesFilter;
+  });
 
   useEffect(() => {
     fetchStudentsWithShares();
@@ -87,7 +104,7 @@ const Share = () => {
     setMassShareData({
       quotaName: '',
       amount: '',
-      dueDate: '',
+      date: '',
       year: new Date().getFullYear(),
     });
   };
@@ -99,38 +116,49 @@ const Share = () => {
 
   const handleMassShareSubmit = async (e) => {
     e.preventDefault();
-    const { quotaName, amount, dueDate, year } = massShareData;
-    if (!quotaName || !amount || !dueDate) {
+    const { quotaName, amount, date, year } = massShareData;
+    if (!quotaName || !amount || !date || !year) {
       toast.error('Por favor, completa todos los campos');
       return;
     }
     try {
-      await createMassShare({ quotaName, amount: parseFloat(amount), dueDate, year });
+      const dueDate = calculateDueDate(date); // Calcular fecha de vencimiento desde la fecha ingresada
+      const payload = { quotaName, amount: parseFloat(amount), date, dueDate, year };
+      await createMassShare(payload);
       toast.success('Cuota masiva creada exitosamente');
+      await fetchStudentsWithShares();
       handleCloseMassShareDialog();
     } catch (err) {
-      toast.error('Error al crear la cuota masiva');
+      toast.error('Error al crear la cuota masiva: ' + (err.response?.data?.error || err.message));
       console.error(err);
     }
   };
 
-  const handleToggleStudentStatus = async (studentId, currentStatus) => {
-    const isActive = !studentStatuses[studentId];
-    setStudentStatuses((prev) => ({ ...prev, [studentId]: isActive }));
-    const newStatus = isActive ? 'Activo' : 'Inactivo';
-    try {
-      await updateStudentStatus(studentId, newStatus);
-      toast.success(`Estado del alumno actualizado a ${newStatus}`);
-      fetchStudentsWithShares();
-    } catch (err) {
-      setStudentStatuses((prev) => ({ ...prev, [studentId]: !isActive }));
-      toast.error('Error al actualizar el estado del alumno');
+  const handleFilterChange = (event) => {
+    const { name, checked } = event.target;
+    if (name === 'all') {
+      setFilters({
+        all: checked,
+        pendiente: checked,
+        vencido: checked,
+        pagado: checked,
+        sinCuotas: checked,
+      });
+    } else {
+      setFilters((prev) => {
+        const newFilters = { ...prev, [name]: checked };
+        newFilters.all = Object.values(newFilters).slice(1).every((value) => value); // Actualiza "all" si todos están checked
+        return newFilters;
+      });
     }
   };
 
   return (
     <Box sx={{ padding: '20px' }}>
-      <Box sx={{ mb: 3, display: 'flex', flexWrap: 'wrap', gap: 2 }}>
+      <Typography variant="h4" gutterBottom>
+        Panel de Cuotas
+      </Typography>
+      <Box sx={{ mb: 3, display: 'flex', flexWrap: 'wrap', gap: 2, alignItems: 'center' }}>
         <TextField
           sx={{ flex: 1, minWidth: '250px' }}
           label="Buscar por nombre, apellido o DNI"
@@ -141,8 +169,29 @@ const Share = () => {
         <Button variant="contained" color="primary" onClick={handleOpenMassShareDialog}>
           Crear Cuota Masiva
         </Button>
+        <Box sx={{ display: 'flex', gap: 1, ml: 2 }}>
+          <FormControlLabel
+            control={<Checkbox checked={filters.all} onChange={handleFilterChange} name="all" />}
+            label="Todos"
+          />
+          <FormControlLabel
+            control={<Checkbox checked={filters.pendiente} onChange={handleFilterChange} name="pendiente" />}
+            label="Pendiente"
+          />
+          <FormControlLabel
+            control={<Checkbox checked={filters.vencido} onChange={handleFilterChange} name="vencido" />}
+            label="Vencido"
+          />
+          <FormControlLabel
+            control={<Checkbox checked={filters.pagado} onChange={handleFilterChange} name="pagado" />}
+            label="Pagado"
+          />
+          <FormControlLabel
+            control={<Checkbox checked={filters.sinCuotas} onChange={handleFilterChange} name="sinCuotas" />}
+            label="Sin Cuotas"
+          />
+        </Box>
       </Box>
-
       <TableContainer component={Paper} sx={{ mb: 4 }}>
         <Table>
           <TableHead>
@@ -169,14 +218,7 @@ const Share = () => {
                   <TableCell>{student.name}</TableCell>
                   <TableCell>{student.lastName}</TableCell>
                   <TableCell>{student.dni}</TableCell>
-                  <TableCell>
-                    <Switch
-                      checked={studentStatuses[student.id] || false}
-                      onChange={() => handleToggleStudentStatus(student.id, student.student_status)}
-                      color="success"
-                    />
-                    {studentStatuses[student.id] ? 'Activo' : 'Inactivo'}
-                  </TableCell>
+                  <TableCell>{getLatestShareStatus(student.id)}</TableCell>
                   <TableCell>
                     <Button
                       variant="contained"
@@ -205,7 +247,7 @@ const Share = () => {
               onChange={handleMassShareInputChange}
               label="Año"
             >
-              {[2025, 2024, 2023].map((year) => (
+              {[2023, 2024, 2025, 2026, 2027].map((year) => (
                 <MenuItem key={year} value={year}>
                   {year}
                 </MenuItem>
@@ -219,6 +261,7 @@ const Share = () => {
             onChange={handleMassShareInputChange}
             fullWidth
             sx={{ mb: 2 }}
+            required
             placeholder="Ej: Cuota Masiva - Semestre 1 - 2025"
           />
           <TextField
@@ -229,15 +272,17 @@ const Share = () => {
             onChange={handleMassShareInputChange}
             fullWidth
             sx={{ mb: 2 }}
+            required
           />
           <TextField
-            label="Fecha de Vencimiento"
-            name="dueDate"
+            label="Fecha de Inicio"
+            name="date"
             type="date"
-            value={massShareData.dueDate}
+            value={massShareData.date}
             onChange={handleMassShareInputChange}
             fullWidth
             sx={{ mb: 2 }}
+            required
             InputLabelProps={{ shrink: true }}
           />
         </DialogContent>

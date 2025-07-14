@@ -46,7 +46,7 @@ const NavBar = ({ onNotificationClick }) => {
   };
 
   const navItems = [
-    { text: 'Inicio', icon: <HomeAdmin />, url: '/home' },
+    { text: 'Inicio', icon: <HomeAdmin />, url: '/' },
     { text: 'Usuarios', icon: <UserIcon />, url: '/user' },
     { text: 'Alumnos', icon: <PeopleIcon />, url: '/students' },
     { text: 'Cuotas', icon: <AttachMoneyIcon />, url: '/shares' },
