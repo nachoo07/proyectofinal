@@ -1,4 +1,3 @@
-// src/components/share/StudentShares.jsx
 import React, { useContext, useState, useEffect } from 'react';
 import {
   Box,
@@ -24,17 +23,32 @@ import {
 import { SharesContext } from '../../context/share/ShareContext';
 import { toast } from 'react-toastify';
 
-// Función para formatear fecha a YYYY-MM-DD (elimina hora y zona)
-const formatDateForInput = (dateStr) => {
-  if (!dateStr) return '';
-  return dateStr.split('T')[0]; // Toma solo la parte YYYY-MM-DD
-};
+import { calculateDueDate } from '../../utils/dateUtils';
 
-// Función para parsear fecha de YYYY-MM-DD a DD-MM-YYYY (para mostrar)
-const formatDateForDisplay = (dateStr) => {
-  if (!dateStr) return '';
-  const [year, month, day] = dateStr.split('-');
-  return `${day}-${month}-${year}`;
+// Función para determinar el estado y recargos basada en la fecha de vencimiento
+const getShareStatusAndAmount = (share, today) => {
+  if (!share.date) return { state: 'Sin Cuota', amount: 0 };
+  const dueDate = new Date(calculateDueDate(share.date));
+  const originalAmount = Number(share.amount) || 0;
+  if (share.state === 'Pagado') {
+    return { state: 'Pagado', amount: originalAmount };
+  }
+  const shareYear = dueDate.getFullYear();
+  const shareMonth = dueDate.getMonth();
+  const todayYear = today.getFullYear();
+  const todayMonth = today.getMonth();
+  if (shareYear > todayYear || (shareYear === todayYear && shareMonth > todayMonth)) {
+    return { state: 'Pendiente', amount: originalAmount };
+  }
+  if (today < dueDate) {
+    return { state: 'Pendiente', amount: originalAmount };
+  } else if (today >= dueDate && today.getDate() <= 20) {
+    const surcharge = originalAmount * 0.20;
+    return { state: 'Vencido', amount: originalAmount + surcharge };
+  } else {
+    const surcharge = originalAmount * 0.30;
+    return { state: 'Vencido', amount: originalAmount + surcharge };
+  }
 };
 
 const StudentShares = ({ studentId, onBack }) => {
@@ -42,68 +56,84 @@ const StudentShares = ({ studentId, onBack }) => {
   const [openCreateDialog, setOpenCreateDialog] = useState(false);
   const [openEditDialog, setOpenEditDialog] = useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+  const [openPayDialog, setOpenPayDialog] = useState(false);
   const [newShareData, setNewShareData] = useState({
+    quotaName: '',
     amount: '',
-    dueDate: '',
-    paymentDate: '',
+    date: '',
     state: 'Pendiente',
+    paymentmethod: '',
+    year: new Date().getFullYear(),
   });
   const [editingShare, setEditingShare] = useState(null);
   const [shareToDelete, setShareToDelete] = useState(null);
+  const [payShareId, setPayShareId] = useState(null);
+  const [payMethod, setPayMethod] = useState('Efectivo');
   const [editData, setEditData] = useState({
+    quotaName: '',
     amount: '',
-    dueDate: '',
-    paymentDate: '',
-    state: 'Pendiente',
+    date: '',
+    paymentmethod: 'Efectivo',
+    year: new Date().getFullYear(),
+    paymentdate_actual: '',
   });
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
 
   useEffect(() => {
     if (studentId) {
-      fetchSharesByStudent(studentId).then(() => {
-        console.log('Datos iniciales de studentsWithShares:', studentsWithShares); // Depuración
-      });
+      fetchSharesByStudent(studentId);
     }
   }, [studentId, fetchSharesByStudent]);
 
+  const today = new Date();
   const studentShares = studentsWithShares
     .filter((share) => share.student_id === parseInt(studentId))
+    .filter((share) => share.date && share.amount && share.quota_name)
+    .map((share) => {
+      const dueDate = new Date(calculateDueDate(share.date));
+      const { state, amount } = getShareStatusAndAmount(share, today);
+      return { ...share, state, amount: Number(amount) || 0, year: dueDate.getFullYear() };
+    })
+    .filter((share) => share.year === selectedYear)
     .sort((a, b) => new Date(b.date) - new Date(a.date));
 
   const student = studentsWithShares.find((share) => share.student_id === parseInt(studentId)) || studentsWithShares[0];
 
   const handleOpenCreateDialog = () => {
     setNewShareData({
+      quotaName: '',
       amount: '',
-      dueDate: '',
-      paymentDate: '',
+      date: '',
       state: 'Pendiente',
+      paymentmethod: '',
+      year: new Date().getFullYear(),
     });
     setOpenCreateDialog(true);
   };
 
-  const handleCloseCreateDialog = () => {
-    setOpenCreateDialog(false);
-  };
+  const handleCloseCreateDialog = () => setOpenCreateDialog(false);
 
   const handleSaveNewShare = async (e) => {
     e.preventDefault();
-    if (!newShareData.amount || !newShareData.dueDate || !newShareData.state) {
-      toast.error('Por favor, completa todos los campos obligatorios');
+    if (!newShareData.quotaName.trim() || !newShareData.amount || !newShareData.date) {
+      toast.error('Por favor, completa el nombre de la cuota, el monto y la fecha');
       return;
     }
-    if (isNaN(parseFloat(newShareData.amount)) || parseFloat(newShareData.amount) <= 0) {
+    const amountValue = parseFloat(newShareData.amount);
+    if (isNaN(amountValue) || amountValue <= 0) {
       toast.error('El monto debe ser un número mayor a 0');
       return;
     }
-
     try {
+      const dueDate = calculateDueDate(newShareData.date);
       const shareData = {
         student_id: parseInt(studentId),
-        date: new Date().toISOString().split('T')[0], // YYYY-MM-DD
-        amount: parseFloat(newShareData.amount),
-        state: newShareData.state,
-        paymentdate: newShareData.dueDate, // Ya en YYYY-MM-DD desde el input
-        paymentdate_actual: newShareData.paymentDate || null, // Ya en YYYY-MM-DD desde el input
+        date: newShareData.date,
+        amount: amountValue,
+        state: 'Pendiente',
+        paymentdate: '',
+        quotaName: newShareData.quotaName.trim(),
+        paymentmethod: '',
       };
 
       await createShare(shareData);
@@ -112,16 +142,19 @@ const StudentShares = ({ studentId, onBack }) => {
       handleCloseCreateDialog();
     } catch (err) {
       toast.error(`Error al crear la cuota: ${err.response?.data?.error || err.message || 'Desconocido'}`);
+      console.error(err);
     }
   };
 
   const handleEditShare = (share) => {
     setEditingShare(share.share_id);
     setEditData({
-      amount: share.amount.toString(),
-      dueDate: share.paymentdate ? formatDateForInput(share.paymentdate) : '',
-      paymentDate: share.paymentdate_actual ? formatDateForInput(share.paymentdate_actual) : '',
-      state: share.state || 'Pendiente',
+      quotaName: share.quota_name || '',
+      amount: (Number(share.amount) || 0).toString(),
+      date: share.date || '',
+      paymentmethod: share.paymentmethod,
+      year: new Date(calculateDueDate(share.date)).getFullYear(),
+      paymentdate_actual: share.paymentdate_actual || '',
     });
     setOpenEditDialog(true);
   };
@@ -129,30 +162,32 @@ const StudentShares = ({ studentId, onBack }) => {
   const handleCloseEditDialog = () => {
     setOpenEditDialog(false);
     setEditingShare(null);
-    setEditData({ amount: '', dueDate: '', paymentDate: '', state: 'Pendiente' });
+    setEditData({ quotaName: '', amount: '', date: '', paymentmethod: 'Efectivo', year: new Date().getFullYear() });
   };
 
   const handleSaveEdit = async (e) => {
     e.preventDefault();
-    if (!editData.amount || !editData.state) {
-      toast.error('Por favor, completa todos los campos obligatorios');
+    if (!editData.quotaName.trim() || !editData.amount || !editData.date) {
+      toast.error('Por favor, completa el nombre de la cuota, el monto y la fecha');
       return;
     }
-    if (isNaN(parseFloat(editData.amount)) || parseFloat(editData.amount) <= 0) {
+    const amountValue = parseFloat(editData.amount);
+    if (isNaN(amountValue) || amountValue <= 0) {
       toast.error('El monto debe ser un número mayor a 0');
       return;
     }
-
     try {
-      const originalShare = studentsWithShares.find((s) => s.share_id === editingShare);
+      const share = studentsWithShares.find((s) => s.share_id === editingShare);
       const updatedData = {
-        student_id: parseInt(studentId),
-        date: originalShare.date.split('T')[0], // Mantener el date original en YYYY-MM-DD
-        amount: parseFloat(editData.amount),
-        state: editData.state,
-        paymentdate: originalShare.paymentdate ? formatDateForInput(originalShare.paymentdate) : null, // Corregir formato
-        paymentdate_actual: editData.paymentDate || null, // Ya en YYYY-MM-DD desde el input
-      };
+                student_id: parseInt(studentId),
+                date: editData.date,
+                amount: amountValue,
+                state: share.state,
+                quotaName: editData.quotaName.trim(),
+                paymentmethod: editData.paymentmethod || 'Efectivo',
+                paymentdate_actual: editData.paymentdate_actual || '', // <- Esto es clave
+              };
+
 
       await updateShare(editingShare, updatedData);
       toast.success('Cuota actualizada exitosamente');
@@ -160,6 +195,7 @@ const StudentShares = ({ studentId, onBack }) => {
       handleCloseEditDialog();
     } catch (err) {
       toast.error(`Error al actualizar la cuota: ${err.response?.data?.error || err.message || 'Desconocido'}`);
+      console.error(err);
     }
   };
 
@@ -180,39 +216,75 @@ const StudentShares = ({ studentId, onBack }) => {
       await fetchSharesByStudent(studentId);
     } catch (err) {
       toast.error(`Error al eliminar la cuota: ${err.response?.data?.error || err.message || 'Desconocido'}`);
+      console.error(err);
     } finally {
       handleCloseDeleteDialog();
     }
   };
 
-  const handleMarkAsPaid = async (shareId) => {
-    try {
-      const share = studentsWithShares.find((s) => s.share_id === shareId);
-      const updatedData = {
-        student_id: parseInt(studentId),
-        date: share.date ? formatDateForInput(share.date) : new Date().toISOString().split('T')[0], // Asegurar YYYY-MM-DD
-        amount: share.amount,
-        state: 'Pagado',
-        paymentdate: share.paymentdate ? formatDateForInput(share.paymentdate) : null, // Corregir formato
-        paymentdate_actual: new Date().toISOString().split('T')[0], // YYYY-MM-DD
-      };
-      console.log('Datos enviados a update:', updatedData); // Depuración adicional
-      await updateShare(shareId, updatedData);
-      toast.success('Cuota marcada como pagada');
-      await fetchSharesByStudent(studentId);
-    } catch (err) {
-      toast.error(`Error al marcar como pagado: ${err.response?.data?.error || err.message || 'Desconocido'}`);
-      console.error('Error detallado:', err); // Depuración adicional
-    }
+  const handleOpenPayDialog = (shareId) => {
+    setPayShareId(shareId);
+    setOpenPayDialog(true);
   };
 
+  const handleClosePayDialog = () => {
+    setOpenPayDialog(false);
+    setPayShareId(null);
+    setPayMethod('Efectivo');
+  };
+
+  const handleConfirmPay = async () => {
+  if (!payShareId) return;
+  try {
+    const share = studentsWithShares.find((s) => s.share_id === payShareId);
+    const dueDate = calculateDueDate(share.date);
+    
+    const { amount } = getShareStatusAndAmount(share, today); // 👈 monto con recargo si corresponde
+
+    const updatedData = {
+      student_id: parseInt(studentId),
+      date: share.date,
+      amount: amount, // 👈 monto final con posible recargo
+      state: 'Pagado',
+      paymentdate: dueDate,
+      quotaName: share.quota_name,
+      paymentmethod: payMethod,
+      paymentdate_actual: new Date().toISOString().split('T')[0],
+    };
+
+    await updateShare(payShareId, updatedData);
+    toast.success('Cuota marcada como pagada');
+    await fetchSharesByStudent(studentId);
+    handleClosePayDialog();
+  } catch (err) {
+    toast.error(`Error al marcar como pagado: ${err.response?.data?.error || err.message || 'Desconocido'}`);
+    console.error(err);
+  }
+};
+
+
   return (
-    <Box sx={{ }}>
-      
+
+    <Box sx={{ padding: '20px' }}>
+     
       <Typography variant="h4" gutterBottom>
         Cuotas de {student?.name} {student?.lastName}
       </Typography>
-      <Box sx={{ mb: 2 }}>
+      <Box sx={{ mb: 2, display: 'flex', alignItems: 'center', gap: 2 }}>
+        <FormControl sx={{ minWidth: 120 }}>
+          <InputLabel>Año</InputLabel>
+          <Select
+            value={selectedYear}
+            onChange={(e) => setSelectedYear(e.target.value)}
+            label="Año"
+          >
+            {[2023, 2024, 2025, 2026, 2027].map((year) => (
+              <MenuItem key={year} value={year}>
+                {year}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
         <Button variant="contained" color="primary" onClick={handleOpenCreateDialog}>
           Crear Nueva Cuota
         </Button>
@@ -220,15 +292,14 @@ const StudentShares = ({ studentId, onBack }) => {
           Volver
         </Button>
       </Box>
-
       <TableContainer component={Paper} sx={{ mb: 4 }}>
         <Table>
           <TableHead>
             <TableRow>
               <TableCell>Cuota</TableCell>
               <TableCell>Monto</TableCell>
-              <TableCell>Fecha de Vencimiento</TableCell>
               <TableCell>Fecha de Pago</TableCell>
+              <TableCell>Método de Pago</TableCell>
               <TableCell>Estado</TableCell>
               <TableCell>Acciones</TableCell>
             </TableRow>
@@ -237,17 +308,17 @@ const StudentShares = ({ studentId, onBack }) => {
             {studentShares.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={6} sx={{ textAlign: 'center' }}>
-                  No hay cuotas registradas para este alumno
+                  Sin Cuota
                 </TableCell>
               </TableRow>
             ) : (
               studentShares.map((share) => (
                 <TableRow key={share.share_id}>
-                  <TableCell>{share.date ? share.date.slice(0, 7) : '-'}</TableCell>
-                  <TableCell>${share.amount || 0}</TableCell>
-                  <TableCell>{share.paymentdate ? formatDateForDisplay(formatDateForInput(share.paymentdate)) : '-'}</TableCell>
-                  <TableCell>{share.paymentdate_actual ? formatDateForDisplay(formatDateForInput(share.paymentdate_actual)) : '-'}</TableCell>
-                  <TableCell>{share.state || 'Pendiente'}</TableCell>
+                  <TableCell>{share.quota_name || '-'}</TableCell>
+                  <TableCell>${(Number(share.amount) || 0).toFixed(2)}</TableCell>
+                  <TableCell>{share.paymentdate_actual || '-'}</TableCell>
+                  <TableCell>{share.paymentmethod || '-'}</TableCell>
+                  <TableCell>{share.state}</TableCell>
                   <TableCell>
                     <Button
                       variant="outlined"
@@ -263,18 +334,20 @@ const StudentShares = ({ studentId, onBack }) => {
                       color="error"
                       size="small"
                       onClick={() => handleOpenDeleteDialog(share.share_id)}
+                      sx={{ mr: 1 }}
                     >
                       Eliminar
                     </Button>
-                    <Button
-                      variant="outlined"
-                      color="success"
-                      size="small"
-                      onClick={() => handleMarkAsPaid(share.share_id)}
-                      sx={{ ml: 1 }}
-                    >
-                      Pagado
-                    </Button>
+                    {share.state !== 'Pagado' && (
+                      <Button
+                        variant="outlined"
+                        color="success"
+                        size="small"
+                        onClick={() => handleOpenPayDialog(share.share_id)}
+                      >
+                        Pagado
+                      </Button>
+                    )}
                   </TableCell>
                 </TableRow>
               ))
@@ -288,6 +361,16 @@ const StudentShares = ({ studentId, onBack }) => {
         <DialogTitle>Crear Nueva Cuota</DialogTitle>
         <DialogContent>
           <TextField
+            label="Nombre de la Cuota"
+            name="quotaName"
+            value={newShareData.quotaName}
+            onChange={(e) => setNewShareData((prev) => ({ ...prev, quotaName: e.target.value }))}
+            fullWidth
+            sx={{ mb: 2 }}
+            required
+            placeholder="Ej: Cuota Escuela 2025"
+          />
+          <TextField
             label="Monto"
             name="amount"
             type="number"
@@ -298,38 +381,29 @@ const StudentShares = ({ studentId, onBack }) => {
             required
           />
           <TextField
-            label="Fecha de Vencimiento"
-            name="dueDate"
+            label="Fecha de Inicio"
+            name="date"
             type="date"
-            value={newShareData.dueDate}
-            onChange={(e) => setNewShareData((prev) => ({ ...prev, dueDate: e.target.value }))}
+            value={newShareData.date}
+            onChange={(e) => setNewShareData((prev) => ({ ...prev, date: e.target.value }))}
             fullWidth
             sx={{ mb: 2 }}
-            InputLabelProps={{ shrink: true }}
             required
-          />
-          <TextField
-            label="Fecha de Pago"
-            name="paymentDate"
-            type="date"
-            value={newShareData.paymentDate}
-            onChange={(e) => setNewShareData((prev) => ({ ...prev, paymentDate: e.target.value }))}
-            fullWidth
-            sx={{ mb: 2 }}
             InputLabelProps={{ shrink: true }}
           />
           <FormControl fullWidth sx={{ mb: 2 }}>
-            <InputLabel>Estado</InputLabel>
+            <InputLabel>Año</InputLabel>
             <Select
-              name="state"
-              value={newShareData.state}
-              onChange={(e) => setNewShareData((prev) => ({ ...prev, state: e.target.value }))}
-              label="Estado"
-              required
+              name="year"
+              value={newShareData.year}
+              onChange={(e) => setNewShareData((prev) => ({ ...prev, year: e.target.value }))}
+              label="Año"
             >
-              <MenuItem value="Pagado">Pagado</MenuItem>
-              <MenuItem value="Pendiente">Pendiente</MenuItem>
-              <MenuItem value="Vencido">Vencido</MenuItem>
+              {[2023, 2024, 2025, 2026, 2027].map((year) => (
+                <MenuItem key={year} value={year}>
+                  {year}
+                </MenuItem>
+              ))}
             </Select>
           </FormControl>
         </DialogContent>
@@ -344,64 +418,66 @@ const StudentShares = ({ studentId, onBack }) => {
       </Dialog>
 
       {/* Diálogo de edición */}
-      <Dialog open={openEditDialog} onClose={handleCloseEditDialog}>
-        <DialogTitle>Editar Cuota</DialogTitle>
-        <DialogContent>
-          <TextField
-            label="Monto"
-            name="amount"
-            type="number"
-            value={editData.amount}
-            onChange={(e) => setEditData((prev) => ({ ...prev, amount: e.target.value }))}
-            fullWidth
-            sx={{ mb: 2 }}
-            required
-          />
-          <TextField
-            label="Fecha de Vencimiento"
-            name="dueDate"
-            type="date"
-            value={editData.dueDate} // Ya en YYYY-MM-DD
-            fullWidth
-            sx={{ mb: 2 }}
-            InputLabelProps={{ shrink: true }}
-            InputProps={{ readOnly: true }}
-            required
-          />
-          <TextField
-            label="Fecha de Pago"
-            name="paymentDate"
-            type="date"
-            value={editData.paymentDate} // Ya en YYYY-MM-DD
-            onChange={(e) => setEditData((prev) => ({ ...prev, paymentDate: e.target.value }))}
-            fullWidth
-            sx={{ mb: 2 }}
-            InputLabelProps={{ shrink: true }}
-          />
-          <FormControl fullWidth sx={{ mb: 2 }}>
-            <InputLabel>Estado</InputLabel>
-            <Select
-              name="state"
-              value={editData.state}
-              onChange={(e) => setEditData((prev) => ({ ...prev, state: e.target.value }))}
-              label="Estado"
-              required
-            >
-              <MenuItem value="Pagado">Pagado</MenuItem>
-              <MenuItem value="Pendiente">Pendiente</MenuItem>
-              <MenuItem value="Vencido">Vencido</MenuItem>
-            </Select>
-          </FormControl>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseEditDialog} color="secondary">
-            Cancelar
-          </Button>
-          <Button onClick={handleSaveEdit} color="primary">
-            Guardar
-          </Button>
-        </DialogActions>
-      </Dialog>
+      {/* Diálogo de edición */}
+<Dialog open={openEditDialog} onClose={handleCloseEditDialog}>
+  <DialogTitle>Editar Cuota</DialogTitle>
+  <DialogContent>
+    <TextField
+      label="Nombre de la Cuota"
+      name="quotaName"
+      value={editData.quotaName}
+      onChange={(e) => setEditData((prev) => ({ ...prev, quotaName: e.target.value }))}
+      fullWidth
+      sx={{ mb: 2 }}
+      required
+      placeholder="Ej: Cuota Escuela 2025"
+    />
+    <TextField
+      label="Monto"
+      name="amount"
+      type="number"
+      value={editData.amount}
+      onChange={(e) => setEditData((prev) => ({ ...prev, amount: e.target.value }))}
+      fullWidth
+      sx={{ mb: 2 }}
+      required
+    />
+    <TextField
+      label="Fecha de Pago"
+      name="paymentdate_actual"
+      type="date"
+      value={editData.paymentdate_actual}
+      onChange={(e) => setEditData((prev) => ({ ...prev, paymentdate_actual: e.target.value }))}
+      fullWidth
+      sx={{ mb: 2 }}
+      required
+      InputLabelProps={{ shrink: true }}
+    />
+    <FormControl fullWidth sx={{ mb: 2 }}>
+      <InputLabel>Método de Pago</InputLabel>
+      <Select
+        name="paymentmethod"
+        value={editData.paymentmethod}
+        onChange={(e) => setEditData((prev) => ({ ...prev, paymentmethod: e.target.value }))}
+        label="Método de Pago"
+        required
+      >
+        <MenuItem value="Efectivo">Efectivo</MenuItem>
+        <MenuItem value="Tarjeta">Tarjeta</MenuItem>
+        <MenuItem value="Transferencia">Transferencia</MenuItem>
+      </Select>
+    </FormControl>
+  </DialogContent>
+  <DialogActions>
+    <Button onClick={handleCloseEditDialog} color="secondary">
+      Cancelar
+    </Button>
+    <Button onClick={handleSaveEdit} color="primary">
+      Guardar
+    </Button>
+  </DialogActions>
+</Dialog>
+
 
       {/* Diálogo de eliminación */}
       <Dialog open={openDeleteDialog} onClose={handleCloseDeleteDialog}>
@@ -415,6 +491,35 @@ const StudentShares = ({ studentId, onBack }) => {
           </Button>
           <Button onClick={handleConfirmDelete} color="error">
             Eliminar
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Diálogo de pago */}
+      <Dialog open={openPayDialog} onClose={handleClosePayDialog}>
+        <DialogTitle>Marcar como Pagado</DialogTitle>
+        <DialogContent>
+          <FormControl fullWidth sx={{ mb: 2 }}>
+            <InputLabel>Método de Pago</InputLabel>
+            <Select
+              name="paymentmethod"
+              value={payMethod}
+              onChange={(e) => setPayMethod(e.target.value)}
+              label="Método de Pago"
+              required
+            >
+              <MenuItem value="Efectivo">Efectivo</MenuItem>
+              <MenuItem value="Tarjeta">Tarjeta</MenuItem>
+              <MenuItem value="Transferencia">Transferencia</MenuItem>
+            </Select>
+          </FormControl>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClosePayDialog} color="secondary">
+            Cancelar
+          </Button>
+          <Button onClick={handleConfirmPay} color="primary">
+            Confirmar
           </Button>
         </DialogActions>
       </Dialog>

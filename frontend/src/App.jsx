@@ -33,7 +33,24 @@ function AppContent() {
             <StudentProvider>
               <TeacherProvider>
                 <SharesProvider>
+
+                  {/* Contenedor global para layout centrado y responsive */}
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      minHeight: '100vh',
+                      width: '100%',
+                    
+                      margin: '0 auto',
+                    
+                      boxSizing: 'border-box',
+                    }}
+                    className="app-container"
+                  >
+
                   <AttendanceProvider>
+
                     <Routing />
                     <ToastContainer />
                   </AttendanceProvider>
