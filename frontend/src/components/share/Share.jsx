@@ -1,4 +1,5 @@
-import React, { useContext, useState, useEffect } from 'react';
+import { useContext, useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Box,
   Typography,
@@ -22,7 +23,6 @@ import {
   Checkbox,
   FormControlLabel,
 } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
 import { SharesContext } from '../../context/share/ShareContext';
 import { toast } from 'react-toastify';
 import { calculateDueDate } from '../../utils/dateUtils';
@@ -154,11 +154,16 @@ const Share = () => {
   };
 
   return (
+
     <Box sx={{ padding: '20px' }}>
       <Typography variant="h4" gutterBottom>
         Panel de Cuotas
       </Typography>
       <Box sx={{ mb: 3, display: 'flex', flexWrap: 'wrap', gap: 2, alignItems: 'center' }}>
+
+    <Box sx={{}}>
+      <Box sx={{ mb: 3, display: 'flex', flexWrap: 'wrap', gap: 2 }}>
+
         <TextField
           sx={{ flex: 1, minWidth: '250px' }}
           label="Buscar por nombre, apellido o DNI"

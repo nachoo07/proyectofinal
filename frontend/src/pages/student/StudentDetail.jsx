@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { StudentContext } from "../../context/student/StudentContext";
+import { toast } from "react-toastify";
 
 const StudentDetail = () => {
   const { id } = useParams();
@@ -10,7 +11,7 @@ const StudentDetail = () => {
   const isEdit = new URLSearchParams(location.search).get("edit") === "true";
   const isView = !isNew && !isEdit && id;
 
-  const { students, createStudent, updateStudent, fetchStudents  } = useContext(StudentContext);
+  const { students, createStudent, updateStudent, fetchStudents } = useContext(StudentContext);
 
   const [student, setStudent] = useState({
     name: "",
@@ -26,7 +27,7 @@ const StudentDetail = () => {
     mail: "",
     state: "Activo",
     comment: "",
-    profileImage: "", // nombre de archivo o URL parcial
+    profileImage: "",
   });
 
   const [imagePreview, setImagePreview] = useState(null);
@@ -68,180 +69,215 @@ const StudentDetail = () => {
 
     if (student.birthDate) {
       const date = new Date(student.birthDate);
-      const formattedDate = date.toISOString().substring(0, 10); // yyyy-MM-dd
-      formData.set("birthDate", formattedDate); // <-- esta línea sobreescribe el valor anterior
+      const formattedDate = date.toISOString().substring(0, 10);
+      formData.set("birthDate", formattedDate);
     }
 
     if (file) {
       formData.append("profileImage", file);
     }
 
+    if (student.motherPhone && student.motherPhone.length < 10) {
+      toast.error("El teléfono de la madre debe tener al menos 10 caracteres");
+      return;
+    }
+
+    if (student.fatherPhone && student.fatherPhone.length < 10) {
+      toast.error("El teléfono del padre debe tener al menos 10 caracteres");
+      return;
+    }
+
     try {
       if (isEdit) {
         await updateStudent(id, formData);
-        alert("Estudiante actualizado");
+        toast.success("Estudiante actualizado");
       } else {
         await createStudent(formData);
-        alert("Estudiante creado");
+        toast.success("Estudiante creado");
       }
       await fetchStudents();
-
       navigate("/students");
     } catch (err) {
-      console.error("Error al guardar estudiante:", err);
+      const errorMessage = err?.response?.data?.error || "Error al guardar el estudiante";
+      toast.error(errorMessage);
     }
   };
-  const baseURL = "http://localhost:4000";
 
   return (
-    <div className="container mt-4">
-      <h2>{isNew ? "Nuevo Estudiante" : isView ? "Detalle del Estudiante" : "Editar Estudiante"}</h2>
+    <div className="container mt-4 text-center">
+
+      {/* Imagen, nombre y botones arriba si está en modo vista */}
+      {isView && (
+  <div className="d-flex justify-content-center align-items-center gap-4 mb-4 flex-wrap">
+    {/* Imagen */}
+    <div className="text-center">
+      
+       <h2 className="mb-4">
+        {isNew ? "Nuevo Estudiante" : isView ? "Detalle del Estudiante" : "Editar Estudiante"}
+      </h2>
+
+      <img
+        src={
+          student.profileImage && !student.profileImage.includes("pinimg.com")
+            ? `http://localhost:4000${student.profileImage}`
+            : "https://i.pinimg.com/736x/24/f2/25/24f22516ec47facdc2dc114f8c3de7db.jpg"
+        }
+        alt="Foto de perfil"
+        style={{ maxWidth: "180px", borderRadius: "8px" }}
+      />
+      <h3 className="mt-3">{student.name} {student.lastName}</h3>
+    </div>
+
+    {/* Botones */}
+    <div className="d-flex flex-column gap-2">
+     
+      <button className="btn btn btn-primary" onClick={() => navigate(-1)}>
+        Volver atrás
+      </button>
+
+      
+    </div>
+  </div>
+)}
+
+     
 
       <form onSubmit={handleSubmit}>
-        <div className="mb-3">
-          <label>Nombre</label>
-          <input
-            type="text"
-            className="form-control"
-            name="name"
-            value={student.name}
-            onChange={handleChange}
-            disabled={isView}
-          />
+        <div className="row mb-3">
+          <div className="col-md-4">
+            <label>DNI</label>
+           <input
+              type="text"
+              className="form-control"
+              name="dni"
+              value={student.dni}
+              onChange={handleChange}
+              disabled={isView}
+            />
+          </div>
+          <div className="col-md-4">
+            <label>Fecha de nacimiento</label>
+            <input
+              type="date"
+              className="form-control"
+              name="birthDate"
+              value={student.birthDate ? student.birthDate.substring(0, 10) : ""}
+              onChange={handleChange}
+              disabled={isView}
+            />
+          </div>
+          <div className="col-md-4">
+           <label>Dirección</label>
+            <input
+              type="text"
+              className="form-control"
+              name="address"
+              value={student.address}
+              onChange={handleChange}
+              disabled={isView}
+            />
+          </div>
         </div>
 
-        <div className="mb-3">
-          <label>Apellido</label>
-          <input
-            type="text"
-            className="form-control"
-            name="lastName"
-            value={student.lastName}
-            onChange={handleChange}
-            disabled={isView}
-          />
+        <div className="row mb-3">
+          <div className="col-md-4">
+            <label>Fecha de nacimiento</label>
+            <input
+              type="date"
+              className="form-control"
+              name="birthDate"
+              value={student.birthDate ? student.birthDate.substring(0, 10) : ""}
+              onChange={handleChange}
+              disabled={isView}
+            />
+          </div>
+          <div className="col-md-4">
+            <label>Email</label>
+            <input
+              type="email"
+              className="form-control"
+              name="mail"
+              value={student.mail}
+              onChange={handleChange}
+              disabled={isView}
+            />
+          </div>
+          <div className="col-md-4">
+            <label>Categoría</label>
+            <input
+              type="text"
+              className="form-control"
+              name="category"
+              value={student.category}
+              onChange={handleChange}
+              disabled={isView}
+            />
+          </div>
         </div>
 
-        <div className="mb-3">
-          <label>DNI</label>
-          <input
-            type="text"
-            className="form-control"
-            name="dni"
-            value={student.dni}
-            onChange={handleChange}
-            disabled={isView}
-          />
+        <div className="row mb-3">
+          <div className="col-md-4">
+            <label>Nombre de la madre</label>
+            <input
+              type="text"
+              className="form-control"
+              name="motherName"
+              value={student.motherName}
+              onChange={handleChange}
+              disabled={isView}
+            />
+          </div>
+          <div className="col-md-4">
+            <label>Teléfono madre</label>
+            <input
+              type="text"
+              className="form-control"
+              name="motherPhone"
+              value={student.motherPhone}
+              onChange={handleChange}
+              disabled={isView}
+            />
+          </div>
+          <div className="col-md-4">
+             <label>Estado</label>
+            <select
+              name="state"
+              className="form-select"
+              value={student.state}
+              onChange={handleChange}
+              disabled={isView}
+            >
+              <option value="Activo">Activo</option>
+              <option value="Inactivo">Inactivo</option>
+            </select>
+            
+          </div>
         </div>
 
-        <div className="mb-3">
-          <label>Fecha de nacimiento</label>
-          <input
-            type="date"
-            className="form-control"
-            name="birthDate"
-            value={student.birthDate ? student.birthDate.substring(0, 10) : ""}
-            onChange={handleChange}
-            disabled={isView}
-          />
-        </div>
-
-        <div className="mb-3">
-          <label>Dirección</label>
-          <input
-            type="text"
-            className="form-control"
-            name="address"
-            value={student.address}
-            onChange={handleChange}
-            disabled={isView}
-          />
-        </div>
-
-        <div className="mb-3">
-          <label>Nombre de la madre</label>
-          <input
-            type="text"
-            className="form-control"
-            name="motherName"
-            value={student.motherName}
-            onChange={handleChange}
-            disabled={isView}
-          />
-        </div>
-
-        <div className="mb-3">
-          <label>Nombre del padre</label>
-          <input
-            type="text"
-            className="form-control"
-            name="fatherName"
-            value={student.fatherName}
-            onChange={handleChange}
-            disabled={isView}
-          />
-        </div>
-
-        <div className="mb-3">
-          <label>Teléfono madre</label>
-          <input
-            type="text"
-            className="form-control"
-            name="motherPhone"
-            value={student.motherPhone}
-            onChange={handleChange}
-            disabled={isView}
-          />
-        </div>
-
-        <div className="mb-3">
-          <label>Teléfono padre</label>
-          <input
-            type="text"
-            className="form-control"
-            name="fatherPhone"
-            value={student.fatherPhone}
-            onChange={handleChange}
-            disabled={isView}
-          />
-        </div>
-
-        <div className="mb-3">
-          <label>Categoría</label>
-          <input
-            type="text"
-            className="form-control"
-            name="category"
-            value={student.category}
-            onChange={handleChange}
-            disabled={isView}
-          />
-        </div>
-
-        <div className="mb-3">
-          <label>Email</label>
-          <input
-            type="email"
-            className="form-control"
-            name="mail"
-            value={student.mail}
-            onChange={handleChange}
-            disabled={isView}
-          />
-        </div>
-
-        <div className="mb-3">
-          <label>Estado</label>
-          <select
-            name="state"
-            className="form-select"
-            value={student.state}
-            onChange={handleChange}
-            disabled={isView}
-          >
-            <option value="Activo">Activo</option>
-            <option value="Inactivo">Inactivo</option>
-          </select>
+        <div className="row mb-3">
+          <div className="col-md-6">
+            <label>Nombre del padre</label>
+            <input
+              type="text"
+              className="form-control"
+              name="fatherName"
+              value={student.fatherName}
+              onChange={handleChange}
+              disabled={isView}
+            />
+          </div>
+          <div className="col-md-6">
+            <label>Teléfono padre</label>
+            <input
+              type="text"
+              className="form-control"
+              name="fatherPhone"
+              value={student.fatherPhone}
+              onChange={handleChange}
+              disabled={isView}
+            />
+          </div>
+          
         </div>
 
         <div className="mb-3">
@@ -255,47 +291,41 @@ const StudentDetail = () => {
           ></textarea>
         </div>
 
-        <div className="mb-3">
-        <div className="mb-3">
-          <label>Foto de perfil</label>
-          <br />
-          {student.profileImage && !student.profileImage.includes("pinimg.com") ? (
-            // Imagen cargada desde el servidor (ruta relativa tipo /uploads/...)
-            <img
-              src={`http://localhost:4000${student.profileImage}`}
-              alt="Imagen de perfil"
-              style={{ maxWidth: "250px", borderRadius: "8px" }}
-            />
-          ) : (
-            // Imagen por defecto (si no hay imagen cargada o es la por defecto desde la DB)
-            <img
-              src="https://i.pinimg.com/736x/24/f2/25/24f22516ec47facdc2dc114f8c3de7db.jpg"
-              alt="Imagen por defecto"
-              style={{ maxWidth: "150px", borderRadius: "8px" }}
-            />
-          )}
-        </div>
-
-        
-        
-  
-
-          {/* Input solo si no está en modo visualización */}
-          {!isView && (
+        {/* Foto y carga solo para crear/editar */}
+        {!isView && (
+          <div className="mb-3">
+            <label>Foto de perfil</label>
+            <br />
+            {imagePreview ? (
+              <img
+                src={imagePreview}
+                alt="Vista previa"
+                style={{ maxWidth: "250px", borderRadius: "8px" }}
+              />
+            ) : null}
             <input
               type="file"
-              className="form-control"
+              className="form-control mt-2"
               accept="image/*"
               onChange={handleImageChange}
             />
-          )}
-        </div>
+          </div>
+        )}
 
-
+        {/* Botones Crear/Editar */}
         {!isView && (
-          <button type="submit" className="btn btn-primary">
-            {isEdit ? "Actualizar" : "Crear"}
-          </button>
+          <div className="d-flex gap-2 mt-3 justify-content-center">
+            <button type="submit" className="btn btn-primary">
+              {isEdit ? "Actualizar" : "Crear"}
+            </button>
+            <button
+              type="button"
+              className="btn btn-outline-primary"
+              onClick={() => navigate(-1)}
+            >
+              <i className="bi bi-arrow-left"></i> Volver
+            </button>
+          </div>
         )}
       </form>
     </div>

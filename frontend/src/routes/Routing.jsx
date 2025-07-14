@@ -1,4 +1,9 @@
+
 import { Routes, Route, Outlet } from 'react-router-dom';
+
+import { Routes, Route, useLocation } from 'react-router-dom';
+
+
 import ErrorBoundary from '../components/ErrorBoundary/ErrorBoundary';
 import ProtectedRoute from '../routes/protectRoutes/ProtectedRoute';
 import PageLogin from '../components/login/Login';
@@ -16,8 +21,14 @@ import PageEditStudent from '../pages/student/PageEditStudent';
 import StudentDetail from '../pages/student/StudentDetail';
 import NavBar from '../components/navbar/Navbar'; // Lo usaremos solo en algunas rutas
 
+import PageAttendance from '../pages/attendance/PageAttendance';
+import NotFound from '../pages/notFound/NotFound';
+
 const Routing = () => {
+  const location = useLocation();
+  const currentRoute = location.pathname.replace('/', '');
   return (
+
     <ErrorBoundary>
       <Routes>
         
@@ -40,6 +51,17 @@ const Routing = () => {
               </>
             }
           >
+
+    <>
+      {
+        currentRoute && <NavBar />
+      }
+      <ErrorBoundary>
+        <Routes>
+          <Route path="/login" element={<PageLogin />} />
+          <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
+            <Route path="/" element={<PageHomeAdmin />} />
+
             <Route path="/user" element={<PageUser />} />
             <Route path="/motions" element={<PageMotion />} />
             <Route path="/students" element={<PageStudent />} />
@@ -65,10 +87,18 @@ const Routing = () => {
             <Route path="/homeuser" element={<PageUser />} />
             <Route path="/notifications" element={<PageNotification />} />
             <Route path="/shares/student/:studentId" element={<PageStudentShares />} />
+            <Route path="/attendance" element={<PageAttendance />} />
           </Route>
+
         </Route>
       </Routes>
     </ErrorBoundary>
+
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </ErrorBoundary>
+    </>
+
   );
 };
 

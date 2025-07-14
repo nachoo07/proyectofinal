@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from 'react';
+import{ useContext, useState, useEffect } from 'react';
 import {
   Box,
   Typography,
@@ -19,7 +19,7 @@ import {
 } from '@mui/material';
 import { TeacherContext } from '../../context/teacher/TeacherContext';
 import { toast } from 'react-toastify';
-import Navbar from '../navbar/Navbar';
+
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import SaveIcon from '@mui/icons-material/Save';
@@ -136,7 +136,6 @@ const Teacher = ({ onBack }) => {
   return (
     <Box
       sx={{
-        padding: { xs: '20px', md: '40px' },
         mt: 8, // Aumentado para dejar espacio al NavBar fijo
         backgroundColor: '#E6F9EC',
         minHeight: '100vh', // Asegura que el contenido ocupe toda la altura

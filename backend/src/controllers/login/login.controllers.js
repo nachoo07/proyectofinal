@@ -3,6 +3,7 @@ import bcrypt from 'bcrypt';
 import { generateAccessToken, generateRefreshToken } from '../../utils/jwt.js';
 import { loginSchema } from '../../utils/validators.js';
 import logger from '../../utils/logger.js';
+import { rateLimitStore } from '../../Middleware/rateLimit/rateLimit.js';
 
 // Login de usuario
 export const loginUser = async (req, res, next) => {
@@ -58,6 +59,9 @@ export const loginUser = async (req, res, next) => {
         });
 
         logger.info(`Usuario logueado: ${mail}`);
+
+        rateLimitStore.resetKey(req.ip);
+
         res.status(200).json({
             message: 'Login exitoso',
             user: { id: user.id, name: user.name, mail: user.mail, role: user.role },

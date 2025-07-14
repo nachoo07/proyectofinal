@@ -1,0 +1,25 @@
+.card-container {
+  display: flex;
+  gap: 24px;
+  margin-top: 32px;
+}
+
+.custom-card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+  padding: 24px;
+  width: 300px;
+  border: 1px solid #e0e0e0;
+}
+
+.custom-card h2 {
+  margin-top: 0;
+  margin-bottom: 12px;
+  font-size: 1.3rem;
+}
+
+.custom-card p {
+  margin: 0;
+  color: #555;
+}

@@ -22,6 +22,7 @@ import {
 } from '@mui/material';
 import { SharesContext } from '../../context/share/ShareContext';
 import { toast } from 'react-toastify';
+
 import { calculateDueDate } from '../../utils/dateUtils';
 
 // Función para determinar el estado y recargos basada en la fecha de vencimiento
@@ -263,7 +264,9 @@ const StudentShares = ({ studentId, onBack }) => {
 
 
   return (
+
     <Box sx={{ padding: '20px' }}>
+     
       <Typography variant="h4" gutterBottom>
         Cuotas de {student?.name} {student?.lastName}
       </Typography>

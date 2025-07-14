@@ -25,7 +25,7 @@ const app = express();
 const corsOptions = {
   origin: 'http://localhost:5173', // Origen de tu frontend
   credentials: true, // Permitir credenciales (cookies)
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Métodos permitidos
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'], // Métodos permitidos
   allowedHeaders: ['Content-Type', 'Authorization'], // Encabezados permitidos
 };
 // Middlewares

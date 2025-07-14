@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Container, Row, Col, Card } from 'react-bootstrap';
@@ -40,7 +41,11 @@ const HomeAdmin = () => {
     visible: { opacity: 1, y: 0 }
   };
 
+import './homeAdmin.css';
+
+
   return (
+
     <Container className="p-4 d-flex justify-content-center">
       <motion.div
         variants={containerVariants}
@@ -87,3 +92,6 @@ const HomeAdmin = () => {
 };
 
 export default HomeAdmin;
+
+  
+

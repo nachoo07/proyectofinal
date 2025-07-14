@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import { useState, useContext } from 'react';
 import {
   Box,
   Typography,
@@ -22,13 +22,19 @@ import { StudentContext } from '../../context/student/StudentContext';
 import { toast } from 'react-toastify';
 import SchoolIcon from '@mui/icons-material/School';
 import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit'; // Importación añadida
+import EditIcon from '@mui/icons-material/Edit';
 import CancelIcon from '@mui/icons-material/Cancel';
 import './student.css';
 
 const StudentTable = () => {
   const { students, deleteStudent } = useContext(StudentContext);
   const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('Todos');
+
+  // Estado para paginación
+  const [currentPage, setCurrentPage] = useState(1);
+  const studentsPerPage = 5;
+
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [studentToDelete, setStudentToDelete] = useState(null);
   const navigate = useNavigate();
@@ -37,7 +43,6 @@ const StudentTable = () => {
     return (
       <Box
         sx={{
-          padding: { xs: '20px', md: '40px' },
           mt: 8,
           backgroundColor: '#E6F9EC',
           minHeight: '100vh',
@@ -51,11 +56,33 @@ const StudentTable = () => {
     );
   }
 
-  const filteredStudents = students.filter((student) =>
-    `${student.name} ${student.address} ${student.category}`
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase())
-  );
+  const filteredStudents = students.filter((student) => {
+    const search = searchTerm.toLowerCase().trim();
+
+    const matchesSearch =
+      student.name.toLowerCase().startsWith(search) ||
+      student.lastName.toLowerCase().startsWith(search) ||
+      student.dni.toLowerCase().startsWith(search);
+
+    const matchesStatus =
+      statusFilter === 'Todos' ||
+      student.state?.toLowerCase() === statusFilter.toLowerCase();
+
+    return matchesSearch && matchesStatus;
+  });
+
+  // Paginación: calcular total páginas
+  const totalPages = Math.ceil(filteredStudents.length / studentsPerPage);
+
+  // Obtener estudiantes para la página actual
+  const indexOfLastStudent = currentPage * studentsPerPage;
+  const indexOfFirstStudent = indexOfLastStudent - studentsPerPage;
+  const currentStudents = filteredStudents.slice(indexOfFirstStudent, indexOfLastStudent);
+
+  // Cambiar página cuando cambie filtro o búsqueda
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, statusFilter]);
 
   const handleOpenDeleteDialog = (studentId) => {
     setStudentToDelete(studentId);
@@ -78,10 +105,22 @@ const StudentTable = () => {
     }
   };
 
+  // Funciones paginación
+  const handleNextPage = () => {
+    if (currentPage < totalPages) setCurrentPage(currentPage + 1);
+  };
+
+  const handlePrevPage = () => {
+    if (currentPage > 1) setCurrentPage(currentPage - 1);
+  };
+
+  const handlePageClick = (pageNum) => {
+    setCurrentPage(pageNum);
+  };
+
   return (
     <Box
       sx={{
-        padding: { xs: '20px', md: '40px' },
         mt: 8, // Espacio para el NavBar fijo
         backgroundColor: '#E6F9EC',
         minHeight: '100vh',
@@ -118,22 +157,69 @@ const StudentTable = () => {
         </Typography>
       </Box>
 
-      <Box sx={{ mb: 4, maxWidth: '300px' }}>
-        <TextField
-          label="Buscar por nombre, dirección o categoría"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          fullWidth
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          mb: 4,
+          flexWrap: 'wrap',
+          gap: 2
+          
+        }}
+      >
+        {/* Buscador + filtro estado */}
+        <Box
           sx={{
-            '& .MuiOutlinedInput-root': {
-              '& fieldset': { borderColor: '#00335c' },
-              '&:hover fieldset': { borderColor: '#8eeab1' },
-              '&.Mui-focused fieldset': { borderColor: '#8eeab1' },
-            },
-            '& .MuiInputLabel-root': { color: '#00335c' },
-            '& .MuiInputLabel-root.Mui-focused': { color: '#8eeab1' },
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            gap: 2,
+            mb: 4,
+            flexWrap: 'wrap',
           }}
-        />
+        >
+          <Box sx={{ display: 'flex', gap: 2, flexGrow: 1, maxWidth: '900px',minWidth:'600px' }}>
+            <TextField
+              label="Buscar por Nombre, Apellido o DNI"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              fullWidth
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  '& fieldset': { borderColor: '#00335c' },
+                  '&:hover fieldset': { borderColor: '#8eeab1' },
+                  '&.Mui-focused fieldset': { borderColor: '#8eeab1' },
+                },
+                '& .MuiInputLabel-root': { color: '#00335c' },
+                '& .MuiInputLabel-root.Mui-focused': { color: '#8eeab1' },
+              }}
+            />
+
+            <TextField
+              select
+              label="Estado"
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              SelectProps={{ native: true }}
+              sx={{ minWidth: 120 }}
+            >
+              <option value="Todos">Todos</option>
+              <option value="Activo">Activo</option>
+              <option value="Inactivo">Inactivo</option>
+            </TextField>
+          </Box>
+
+          {/* Botones */}
+          <Box sx={{ display: 'flex', gap: 1 }}>
+            <Button component={Link} to="/students/new" variant="contained" color="success">
+              Crear Nuevo Estudiante
+            </Button>
+            <Button variant="outlined" color="success" onClick={() => navigate(-1)}>
+              Volver
+            </Button>
+          </Box>
+        </Box>
       </Box>
 
       <TableContainer
@@ -148,20 +234,21 @@ const StudentTable = () => {
           <TableHead className="table-head">
             <TableRow>
               <TableCell>Nombre</TableCell>
-              <TableCell>Dirección</TableCell>
-              <TableCell>Categoría</TableCell>
+              <TableCell>Apellido</TableCell>
+              <TableCell>DNI</TableCell>
+              <TableCell>Estado</TableCell>
               <TableCell>Acciones</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {filteredStudents.length === 0 ? (
+            {currentStudents.length === 0 ? (
               <TableRow sx={{ '&:hover': { backgroundColor: '#37fa82' } }}>
-                <TableCell colSpan={4} className="table-cell" sx={{ textAlign: 'center' }}>
+                <TableCell colSpan={5} className="table-cell" sx={{ textAlign: 'center' }}>
                   No se encontraron estudiantes.
                 </TableCell>
               </TableRow>
             ) : (
-              filteredStudents.map((student, index) => (
+              currentStudents.map((student, index) => (
                 <TableRow
                   key={student.id}
                   className="table-body-row"
@@ -172,8 +259,9 @@ const StudentTable = () => {
                   }}
                 >
                   <TableCell className="table-cell">{student.name}</TableCell>
-                  <TableCell className="table-cell">{student.address}</TableCell>
-                  <TableCell className="table-cell">{student.category}</TableCell>
+                  <TableCell className="table-cell">{student.lastName}</TableCell>
+                  <TableCell className="table-cell">{student.dni}</TableCell>
+                  <TableCell className="table-cell">{student.state}</TableCell>
                   <TableCell className="table-cell">
                     <Tooltip title="Ver estudiante">
                       <Button
@@ -202,7 +290,7 @@ const StudentTable = () => {
                     <Tooltip title="Ver cuotas">
                       <Button
                         component={Link}
-                        to={`/students/${student.id}/shares`}
+                        to={`/shares/student/${student.id}`}
                         variant="outlined"
                         color="primary"
                         size="small"
@@ -230,23 +318,35 @@ const StudentTable = () => {
         </Table>
       </TableContainer>
 
-      <Box sx={{ display: ' arquita', justifyContent: 'center', gap: 2, mb: 4 }}>
-        <Button
-          component={Link}
-          to="/students/new"
-          variant="contained"
-          color="success"
-          sx={{ cursor: 'pointer' }}
-        >
-          Crear Nuevo Estudiante
+      {/* Controles de paginación */}
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'center',
+          gap: 1,
+          mb: 6,
+          flexWrap: 'wrap',
+        }}
+      >
+        <Button variant="outlined" onClick={handlePrevPage} disabled={currentPage === 1}>
+          Anterior
         </Button>
-        <Button
-          variant="outlined"
-          color="success"
-          onClick={() => navigate(-1)}
-          sx={{ cursor: 'pointer' }}
-        >
-          Volver
+
+        {[...Array(totalPages)].map((_, i) => {
+          const pageNum = i + 1;
+          return (
+            <Button
+              key={pageNum}
+              variant={pageNum === currentPage ? 'contained' : 'outlined'}
+              onClick={() => handlePageClick(pageNum)}
+            >
+              {pageNum}
+            </Button>
+          );
+        })}
+
+        <Button variant="outlined" onClick={handleNextPage} disabled={currentPage === totalPages || totalPages === 0}>
+          Siguiente
         </Button>
       </Box>
 

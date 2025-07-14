@@ -9,13 +9,10 @@ import {
   FormControl,
   Alert,
 } from "@mui/material";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
-import es from "date-fns/locale/es";
 import { useState } from "react";
+import PropTypes from "prop-types";
 
-const Formulario = ({ formData, setFormData, handleSubmit, incomeType, isEditing, handleCancel }) => {
+const Formulario = ({ formData, setFormData, handleSubmit, isEditing, handleCancel }) => {
   const [localError, setLocalError] = useState("");
 
   const handleInputChange = (event) => {
@@ -26,64 +23,41 @@ const Formulario = ({ formData, setFormData, handleSubmit, incomeType, isEditing
     }));
   };
 
-  const handleDateChange = (newDate) => {
-    console.log("Fecha seleccionada:", newDate); // Depuración de la selección de fecha
-    setFormData((prevData) => ({
-      ...prevData,
-      date: newDate,
-    }));
-  };
-
   const validateForm = () => {
-    console.log("Validando formulario con datos:", formData); // Depuración de datos del formulario
     if (!formData.concept.trim()) {
       setLocalError("La descripción es obligatoria");
-      console.log("Validación fallida: Descripción vacía");
       return false;
     }
     if (!formData.amount || formData.amount <= 0) {
       setLocalError("El monto debe ser un número positivo");
-      console.log("Validación fallida: Monto inválido");
-      return false;
-    }
-    if (!formData.date || isNaN(new Date(formData.date).getTime())) {
-      setLocalError("La fecha es obligatoria y debe ser válida");
-      console.log("Validación fallida: Fecha inválida");
       return false;
     }
     if (!formData.paymentMethod) {
       setLocalError("El método de pago es obligatorio");
-      console.log("Validación fallida: Método de pago faltante");
       return false;
     }
     if (!["ingreso", "egreso"].includes(formData.incomeType)) {
       setLocalError("El tipo de movimiento no es válido");
-      console.log("Validación fallida: incomeType inválido");
       return false;
     }
-    setLocalError(""); // Limpiar error si la validación pasa
+    setLocalError("");
     return true;
   };
 
   const submit = async (e) => {
     e.preventDefault();
-    console.log("Formulario enviado con datos:", formData); // Depuración de envío
     setLocalError("");
-    if (!validateForm()) {
-      console.log("Validación del formulario fallida");
-      return;
-    }
+    if (!validateForm()) return;
 
     try {
       await handleSubmit(formData);
-      console.log("Envío del formulario exitoso");
       setFormData({
         id: null,
         concept: "",
         amount: "",
         date: null,
         paymentMethod: "",
-        incomeType: incomeType,
+        incomeType: "",
       });
     } catch (err) {
       console.error("Error en el envío del formulario:", err);
@@ -124,23 +98,7 @@ const Formulario = ({ formData, setFormData, handleSubmit, incomeType, isEditing
           />
         </Grid>
         <Grid xs={12} sm={6}>
-          <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={es}>
-            <DatePicker
-              label="Fecha"
-              value={formData.date}
-              onChange={handleDateChange}
-              slotProps={{
-                textField: {
-                  fullWidth: true,
-                  required: true,
-                  variant: "outlined",
-                },
-              }}
-            />
-          </LocalizationProvider>
-        </Grid>
-        <Grid xs={12} sm={6}>
-          <FormControl fullWidth sx={{ minWidth: 165 }}>
+          <FormControl fullWidth>
             <InputLabel>Método de Pago</InputLabel>
             <Select
               label="Método de Pago"
@@ -154,6 +112,24 @@ const Formulario = ({ formData, setFormData, handleSubmit, incomeType, isEditing
               </MenuItem>
               <MenuItem value="efectivo">Efectivo</MenuItem>
               <MenuItem value="transferencia">Transferencia</MenuItem>
+            </Select>
+          </FormControl>
+        </Grid>
+        <Grid xs={12} sm={6}>
+          <FormControl fullWidth>
+            <InputLabel>Tipo de Movimiento</InputLabel>
+            <Select
+              label="Tipo de Movimiento"
+              name="incomeType"
+              value={formData.incomeType}
+              onChange={handleInputChange}
+              required
+            >
+              <MenuItem value="">
+                <em>Seleccione un tipo</em>
+              </MenuItem>
+              <MenuItem value="ingreso">Ingreso</MenuItem>
+              <MenuItem value="egreso">Egreso</MenuItem>
             </Select>
           </FormControl>
         </Grid>
@@ -172,6 +148,20 @@ const Formulario = ({ formData, setFormData, handleSubmit, incomeType, isEditing
       </Grid>
     </Box>
   );
+};
+Formulario.propTypes = {
+  formData: PropTypes.shape({
+    id: PropTypes.any,
+    concept: PropTypes.string.isRequired,
+    amount: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+    date: PropTypes.any,
+    paymentMethod: PropTypes.string.isRequired,
+    incomeType: PropTypes.string.isRequired,
+  }).isRequired,
+  setFormData: PropTypes.func.isRequired,
+  handleSubmit: PropTypes.func.isRequired,
+  isEditing: PropTypes.bool.isRequired,
+  handleCancel: PropTypes.func,
 };
 
 export default Formulario;

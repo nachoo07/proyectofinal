@@ -1,4 +1,5 @@
-import { createContext, useState, useEffect, useContext } from 'react';
+
+import React, { createContext, useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { LoginContext } from '../login/LoginContext';
 
@@ -9,15 +10,20 @@ export const StudentProvider = ({ children }) => {
   const [students, setStudents] = useState([]);
 
   const fetchStudents = async () => {
-    if (authLoading || !auth || auth !== 'admin') return; // Solo admins
-
+    if (authLoading || !auth) return; // Espera autenticación, permite 'admin' y 'user' para depuración
     try {
-      const response = await axios.get('http://localhost:4000/api/student', {
+      const response = await axios.get('http://localhost:4000/api/student/', {
         withCredentials: true,
       });
-      setStudents(response.data);
+      const data = Array.isArray(response.data) ? response.data : [];
+      const studentsWithCategory = data.map(student => ({
+        ...student,
+        category: student.category || 'Sin categoría', // Maneja NULL o ausencia de category
+      }));
+      setStudents(studentsWithCategory);
     } catch (error) {
       console.error('Error al obtener estudiantes:', error.response?.data || error.message);
+      setStudents([]);
     }
   };
 
@@ -27,7 +33,7 @@ export const StudentProvider = ({ children }) => {
 
   const createStudent = async (formData) => {
     try {
-      const response = await axios.post('http://localhost:4000/api/student', formData, {
+      const response = await axios.post('http://localhost:4000/api/student/create', formData, {
         withCredentials: true,
         headers: { 'Content-Type': 'multipart/form-data' },
       });
