@@ -54,6 +54,7 @@ function AppContent() {
                     <Routing />
                     <ToastContainer />
                   </AttendanceProvider>
+                  </Box>
                 </SharesProvider>
               </TeacherProvider>
             </StudentProvider>

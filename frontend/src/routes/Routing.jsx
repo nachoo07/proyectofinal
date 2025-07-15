@@ -1,9 +1,4 @@
-
-import { Routes, Route,  } from 'react-router-dom';
-
-import { Routes, Route, useLocation,Outlet } from 'react-router-dom';
-
-
+import { Routes, Route, useLocation, Outlet } from 'react-router-dom';
 import ErrorBoundary from '../components/ErrorBoundary/ErrorBoundary';
 import ProtectedRoute from '../routes/protectRoutes/ProtectedRoute';
 import PageLogin from '../components/login/Login';
@@ -28,77 +23,32 @@ const Routing = () => {
   const location = useLocation();
   const isLoginRoute = location.pathname.includes('login')
   return (
-
     <ErrorBoundary>
-      <Routes>
-        
-
-        <Route path="/login" element={<PageLogin />} />
-
-        {/* Rutas admin sin NavBar para '/' */}
-        <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
-          <Route path="/" element={<PageHomeAdmin />} />
-        </Route>
-
-        {/* Rutas admin con NavBar */}
-        <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
-          {/* Poner NavBar en estas rutas */}
-          <Route
-            element={
-              <>
-                <NavBar />
-                <Outlet />
-              </>
-            }
-          >
-
-    <>
       {
         !isLoginRoute && <NavBar />
       }
-      <ErrorBoundary>
-        <Routes>
-          <Route path="/login" element={<PageLogin />} />
-          <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
-            <Route path="/" element={<PageHomeAdmin />} />
+      <Routes>
+        <Route path="/login" element={<PageLogin />} />
+        <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
+          <Route path="/" element={<PageHomeAdmin />} />
 
-            <Route path="/user" element={<PageUser />} />
-            <Route path="/motions" element={<PageMotion />} />
-            <Route path="/students" element={<PageStudent />} />
-            <Route path="/students/:id" element={<StudentDetail />} />
-            <Route path="/students/:id/edit" element={<PageEditStudent />} />
-            <Route path="/teachers" element={<PageTeacher />} />
-            <Route path="/reports" element={<PageReport />} />
-            <Route path="/settings" element={<PageSettings />} />
-            <Route path="/shares" element={<SharesPage />} />
-          </Route>
+          <Route path="/user" element={<PageUser />} />
+          <Route path="/motions" element={<PageMotion />} />
+          <Route path="/students" element={<PageStudent />} />
+          <Route path="/students/:id" element={<StudentDetail />} />
+          <Route path="/students/:id/edit" element={<PageEditStudent />} />
+          <Route path="/teachers" element={<PageTeacher />} />
+          <Route path="/reports" element={<PageReport />} />
+          <Route path="/settings" element={<PageSettings />} />
+          <Route path="/shares" element={<SharesPage />} />
+          <Route path="/homeuser" element={<PageUser />} />
+          <Route path="/notifications" element={<PageNotification />} />
+          <Route path="/shares/student/:studentId" element={<PageStudentShares />} />
+          <Route path="/attendance" element={<PageAttendance />} />
         </Route>
-
-        {/* Rutas para usuarios normales con NavBar */}
-        <Route element={<ProtectedRoute allowedRoles={['user', 'admin']} />}>
-          <Route
-            element={
-              <>
-                <NavBar />
-                <Outlet />
-              </>
-            }
-          >
-            <Route path="/homeuser" element={<PageUser />} />
-            <Route path="/notifications" element={<PageNotification />} />
-            <Route path="/shares/student/:studentId" element={<PageStudentShares />} />
-            <Route path="/attendance" element={<PageAttendance />} />
-          </Route>
-
-        </Route>
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </ErrorBoundary>
-
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </ErrorBoundary>
-    </>
-
   );
 };
 

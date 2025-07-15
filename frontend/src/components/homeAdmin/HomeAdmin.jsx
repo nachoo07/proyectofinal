@@ -7,7 +7,7 @@ import {
   FaCogs, FaChartBar, FaBell, FaExchangeAlt
 } from 'react-icons/fa';
 import { motion } from 'framer-motion';
-
+import './homeAdmin.css';
 const HomeAdmin = () => {
   const navigate = useNavigate();
 
@@ -41,7 +41,7 @@ const HomeAdmin = () => {
     visible: { opacity: 1, y: 0 }
   };
 
-import './homeAdmin.css';
+
 
 
   return (
