@@ -1,7 +1,7 @@
 
-import { Routes, Route, Outlet } from 'react-router-dom';
+import { Routes, Route,  } from 'react-router-dom';
 
-import { Routes, Route, useLocation } from 'react-router-dom';
+import { Routes, Route, useLocation,Outlet } from 'react-router-dom';
 
 
 import ErrorBoundary from '../components/ErrorBoundary/ErrorBoundary';
@@ -26,7 +26,7 @@ import NotFound from '../pages/notFound/NotFound';
 
 const Routing = () => {
   const location = useLocation();
-  const currentRoute = location.pathname.replace('/', '');
+  const isLoginRoute = location.pathname.includes('login')
   return (
 
     <ErrorBoundary>
@@ -54,7 +54,7 @@ const Routing = () => {
 
     <>
       {
-        currentRoute && <NavBar />
+        !isLoginRoute && <NavBar />
       }
       <ErrorBoundary>
         <Routes>

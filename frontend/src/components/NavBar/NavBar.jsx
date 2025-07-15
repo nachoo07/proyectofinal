@@ -3,43 +3,54 @@ import {
   AppBar,
   Toolbar,
   Box,
-  List,
-  ListItem,
-  ListItemText,
-  ListItemIcon,
-  Divider,
   Typography,
-  IconButton,
+  Tabs,
+  Tab,
+  Button,
   Menu,
   MenuItem,
-  ListItemButton,
-  Button,
+  ListItemIcon,
+  ListItemText,
+  Divider,
+  IconButton,
+  useMediaQuery,
+  useTheme,
 } from '@mui/material';
 import {
-  Home as HomeAdmin,
+  Home as HomeIcon,
+  Dashboard as PrincipalIcon,
+  AttachMoney as FinanzasIcon,
+  Description as InformesIcon,
+  Settings as ConfiguracionIcon,
   People as PeopleIcon,
-  AttachMoney as AttachMoneyIcon,
+  Assignment as AsistenciaIcon,
   SwapHoriz as MovimientosIcon,
-  Person as UserIcon,
-  Settings as SettingsIcon,
-  Report as ReportIcon,
-  Notifications as PageNotification,
-  SportsSoccer as SportsSoccerIcon,
+  Person as UsuariosIcon,
+  SportsSoccer as ProfesoresIcon,
+  Notifications as NotificacionesIcon,
   Menu as MenuIcon,
   Logout as LogoutIcon,
+  ArrowDropDown as ArrowDropDownIcon,
 } from '@mui/icons-material';
-import './navbar.css'; // Import your custom CSS for NavBar
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useSettings } from '../../context/settings/settingsContext';
 import { LoginContext } from '../../context/login/LoginContext';
 
-const NavBar = ({ onNotificationClick }) => {
+const NavBar = () => {
   const { themeMode } = useSettings();
   const [mobileMenuAnchorEl, setMobileMenuAnchorEl] = useState(null);
+  const [submenuAnchorEl, setSubmenuAnchorEl] = useState(null);
+  const [currentSubmenu, setCurrentSubmenu] = useState(null);
   const isMobileMenuOpen = Boolean(mobileMenuAnchorEl);
+  const isSubmenuOpen = Boolean(submenuAnchorEl);
   const { logout, userData } = useContext(LoginContext);
   const navigate = useNavigate();
   const location = useLocation();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const isHome = location.pathname === '/'
+
+  console.log(location.pathname)
 
   const handleMobileMenuOpen = (event) => {
     setMobileMenuAnchorEl(event.currentTarget);
@@ -49,24 +60,52 @@ const NavBar = ({ onNotificationClick }) => {
     setMobileMenuAnchorEl(null);
   };
 
+  const handleSubmenuOpen = (event, submenuItems, parentUrl) => {
+    setSubmenuAnchorEl(event.currentTarget);
+    setCurrentSubmenu({ items: submenuItems, url: parentUrl });
+  };
+
+  const handleSubmenuClose = () => {
+    setSubmenuAnchorEl(null);
+    setCurrentSubmenu(null);
+  };
+
   const handleLogout = () => {
     logout();
     navigate('/login');
   };
 
+  const handleNavigate = (url) => {
+    navigate(url);
+    handleSubmenuClose();
+    if (isMobile) handleMobileMenuClose();
+  };
+
   const navItems = [
-    { text: 'Inicio', icon: <HomeAdmin />, url: '/' },
-    { text: 'Usuarios', icon: <UserIcon />, url: '/user' },
-    { text: 'Alumnos', icon: <PeopleIcon />, url: '/students' },
-    { text: 'Cuotas', icon: <AttachMoneyIcon />, url: '/shares' },
-    { text: 'Asistencia', icon: <AttachMoneyIcon />, url: '/attendance' },
-    { text: 'Movimientos', icon: <MovimientosIcon />, url: '/motions' },
-    { text: 'Reporte', icon: <ReportIcon />, url: '/reports' },
-    { text: 'Notificaciones', icon: <PageNotification />, url: '/notifications' },
-    { text: 'Profesores', icon: <SportsSoccerIcon />, url: '/teachers' },
-    { text: 'Settings', icon: <SettingsIcon />, url: '/settings' },
-  
+    { text: 'Todos', icon: <HomeIcon />, url: '/' },
+    {
+      text: 'Principal',
+      icon: <PrincipalIcon />,
+      submenu: [
+        { text: 'Alumnos', url: '/students', icon: <PeopleIcon /> },
+        { text: 'Asistencia', url: '/attendance', icon: <AsistenciaIcon /> },
+        { text: 'Profesores', icon: <ProfesoresIcon />, url: '/teachers' },
+      ],
+    },
+    {
+      text: 'Finanzas',
+      icon: <FinanzasIcon />,
+      submenu: [
+        { text: 'Movimientos', url: '/motions', icon: <MovimientosIcon /> },
+        { text: 'Informes', icon: <InformesIcon />, url: '/reports' },
+      ],
+    },
+    { text: 'Usuarios', icon: <UsuariosIcon />, url: '/user' },
+    { text: 'Notificaciones', icon: <NotificacionesIcon />, url: '/notifications' },
+    { text: 'Configuración', icon: <ConfiguracionIcon />, url: '/settings' },
   ];
+
+  const tabItems = navItems.filter(item => !item.submenu && !item.variant);
 
   return (
     <AppBar
@@ -74,162 +113,227 @@ const NavBar = ({ onNotificationClick }) => {
       elevation={3}
       sx={{
         backgroundColor: (theme) =>
-          themeMode === 'dark'
-            ? theme.palette.background.paper
-            : '#007F5F',
-        color: (theme) =>
-          themeMode === 'dark'
-            ? theme.palette.text.primary
-            : 'white',
+          themeMode === 'dark' ? theme.palette.background.paper : '#007F5F',
+        color: (theme) => (themeMode === 'dark' ? theme.palette.text.primary : 'white'),
       }}
     >
       <Toolbar
         sx={{
           display: 'flex',
           justifyContent: 'space-between',
-          px: { xs: 1, sm: 2 },
+          alignItems: 'center',
+          flexWrap: 'wrap',
+          px: { xs: 1, sm: 2, md: 3 },
         }}
       >
-        {/* Icono para abrir menú en mobile */}
-        <IconButton
-          edge="start"
-          aria-label="menu"
-          onClick={handleMobileMenuOpen}
-          sx={{
-            display: { xs: 'flex', md: 'none' },
-            color: 'inherit',
-          }}
-        >
-          <MenuIcon />
-        </IconButton>
-
-        {/* Logo */}
-        <Typography
-          variant="h6"
-          component="div"
-          sx={{
-            fontWeight: 'bold',
-            color: 'inherit',
-            textAlign: 'center',
-            flexGrow: { xs: 1, md: 0 },
-            display: 'block',
-          }}
-        >
-          Golazo
-        </Typography>
-
-        {/* Navegación desktop */}
-        {userData &&
-          <Box
-            className="mi-clase-personalizada"
-            sx={{}}
+        {/* IZQUIERDA: Nombre de la página + saludo */}
+        <Box sx={{ display: 'flex', alignItems: 'center', flex: 1 }}>
+          <Typography
+            variant="h5"
+            sx={{ fontWeight: 'bold', color: 'inherit', mr: 2 }}
           >
-            <List
-              sx={{
-                display: 'flex',
-                padding: 0,
-                '& .MuiListItem-root': {
-                  width: 'auto',
-                  padding: 0,
-                },
-                '& .MuiListItemButton-root': {
+            Golazo
+          </Typography>
+          <Typography
+            variant="h6"
+            sx={{
+              fontWeight: 'bold',
+              color: 'inherit',
+              display: { xs: 'none', md: 'flex' },
+            }}
+          >
+            ¡Hola, {userData?.name || 'Usuario'}!
+          </Typography>
+          {isMobile && (
+            <IconButton
+              edge="start"
+              aria-label="menu"
+              onClick={handleMobileMenuOpen}
+              sx={{ color: 'inherit', ml: 1 }}
+            >
+              <MenuIcon />
+            </IconButton>
+          )}
+        </Box>
 
-                  color: 'inherit',
-                },
-                '& .Mui-selected': {
-                  backgroundColor: 'rgba(255, 255, 255, 0.16)',
-                },
-                '& .Mui-selected:hover': {
-                  backgroundColor: 'rgba(255, 255, 255, 0.24)',
+        {/* CENTRO: Íconos / Tabs / Submenús */}
+        {!isMobile && userData && !isHome && (
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              flex: 2,
+              flexWrap: 'wrap',
+              gap: 1.5,
+            }}
+          >
+            <Tabs
+              value={tabItems.findIndex(item => location.pathname === item.url)}
+              onChange={(_, newValue) => {
+                const item = tabItems[newValue];
+                if (item) navigate(item.url);
+              }}
+              textColor="inherit"
+              indicatorColor="primary"
+              sx={{
+                '& .MuiTabs-flexContainer': {
+                  justifyContent: 'center',
+                  gap: 1,
                 },
               }}
             >
-              {navItems.map((item, index) => (
-                <ListItem key={index} disablePadding>
-                  <ListItemButton
-                    selected={location.pathname === item.url}
-                    onClick={() => navigate(item.url)}
-                  >
-                    <ListItemIcon sx={{ color: 'inherit', minWidth: 36 }}>
-                      {item.icon}
-                    </ListItemIcon>
-                    <ListItemText
-                      primary={item.text}
-                      primaryTypographyProps={{
-                        fontWeight: location.pathname === item.url ? 'medium' : 'normal',
-                        whiteSpace: 'nowrap',
-                      }}
-                    />
-                  </ListItemButton>
-                </ListItem>
+              {tabItems.map((item) => (
+                <Tab
+                  key={item.text}
+                  label={item.text}
+                  icon={item.icon}
+                  iconPosition="start"
+                  sx={{
+                    minWidth: 'auto',
+                    px: 1,
+                    fontSize: { xs: '0.7rem', sm: '0.8rem', md: '0.875rem' },
+                    '&:hover': { color: '#90caf9' },
+                  }}
+                />
               ))}
-            </List>
-            {/* Botón cerrar sesión (solo desktop) */}
+            </Tabs>
+
+            {navItems.map((item) =>
+              item.submenu ? (
+                <Button
+                  key={item.text}
+                  onClick={(e) => handleSubmenuOpen(e, item.submenu, item.url)}
+                  sx={{
+                    color: 'inherit',
+                    textTransform: 'none',
+                    px: 1,
+                    fontSize: { xs: '0.7rem', sm: '0.8rem', md: '0.875rem' },
+                    '&:hover': { color: '#90caf9' },
+                  }}
+                >
+                  {item.icon}
+                  <Box component="span" sx={{ ml: 0.5, display: { xs: 'none', sm: 'inline' } }}>
+                    {item.text}
+                  </Box>
+                  <ArrowDropDownIcon />
+                </Button>
+              ) : null
+            )}
+          </Box>
+        )}
+
+        {/* DERECHA: Botón cerrar sesión */}
+        {!isMobile && userData && (
+          <Box sx={{ display: 'flex', justifyContent: 'flex-end', flex: 1 }}>
             <Button
-              color="inherit"
-              variant="outlined"
-              sx={{ ml: 2, display: { xs: 'none', md: 'inline-flex' } }}
-              startIcon={<LogoutIcon />}
+              variant="contained"
+              sx={{
+                backgroundColor: '#007F5F',
+                color: 'white',
+                '&:hover': { backgroundColor: '#006647' },
+                px: 1,
+                fontSize: { xs: '0.7rem', sm: '0.8rem', md: '0.875rem' },
+              }}
               onClick={handleLogout}
             >
-              Cerrar Sesión
+              <LogoutIcon />
+              <Box component="span" sx={{ ml: 0.5, display: { xs: 'none', sm: 'inline' } }}>
+                Cerrar Sesión
+              </Box>
             </Button>
           </Box>
-        }
+        )}
       </Toolbar>
 
-      {/* Menú móvil */}
-      {userData &&
-        <Menu
-          anchorEl={mobileMenuAnchorEl}
-          open={isMobileMenuOpen}
-          onClose={handleMobileMenuClose}
-          PaperProps={{
-            sx: {
-              width: '100%',
-              maxWidth: '100%',
-            },
+
+      {/* SUBMENÚ */}
+      <Menu
+        anchorEl={submenuAnchorEl}
+        open={isSubmenuOpen}
+        onClose={handleSubmenuClose}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+        transformOrigin={{ vertical: 'top', horizontal: 'left' }}
+        PaperProps={{ sx: { minWidth: 200, boxShadow: theme.shadows[3] } }}
+      >
+        {currentSubmenu?.url && (
+          <MenuItem onClick={() => handleNavigate(currentSubmenu.url)}>
+            <ListItemIcon>
+              <FinanzasIcon />
+            </ListItemIcon>
+          </MenuItem>
+        )}
+        {currentSubmenu?.url && <Divider />}
+        {currentSubmenu?.items?.map((subItem) => (
+          <MenuItem
+            key={subItem.text}
+            selected={location.pathname === subItem.url}
+            onClick={() => handleNavigate(subItem.url)}
+          >
+            <ListItemIcon>{subItem.icon}</ListItemIcon>
+            <ListItemText>{subItem.text}</ListItemText>
+          </MenuItem>
+        ))}
+      </Menu>
+
+      {/* MENÚ MOBILE */}
+      <Menu
+        anchorEl={mobileMenuAnchorEl}
+        open={isMobileMenuOpen}
+        onClose={handleMobileMenuClose}
+        PaperProps={{
+          sx: {
+            width: '100%',
+            maxWidth: '100%',
+            maxHeight: '80vh',
+            backgroundColor: themeMode === 'dark' ? theme.palette.background.paper : '#007F5F',
+            color: 'white',
+          },
+        }}
+        sx={{ display: { xs: 'block', md: 'none' } }}
+      >
+        <Box sx={{ display: 'flex', alignItems: 'center', p: 2 }}>
+          <Typography variant="h6" sx={{ flexGrow: 1 }}>
+            ¡Hola, {userData?.name || 'Usuario'}!
+          </Typography>
+        </Box>
+
+        <Divider sx={{ backgroundColor: 'rgba(255, 255, 255, 0.3)' }} />
+
+        {navItems.map((item) => (
+          <div key={item.text}>
+            {item.submenu ? (
+              <MenuItem onClick={(e) => handleSubmenuOpen(e, item.submenu, item.url)}>
+                <ListItemIcon sx={{ color: 'inherit' }}>{item.icon}</ListItemIcon>
+                <ListItemText>{item.text}</ListItemText>
+                <ArrowDropDownIcon />
+              </MenuItem>
+            ) : (
+              <MenuItem
+                selected={location.pathname === item.url}
+                onClick={() => handleNavigate(item.url)}
+              >
+                <ListItemIcon sx={{ color: 'inherit' }}>{item.icon}</ListItemIcon>
+                <ListItemText>{item.text}</ListItemText>
+              </MenuItem>
+            )}
+          </div>
+        ))}
+
+        <Divider sx={{ backgroundColor: 'rgba(255, 255, 255, 0.3)' }} />
+
+        <MenuItem
+          onClick={handleLogout}
+          sx={{
+            backgroundColor: '#007F5F',
+            color: 'white',
+            '&:hover': { backgroundColor: '#006647' },
           }}
-          sx={{ display: { xs: 'block', md: 'none' } }}
         >
-          {navItems.map((item, index) => (
-            <MenuItem
-              key={index}
-              selected={location.pathname === item.url}
-              onClick={() => {
-                navigate(item.url);
-                handleMobileMenuClose();
-              }}
-            >
-              <ListItemIcon>{item.icon}</ListItemIcon>
-              <ListItemText primary={item.text} />
-            </MenuItem>
-          ))}
-          <Divider />
-          <MenuItem
-            onClick={() => {
-              handleMobileMenuClose();
-              handleLogout();
-            }}
-          >
-            <ListItemIcon>
-              <LogoutIcon />
-            </ListItemIcon>
-            <ListItemText primary="Cerrar Sesión" />
-          </MenuItem>
-          <MenuItem
-            onClick={() => {
-              handleMobileMenuClose();
-              onNotificationClick && onNotificationClick();
-            }}
-          >
-            <ListItemIcon>
-              <PageNotification />
-            </ListItemIcon>
-            <ListItemText primary="Notificaciones" />
-          </MenuItem>
-        </Menu>
-      }
+          <ListItemIcon sx={{ color: 'inherit' }}><LogoutIcon /></ListItemIcon>
+          <ListItemText>Cerrar Sesión</ListItemText>
+        </MenuItem>
+      </Menu>
     </AppBar>
   );
 };

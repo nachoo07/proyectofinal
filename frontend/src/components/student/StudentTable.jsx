@@ -80,9 +80,9 @@ const StudentTable = () => {
   const currentStudents = filteredStudents.slice(indexOfFirstStudent, indexOfLastStudent);
 
   // Cambiar página cuando cambie filtro o búsqueda
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [searchTerm, statusFilter]);
+  // useEffect(() => {
+  //   setCurrentPage(1);
+  // }, [searchTerm, statusFilter]);
 
   const handleOpenDeleteDialog = (studentId) => {
     setStudentToDelete(studentId);
