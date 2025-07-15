@@ -65,70 +65,123 @@ const NewStudent = () => {
   return (
     <Box
       sx={{
-        mt: 8,
-        backgroundColor: '#E6F9EC',
+        background: 'linear-gradient(135deg, #e8f5e9 0%, #b2dfdb 100%)',
         minHeight: '100vh',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
+        justifyContent: 'center',
+        p: { xs: 1, md: 2, lg: 4 },
       }}
     >
       <Paper
-        elevation={3}
+        elevation={8}
         sx={{
-          maxWidth: 500,
+          maxWidth: 700,
           width: '100%',
-          borderRadius: '12px',
-          backgroundColor: '#ffffff',
+          borderRadius: '40px',
+          background: 'rgba(255,255,255,0.7)',
+          boxShadow: '0 12px 40px rgba(67, 233, 123, 0.18)',
+          backdropFilter: 'blur(8px)',
+          p: { xs: 2, md: 5 },
+          mx: 'auto',
+          transition: 'box-shadow 0.3s',
+          '&:hover': {
+            boxShadow: '0 16px 48px rgba(67, 233, 123, 0.25)',
+          },
         }}
       >
-        <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-          <SchoolIcon sx={{ fontSize: 30, color: '#00335c', mr: 1 }} />
-          <Typography variant="h5" sx={{ fontWeight: 700, color: '#00335c' }}>
-            {id ? 'Editar Estudiante' : 'Crear Nuevo Estudiante'}
+        <Box sx={{ display: 'flex', alignItems: 'center', mb: 4, justifyContent: 'center' }}>
+          <SchoolIcon sx={{ fontSize: 48, color: '#43e97b', mr: 2 }} />
+          <Typography variant="h3" sx={{ fontWeight: 900, color: '#00335c', letterSpacing: '0.07em' }}>
+            {id ? 'Editar Estudiante' : 'Nuevo Estudiante'}
           </Typography>
         </Box>
 
-        <form onSubmit={handleSubmit}>
-          <TextField
-            label="Apellido"
-            name="lastname"
-            value={student.lastname}
-            onChange={handleChange}
-            fullWidth
-            required
-            sx={{ mb: 3 }}
-          />
-          <TextField
-            label="Nombre"
-            name="name"
-            value={student.name}
-            onChange={handleChange}
-            fullWidth
-            required
-            sx={{ mb: 3 }}
-          />
-          <TextField
-            label="DNI"
-            name="dni"
-            value={student.dni}
-            onChange={handleChange}
-            fullWidth
-            required
-            sx={{ mb: 3 }}
-          />
+        <form onSubmit={handleSubmit} style={{ width: '100%' }}>
+          <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: 3, mb: 3 }}>
+            <TextField
+              label="Apellido"
+              name="lastname"
+              value={student.lastname}
+              onChange={handleChange}
+              required
+              sx={{
+                flex: 1,
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: '20px',
+                  background: 'rgba(232,245,233,0.7)',
+                  fontSize: '1.2rem',
+                  boxShadow: '0 2px 8px rgba(67,233,123,0.08)',
+                  transition: 'box-shadow 0.2s',
+                  '&:hover': { boxShadow: '0 4px 16px rgba(67,233,123,0.15)' },
+                },
+                '& .MuiInputLabel-root': { color: '#43e97b', fontWeight: 700 },
+                '& .MuiInputLabel-root.Mui-focused': { color: '#00335c' },
+              }}
+            />
+            <TextField
+              label="Nombre"
+              name="name"
+              value={student.name}
+              onChange={handleChange}
+              required
+              sx={{
+                flex: 1,
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: '20px',
+                  background: 'rgba(232,245,233,0.7)',
+                  fontSize: '1.2rem',
+                  boxShadow: '0 2px 8px rgba(67,233,123,0.08)',
+                  transition: 'box-shadow 0.2s',
+                  '&:hover': { boxShadow: '0 4px 16px rgba(67,233,123,0.15)' },
+                },
+                '& .MuiInputLabel-root': { color: '#43e97b', fontWeight: 700 },
+                '& .MuiInputLabel-root.Mui-focused': { color: '#00335c' },
+              }}
+            />
+            <TextField
+              label="DNI"
+              name="dni"
+              value={student.dni}
+              onChange={handleChange}
+              required
+              sx={{
+                flex: 1,
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: '20px',
+                  background: 'rgba(232,245,233,0.7)',
+                  fontSize: '1.2rem',
+                  boxShadow: '0 2px 8px rgba(67,233,123,0.08)',
+                  transition: 'box-shadow 0.2s',
+                  '&:hover': { boxShadow: '0 4px 16px rgba(67,233,123,0.15)' },
+                },
+                '& .MuiInputLabel-root': { color: '#43e97b', fontWeight: 700 },
+                '& .MuiInputLabel-root.Mui-focused': { color: '#00335c' },
+              }}
+            />
+          </Box>
 
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 3 }}>
+          <Box sx={{ display: 'flex', justifyContent: 'center', gap: 3, mt: 5 }}>
             <Button
               variant="outlined"
               startIcon={<CancelIcon />}
               onClick={() => navigate('/students')}
               sx={{
                 color: '#00335c',
-                borderColor: '#00335c',
+                borderColor: '#43e97b',
+                borderRadius: '32px',
+                fontWeight: 800,
+                fontSize: { xs: '1.2rem', md: '1.3rem' },
+                px: { xs: 4, md: 6 },
+                py: { xs: 2, md: 2.5 },
+                minWidth: { xs: '150px', md: '200px' },
+                boxShadow: '0 2px 8px rgba(67,233,123,0.10)',
+                transition: 'box-shadow 0.2s',
                 '&:hover': {
-                  backgroundColor: 'rgba(142, 234, 177, 0.1)',
-                  borderColor: '#8eeab1',
+                  backgroundColor: 'rgba(67, 233, 123, 0.12)',
+                  borderColor: '#00335c',
+                  boxShadow: '0 4px 16px rgba(67,233,123,0.18)',
                 },
               }}
             >
@@ -139,10 +192,19 @@ const NewStudent = () => {
               variant="contained"
               startIcon={<SaveIcon />}
               sx={{
-                backgroundColor: '#8eeab1',
+                background: 'linear-gradient(90deg, #43e97b 0%, #38f9d7 100%)',
                 color: '#00335c',
+                borderRadius: '32px',
+                fontWeight: 800,
+                fontSize: { xs: '1.2rem', md: '1.3rem' },
+                px: { xs: 4, md: 6 },
+                py: { xs: 2, md: 2.5 },
+                minWidth: { xs: '150px', md: '200px' },
+                boxShadow: '0 2px 8px rgba(67,233,123,0.10)',
+                transition: 'box-shadow 0.2s',
                 '&:hover': {
-                  backgroundColor: '#007e32',
+                  background: 'linear-gradient(90deg, #38f9d7 0%, #43e97b 100%)',
+                  boxShadow: '0 4px 16px rgba(67,233,123,0.18)',
                 },
               }}
             >
@@ -152,12 +214,25 @@ const NewStudent = () => {
         </form>
       </Paper>
 
-      {/* Botón volver afuera */}
-      <Box sx={{ mt: 4 }}>
+      <Box sx={{ mt: 5, display: 'flex', justifyContent: 'center', width: '100%' }}>
         <Button
           variant="outlined"
           color="success"
           onClick={() => navigate(-1)}
+          sx={{
+            borderRadius: '32px',
+            fontWeight: 800,
+            fontSize: { xs: '1.2rem', md: '1.3rem' },
+            px: { xs: 4, md: 6 },
+            py: { xs: 2, md: 2.5 },
+            minWidth: { xs: '150px', md: '200px' },
+            boxShadow: '0 2px 8px rgba(67,233,123,0.10)',
+            transition: 'box-shadow 0.2s',
+            '&:hover': {
+              backgroundColor: 'rgba(67, 233, 123, 0.12)',
+              boxShadow: '0 4px 16px rgba(67,233,123,0.18)',
+            },
+          }}
         >
           Volver
         </Button>

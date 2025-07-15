@@ -121,9 +121,14 @@ const StudentTable = () => {
   return (
     <Box
       sx={{
-        mt: 8, // Espacio para el NavBar fijo
-        backgroundColor: '#E6F9EC',
+        background: 'linear-gradient(135deg, #e8f5e9 0%, #b2dfdb 100%)',
         minHeight: '100vh',
+        p: { xs: 1, md: 2, lg: 2 },
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'flex-start',
+        boxSizing: 'border-box',
       }}
       className="main-container"
     >
@@ -132,25 +137,26 @@ const StudentTable = () => {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          mb: 6,
+          width: '100%',
+          mb: 4,
           p: 2,
-          background: 'linear-gradient(90deg, #8eeab1, #007e32)',
-          borderRadius: '8px',
-          boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-          transition: 'transform 0.3s ease-in-out',
+          background: 'linear-gradient(90deg, #43e97b 0%, #38f9d7 100%)',
+          borderRadius: '16px',
+          boxShadow: '0 6px 24px rgba(67, 233, 123, 0.15)',
+          transition: 'transform 0.3s',
           '&:hover': {
-            transform: 'scale(1.02)',
+            transform: 'scale(1.01)',
           },
         }}
       >
-        <SchoolIcon sx={{ fontSize: 40, color: '#00335c', mr: 2 }} />
+        <SchoolIcon sx={{ fontSize: 48, color: '#00335c', mr: 2 }} />
         <Typography
-          variant="h4"
+          variant="h3"
           sx={{
-            fontWeight: 700,
+            fontWeight: 800,
             color: '#00335c',
-            textShadow: '1px 1px 2px rgba(0, 0, 0, 0.2)',
-            letterSpacing: '0.05rem',
+            textShadow: '2px 2px 6px rgba(56, 249, 215, 0.15)',
+            letterSpacing: '0.08rem',
           }}
         >
           Gestión de Alumnos
@@ -160,65 +166,67 @@ const StudentTable = () => {
       <Box
         sx={{
           display: 'flex',
-          justifyContent: 'space-between',
+          flexDirection: { xs: 'column', md: 'row' },
+          justifyContent: 'center',
           alignItems: 'center',
-          mb: 4,
+          mb: { xs: 2, md: 4 },
           flexWrap: 'wrap',
-          gap: 2
-          
+          gap: 2,
+          width: '100%',
+          maxWidth: '1200px',
         }}
       >
-        {/* Buscador + filtro estado */}
         <Box
           sx={{
             display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
+            flexDirection: { xs: 'column', sm: 'row' },
             gap: 2,
-            mb: 4,
-            flexWrap: 'wrap',
+            flexGrow: 1,
+            maxWidth: '900px',
+            minWidth: '260px',
+            background: '#fff',
+            borderRadius: '12px',
+            boxShadow: '0 2px 8px rgba(56, 249, 215, 0.08)',
+            p: 2,
+            alignItems: 'center',
+            justifyContent: 'center',
           }}
         >
-          <Box sx={{ display: 'flex', gap: 2, flexGrow: 1, maxWidth: '900px',minWidth:'600px' }}>
-            <TextField
-              label="Buscar por Nombre, Apellido o DNI"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              fullWidth
-              sx={{
-                '& .MuiOutlinedInput-root': {
-                  '& fieldset': { borderColor: '#00335c' },
-                  '&:hover fieldset': { borderColor: '#8eeab1' },
-                  '&.Mui-focused fieldset': { borderColor: '#8eeab1' },
-                },
-                '& .MuiInputLabel-root': { color: '#00335c' },
-                '& .MuiInputLabel-root.Mui-focused': { color: '#8eeab1' },
-              }}
-            />
-
-            <TextField
-              select
-              label="Estado"
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              SelectProps={{ native: true }}
-              sx={{ minWidth: 120 }}
-            >
-              <option value="Todos">Todos</option>
-              <option value="Activo">Activo</option>
-              <option value="Inactivo">Inactivo</option>
-            </TextField>
-          </Box>
-
-          {/* Botones */}
-          <Box sx={{ display: 'flex', gap: 1 }}>
-            <Button component={Link} to="/students/new" variant="contained" color="success">
-              Crear Nuevo Estudiante
-            </Button>
-            <Button variant="outlined" color="success" onClick={() => navigate(-1)}>
-              Volver
-            </Button>
-          </Box>
+          <TextField
+            label="Buscar por Nombre, Apellido o DNI"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            fullWidth
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                '& fieldset': { borderColor: '#38f9d7' },
+                '&:hover fieldset': { borderColor: '#43e97b' },
+                '&.Mui-focused fieldset': { borderColor: '#43e97b' },
+              },
+              '& .MuiInputLabel-root': { color: '#00335c' },
+              '& .MuiInputLabel-root.Mui-focused': { color: '#43e97b' },
+            }}
+          />
+          <TextField
+            select
+            label="Estado"
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+            SelectProps={{ native: true }}
+            sx={{ minWidth: 120 }}
+          >
+            <option value="Todos">Todos</option>
+            <option value="Activo">Activo</option>
+            <option value="Inactivo">Inactivo</option>
+          </TextField>
+        </Box>
+        <Box sx={{ display: 'flex', gap: 2 }}>
+          <Button component={Link} to="/students/new" variant="contained" color="success" sx={{ borderRadius: '32px', fontWeight: 700, fontSize: { xs: '1.1rem', md: '1.3rem' }, px: { xs: 3, md: 5 }, py: { xs: 1.5, md: 2 }, minWidth: { xs: '180px', md: '220px' } }}>
+            Crear Nuevo
+          </Button>
+          <Button variant="outlined" color="success" onClick={() => navigate(-1)} sx={{ borderRadius: '32px', fontWeight: 700, fontSize: { xs: '1.1rem', md: '1.3rem' }, px: { xs: 3, md: 5 }, py: { xs: 1.5, md: 2 }, minWidth: { xs: '180px', md: '220px' } }}>
+            Volver
+          </Button>
         </Box>
       </Box>
 
@@ -226,24 +234,28 @@ const StudentTable = () => {
         component={Paper}
         sx={{
           mb: 4,
-          borderRadius: '8px',
-          boxShadow: 3,
+          borderRadius: '16px',
+          boxShadow: '0 6px 24px rgba(67, 233, 123, 0.10)',
+          overflow: 'auto',
+          width: '100%',
+          maxWidth: '1200px',
+          mx: 'auto',
         }}
       >
-        <Table>
-          <TableHead className="table-head">
-            <TableRow>
-              <TableCell>Nombre</TableCell>
-              <TableCell>Apellido</TableCell>
-              <TableCell>DNI</TableCell>
-              <TableCell>Estado</TableCell>
-              <TableCell>Acciones</TableCell>
+        <Table sx={{ minWidth: 650 }}>
+          <TableHead>
+            <TableRow sx={{ background: 'linear-gradient(90deg, #43e97b 0%, #38f9d7 100%)' }}>
+              <TableCell sx={{ color: '#00335c', fontWeight: 700, fontSize: { xs: '1rem', md: '1.1rem' }, borderTopLeftRadius: '16px', textAlign: 'center' }}>Nombre</TableCell>
+              <TableCell sx={{ color: '#00335c', fontWeight: 700, fontSize: { xs: '1rem', md: '1.1rem' }, textAlign: 'center' }}>Apellido</TableCell>
+              <TableCell sx={{ color: '#00335c', fontWeight: 700, fontSize: { xs: '1rem', md: '1.1rem' }, textAlign: 'center' }}>DNI</TableCell>
+              <TableCell sx={{ color: '#00335c', fontWeight: 700, fontSize: { xs: '1rem', md: '1.1rem' }, textAlign: 'center' }}>Estado</TableCell>
+              <TableCell sx={{ color: '#00335c', fontWeight: 700, fontSize: { xs: '1rem', md: '1.1rem' }, borderTopRightRadius: '16px', textAlign: 'center' }}>Acciones</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {currentStudents.length === 0 ? (
-              <TableRow sx={{ '&:hover': { backgroundColor: '#37fa82' } }}>
-                <TableCell colSpan={5} className="table-cell" sx={{ textAlign: 'center' }}>
+              <TableRow>
+                <TableCell colSpan={5} sx={{ textAlign: 'center', color: '#00335c', fontWeight: 600, fontSize: { xs: '1rem', md: '1.1rem' }, py: 4 }}>
                   No se encontraron estudiantes.
                 </TableCell>
               </TableRow>
@@ -251,65 +263,66 @@ const StudentTable = () => {
               currentStudents.map((student, index) => (
                 <TableRow
                   key={student.id}
-                  className="table-body-row"
                   sx={{
-                    '&:hover': { backgroundColor: '#85E655' },
-                    backgroundColor: index % 2 === 0 ? '#f5f5f5' : '#ffffff',
-                    cursor: 'pointer',
+                    background: index % 2 === 0 ? '#f8fafc' : '#e0f7fa',
+                    transition: 'background 0.2s',
+                    '&:hover': { background: '#b2dfdb' },
                   }}
                 >
-                  <TableCell className="table-cell">{student.name}</TableCell>
-                  <TableCell className="table-cell">{student.lastName}</TableCell>
-                  <TableCell className="table-cell">{student.dni}</TableCell>
-                  <TableCell className="table-cell">{student.state}</TableCell>
-                  <TableCell className="table-cell">
-                    <Tooltip title="Ver estudiante">
-                      <Button
-                        component={Link}
-                        to={`/students/${student.id}`}
-                        variant="outlined"
-                        color="primary"
-                        size="small"
-                        sx={{ minWidth: 'auto', mr: 1, cursor: 'pointer' }}
-                      >
-                        Ver
-                      </Button>
-                    </Tooltip>
-                    <Tooltip title="Editar estudiante">
-                      <Button
-                        component={Link}
-                        to={`/students/${student.id}?edit=true`}
-                        variant="outlined"
-                        color="primary"
-                        size="small"
-                        sx={{ minWidth: 'auto', mr: 1, cursor: 'pointer' }}
-                      >
-                        <EditIcon />
-                      </Button>
-                    </Tooltip>
-                    <Tooltip title="Ver cuotas">
-                      <Button
-                        component={Link}
-                        to={`/shares/student/${student.id}`}
-                        variant="outlined"
-                        color="primary"
-                        size="small"
-                        sx={{ minWidth: 'auto', mr: 1, cursor: 'pointer' }}
-                      >
-                        Cuotas
-                      </Button>
-                    </Tooltip>
-                    <Tooltip title="Eliminar estudiante">
-                      <Button
-                        variant="outlined"
-                        color="error"
-                        size="small"
-                        onClick={() => handleOpenDeleteDialog(student.id)}
-                        sx={{ minWidth: 'auto', cursor: 'pointer' }}
-                      >
-                        <DeleteIcon />
-                      </Button>
-                    </Tooltip>
+                  <TableCell sx={{ color: '#00335c', fontWeight: 500, textAlign: 'center' }}>{student.name}</TableCell>
+                  <TableCell sx={{ color: '#00335c', fontWeight: 500, textAlign: 'center' }}>{student.lastName}</TableCell>
+                  <TableCell sx={{ color: '#00335c', fontWeight: 500, textAlign: 'center' }}>{student.dni}</TableCell>
+                  <TableCell sx={{ color: student.state === 'Activo' ? '#388e3c' : '#d32f2f', fontWeight: 700, textAlign: 'center' }}>{student.state}</TableCell>
+                  <TableCell sx={{ textAlign: 'center' }}>
+                    <Box sx={{ display: 'flex', gap: 1, justifyContent: 'center' }}>
+                      <Tooltip title="Ver estudiante">
+                        <Button
+                          component={Link}
+                          to={`/students/${student.id}`}
+                          variant="contained"
+                          color="primary"
+                          size="small"
+                          sx={{ borderRadius: '50%', minWidth: 40, height: 40, p: 0 }}
+                        >
+                          <SchoolIcon />
+                        </Button>
+                      </Tooltip>
+                      <Tooltip title="Editar estudiante">
+                        <Button
+                          component={Link}
+                          to={`/students/${student.id}?edit=true`}
+                          variant="contained"
+                          color="info"
+                          size="small"
+                          sx={{ borderRadius: '50%', minWidth: 40, height: 40, p: 0 }}
+                        >
+                          <EditIcon />
+                        </Button>
+                      </Tooltip>
+                      <Tooltip title="Ver cuotas">
+                        <Button
+                          component={Link}
+                          to={`/shares/student/${student.id}`}
+                          variant="contained"
+                          color="success"
+                          size="small"
+                          sx={{ borderRadius: '50%', minWidth: 40, height: 40, p: 0 }}
+                        >
+                          $ {/* Puedes cambiar por un ícono de dinero si lo prefieres */}
+                        </Button>
+                      </Tooltip>
+                      <Tooltip title="Eliminar estudiante">
+                        <Button
+                          variant="contained"
+                          color="error"
+                          size="small"
+                          onClick={() => handleOpenDeleteDialog(student.id)}
+                          sx={{ borderRadius: '50%', minWidth: 40, height: 40, p: 0 }}
+                        >
+                          <DeleteIcon />
+                        </Button>
+                      </Tooltip>
+                    </Box>
                   </TableCell>
                 </TableRow>
               ))
@@ -324,7 +337,7 @@ const StudentTable = () => {
           display: 'flex',
           justifyContent: 'center',
           gap: 1,
-          mb: 6,
+          mb: 0,
           flexWrap: 'wrap',
         }}
       >
