@@ -27,6 +27,15 @@ import EditIcon from '@mui/icons-material/Edit';
 import CancelIcon from '@mui/icons-material/Cancel';
 import './student.css';
 
+
+
+const capitalizeFirstLetter = (string) => {
+  if (!string) return '';
+  return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
+};
+
+
+
 const StudentTable = () => {
   const { students, deleteStudent } = useContext(StudentContext);
   const [searchTerm, setSearchTerm] = useState('');
@@ -262,7 +271,8 @@ const StudentTable = () => {
                   <TableCell className="table-cell">{student.name}</TableCell>
                   <TableCell className="table-cell">{student.lastName}</TableCell>
                   <TableCell className="table-cell">{student.dni}</TableCell>
-                  <TableCell className="table-cell">{student.state}</TableCell>
+                  <TableCell className="table-cell">{capitalizeFirstLetter(student.state)}</TableCell>
+
                   <TableCell className="table-cell">
                     <Tooltip title="Ver estudiante">
                       <Button
