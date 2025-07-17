@@ -19,6 +19,7 @@ import {
 } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';
 import { StudentContext } from '../../context/student/StudentContext';
+import { LoginContext } from '../../context/login/LoginContext';
 import { toast } from 'react-toastify';
 import SchoolIcon from '@mui/icons-material/School';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -28,8 +29,12 @@ import './student.css';
 
 const StudentTable = () => {
   const { students, deleteStudent } = useContext(StudentContext);
+  const { auth } = useContext(LoginContext);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('Todos');
+
+  // Verificar si el usuario es admin
+  const isAdmin = auth === 'admin';
 
   // Estado para paginación
   const [currentPage, setCurrentPage] = useState(1);
@@ -80,9 +85,9 @@ const StudentTable = () => {
   const currentStudents = filteredStudents.slice(indexOfFirstStudent, indexOfLastStudent);
 
   // Cambiar página cuando cambie filtro o búsqueda
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [searchTerm, statusFilter]);
+  // useEffect(() => {
+  //   setCurrentPage(1);
+  // }, [searchTerm, statusFilter]);
 
   const handleOpenDeleteDialog = (studentId) => {
     setStudentToDelete(studentId);
@@ -221,9 +226,11 @@ const StudentTable = () => {
           </TextField>
         </Box>
         <Box sx={{ display: 'flex', gap: 2 }}>
-          <Button component={Link} to="/students/new" variant="contained" color="success" sx={{ borderRadius: '32px', fontWeight: 700, fontSize: { xs: '1.1rem', md: '1.3rem' }, px: { xs: 3, md: 5 }, py: { xs: 1.5, md: 2 }, minWidth: { xs: '180px', md: '220px' } }}>
-            Crear Nuevo
-          </Button>
+          {isAdmin && (
+            <Button component={Link} to="/students/new" variant="contained" color="success" sx={{ borderRadius: '32px', fontWeight: 700, fontSize: { xs: '1.1rem', md: '1.3rem' }, px: { xs: 3, md: 5 }, py: { xs: 1.5, md: 2 }, minWidth: { xs: '180px', md: '220px' } }}>
+              Crear Nuevo
+            </Button>
+          )}
           <Button variant="outlined" color="success" onClick={() => navigate(-1)} sx={{ borderRadius: '32px', fontWeight: 700, fontSize: { xs: '1.1rem', md: '1.3rem' }, px: { xs: 3, md: 5 }, py: { xs: 1.5, md: 2 }, minWidth: { xs: '180px', md: '220px' } }}>
             Volver
           </Button>
@@ -287,41 +294,45 @@ const StudentTable = () => {
                           <SchoolIcon />
                         </Button>
                       </Tooltip>
-                      <Tooltip title="Editar estudiante">
-                        <Button
-                          component={Link}
-                          to={`/students/${student.id}?edit=true`}
-                          variant="contained"
-                          color="info"
-                          size="small"
-                          sx={{ borderRadius: '50%', minWidth: 40, height: 40, p: 0 }}
-                        >
-                          <EditIcon />
-                        </Button>
-                      </Tooltip>
-                      <Tooltip title="Ver cuotas">
-                        <Button
-                          component={Link}
-                          to={`/shares/student/${student.id}`}
-                          variant="contained"
-                          color="success"
-                          size="small"
-                          sx={{ borderRadius: '50%', minWidth: 40, height: 40, p: 0 }}
-                        >
-                          $ {/* Puedes cambiar por un ícono de dinero si lo prefieres */}
-                        </Button>
-                      </Tooltip>
-                      <Tooltip title="Eliminar estudiante">
-                        <Button
-                          variant="contained"
-                          color="error"
-                          size="small"
-                          onClick={() => handleOpenDeleteDialog(student.id)}
-                          sx={{ borderRadius: '50%', minWidth: 40, height: 40, p: 0 }}
-                        >
-                          <DeleteIcon />
-                        </Button>
-                      </Tooltip>
+                      {isAdmin && (
+                        <>
+                          <Tooltip title="Editar estudiante">
+                            <Button
+                              component={Link}
+                              to={`/students/${student.id}?edit=true`}
+                              variant="contained"
+                              color="info"
+                              size="small"
+                              sx={{ borderRadius: '50%', minWidth: 40, height: 40, p: 0 }}
+                            >
+                              <EditIcon />
+                            </Button>
+                          </Tooltip>
+                          <Tooltip title="Ver cuotas">
+                            <Button
+                              component={Link}
+                              to={`/shares/student/${student.id}`}
+                              variant="contained"
+                              color="success"
+                              size="small"
+                              sx={{ borderRadius: '50%', minWidth: 40, height: 40, p: 0 }}
+                            >
+                              $ {/* Puedes cambiar por un ícono de dinero si lo prefieres */}
+                            </Button>
+                          </Tooltip>
+                          <Tooltip title="Eliminar estudiante">
+                            <Button
+                              variant="contained"
+                              color="error"
+                              size="small"
+                              onClick={() => handleOpenDeleteDialog(student.id)}
+                              sx={{ borderRadius: '50%', minWidth: 40, height: 40, p: 0 }}
+                            >
+                              <DeleteIcon />
+                            </Button>
+                          </Tooltip>
+                        </>
+                      )}
                     </Box>
                   </TableCell>
                 </TableRow>

@@ -25,6 +25,7 @@ export const LoginProvider = ({ children }) => {
 
       try {
         const response = await axios.get(`${API_URL}/protected`);
+        console.log('Auth check successful:', response.data);
         setAuth(response.data.user.role);
         setUserData({
           id: response.data.user.userId,
@@ -61,8 +62,6 @@ export const LoginProvider = ({ children }) => {
       });
 
       navigate(response.data.user.role === 'admin' ? '/' : '/homeuser', { replace: true });
-
-      navigate(response.data.user.role === 'admin' ? '/' : 'user', { replace: true });
 
       return response.data.user.role;
     } catch (error) {

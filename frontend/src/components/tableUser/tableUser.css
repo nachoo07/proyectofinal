@@ -1,119 +1,48 @@
-/* Título */
-.title {
-  font-size: 28px;
-  font-weight: bold;
-  color: #333;
-  margin-bottom: 20px;
-}
-
-/* Fila de búsqueda y botón */
-.search-row {
+.user-container {
+  background: linear-gradient(135deg, #e8f5e9 0%, #b2dfdb 100%);
+  min-height: 100vh;
+  padding: 1px 2px 2px;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 15px;
-  margin-bottom: 20px;
+  justify-content: flex-start;
+  box-sizing: border-box;
 }
 
-.search-input {
-  flex: 1;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 16px;
+.user-container .table-head {
+  background: linear-gradient(90deg, #8eeab1, #007e32);
+  color: #00335c;
+}
+.user-container .table-head th {
+  font-weight: 600;
+  color: #00335c;
+}
+.user-container .table-cell {
+  color: #00335c;
+}
+.user-container .table-body-row:hover {
+  background-color: #85E655 !important;
 }
 
-.search-input:focus {
-  outline: none;
-  border-color: #007bff;
-  box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+/* Sobrescribir las clases de Material-UI para el formulario */
+.user-management-form.MuiBox-root {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 24px !important;
 }
 
-.add-button {
-  padding: 10px 20px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  font-size: 16px;
-  cursor: pointer;
+/* Sobrescribir cualquier clase css-l9e2g3 específica */
+.css-l9e2g3 {
+  grid-template-columns: 1fr 1fr !important;
 }
 
-.add-button:hover {
-  background-color: #0056b3;
-}
-
-/* Contenedor de la tabla */
-.table-container {
-  background-color: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  overflow-x: auto;
-}
-
-/* Tabla */
-.user-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.user-table th,
-.user-table td {
-  padding: 12px;
-  text-align: left;
-  border-bottom: 1px solid #ddd;
-}
-
-.user-table th {
-  background-color: #f8f9fa;
-  font-size: 14px;
-  color: #555;
-  text-transform: uppercase;
-}
-
-.user-table td {
-  font-size: 14px;
-  color: #333;
-}
-
-/* Botones de acción */
-.action-button {
-  padding: 6px 12px;
-  border: none;
-  border-radius: 4px;
-  font-size: 14px;
-  cursor: pointer;
-  margin-right: 8px;
-}
-
-.edit-button {
-  background-color: #28a745;
-  color: white;
-}
-
-.edit-button:hover {
-  background-color: #218838;
-}
-
-.delete-button {
-  background-color: #dc3545;
-  color: white;
-}
-
-.delete-button:hover {
-  background-color: #c82333;
-}
-
-.state-button {
-  background-color: #ffc107;
-  color: black;
-}
-
-.state-button:hover {
-  background-color: #e0a800;
-}
-
-/* Mensaje de error */
-.error {
-  color: #dc3545;
-  margin-bottom: 10px;
+/* Para pantallas pequeñas */
+@media (max-width: 899px) {
+  .user-management-form.MuiBox-root {
+    grid-template-columns: 1fr !important;
+  }
+  
+  .css-l9e2g3 {
+    grid-template-columns: 1fr !important;
+  }
 }

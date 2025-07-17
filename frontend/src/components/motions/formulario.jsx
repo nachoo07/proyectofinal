@@ -1,5 +1,8 @@
 import {
   Box,
+  Card,
+  CardContent,
+  CardHeader,
   Grid,
   InputLabel,
   MenuItem,
@@ -8,6 +11,7 @@ import {
   Button,
   FormControl,
   Alert,
+  Stack,
 } from "@mui/material";
 import { useState } from "react";
 import PropTypes from "prop-types";
@@ -66,89 +70,89 @@ const Formulario = ({ formData, setFormData, handleSubmit, isEditing, handleCanc
   };
 
   return (
-    <Box component="form" onSubmit={submit} sx={{ mb: 4 }}>
-      {localError && (
-        <Alert severity="error" sx={{ mb: 2 }}>
-          {localError}
-        </Alert>
-      )}
-      <Grid container spacing={2}>
-        <Grid xs={12}>
-          <TextField
-            fullWidth
-            label="Descripción"
-            name="concept"
-            value={formData.concept}
-            onChange={handleInputChange}
-            variant="outlined"
-            required
-          />
-        </Grid>
-        <Grid xs={12} sm={6}>
-          <TextField
-            fullWidth
-            label="Monto"
-            name="amount"
-            type="number"
-            value={formData.amount}
-            onChange={handleInputChange}
-            variant="outlined"
-            required
-            inputProps={{ min: 0, step: "0.01" }}
-          />
-        </Grid>
-        <Grid xs={12} sm={6}>
-          <FormControl fullWidth>
-            <InputLabel>Método de Pago</InputLabel>
-            <Select
-              label="Método de Pago"
-              name="paymentMethod"
-              value={formData.paymentMethod}
-              onChange={handleInputChange}
-              required
-            >
-              <MenuItem value="">
-                <em>Seleccione un método</em>
-              </MenuItem>
-              <MenuItem value="efectivo">Efectivo</MenuItem>
-              <MenuItem value="transferencia">Transferencia</MenuItem>
-            </Select>
-          </FormControl>
-        </Grid>
-        <Grid xs={12} sm={6}>
-          <FormControl fullWidth>
-            <InputLabel>Tipo de Movimiento</InputLabel>
-            <Select
-              label="Tipo de Movimiento"
-              name="incomeType"
-              value={formData.incomeType}
-              onChange={handleInputChange}
-              required
-            >
-              <MenuItem value="">
-                <em>Seleccione un tipo</em>
-              </MenuItem>
-              <MenuItem value="ingreso">Ingreso</MenuItem>
-              <MenuItem value="egreso">Egreso</MenuItem>
-            </Select>
-          </FormControl>
-        </Grid>
-        <Grid xs={12}>
-          <Box sx={{ display: "flex", gap: 2 }}>
-            <Button type="submit" variant="contained" color="primary">
-              {isEditing ? "Actualizar" : "Agregar"}
-            </Button>
-            {isEditing && (
-              <Button variant="outlined" color="secondary" onClick={handleCancel}>
-                Cancelar
-              </Button>
+    <Card elevation={4} sx={{ maxWidth: 600, mx: "auto", mt: 4, borderRadius: 3 }}>
+      <CardHeader
+        title={isEditing ? "Editar Movimiento" : "Nuevo Movimiento"}
+        sx={{ backgroundColor: "#f5f5f5ff", textAlign: "center" }}
+      />
+      <CardContent >
+        <Box component="form" onSubmit={submit} >
+          <Stack spacing={2}>
+            {localError && (
+              <Alert severity="error">{localError}</Alert>
             )}
-          </Box>
-        </Grid>
-      </Grid>
-    </Box>
+
+            <TextField
+              fullWidth
+              label="Descripción"
+              name="concept"
+              value={formData.concept}
+              onChange={handleInputChange}
+              variant="outlined"
+              required
+            />
+
+            <TextField
+              fullWidth
+              label="Monto"
+              name="amount"
+              type="number"
+              value={formData.amount}
+              onChange={handleInputChange}
+              variant="outlined"
+              required
+              inputProps={{ min: 0, step: "0.01" }}
+            />
+
+            <FormControl fullWidth required>
+              <InputLabel>Método de Pago</InputLabel>
+              <Select
+                label="Método de Pago"
+                name="paymentMethod"
+                value={formData.paymentMethod}
+                onChange={handleInputChange}
+              >
+                <MenuItem value="">
+                  <em>Seleccione un método</em>
+                </MenuItem>
+                <MenuItem value="efectivo">Efectivo</MenuItem>
+                <MenuItem value="transferencia">Transferencia</MenuItem>
+              </Select>
+            </FormControl>
+
+            <FormControl fullWidth required>
+              <InputLabel>Tipo de Movimiento</InputLabel>
+              <Select
+                label="Tipo de Movimiento"
+                name="incomeType"
+                value={formData.incomeType}
+                onChange={handleInputChange}
+              >
+                <MenuItem value="">
+                  <em>Seleccione un tipo</em>
+                </MenuItem>
+                <MenuItem value="ingreso">Ingreso</MenuItem>
+                <MenuItem value="egreso">Egreso</MenuItem>
+              </Select>
+            </FormControl>
+
+            <Box sx={{ display: "flex", gap: 2, justifyContent: "flex-end" }}>
+              {isEditing && (
+                <Button variant="outlined" color="secondary" onClick={handleCancel}>
+                  Cancelar
+                </Button>
+              )}
+              <Button type="submit" variant="contained"   color="success">
+                {isEditing ? "Actualizar" : "Agregar"}
+              </Button>
+            </Box>
+          </Stack>
+        </Box>
+      </CardContent>
+    </Card>
   );
 };
+
 Formulario.propTypes = {
   formData: PropTypes.shape({
     id: PropTypes.any,

@@ -25,6 +25,7 @@ import {
 } from '@mui/material';
 import { SharesContext } from '../../context/share/ShareContext';
 import { toast } from 'react-toastify';
+import CancelIcon from '@mui/icons-material/Cancel'; // Importación añadida
 import { calculateDueDate } from '../../utils/dateUtils';
 
 const Share = () => {
@@ -41,11 +42,11 @@ const Share = () => {
   const [massShareData, setMassShareData] = useState({
     quotaName: '',
     amount: '',
-    date: '', // Nuevo campo para la fecha
+    date: '',
     year: new Date().getFullYear(),
   });
   const [filters, setFilters] = useState({
-    all: true, // Nuevo checkbox "Todos"
+    all: true,
     pendiente: true,
     vencido: true,
     pagado: true,
@@ -53,7 +54,6 @@ const Share = () => {
   });
   const navigate = useNavigate();
 
-  // Obtener la última cuota de cada alumno
   const getLatestShareStatus = (studentId) => {
     const studentShares = studentsWithShares.filter((share) => share.student_id === studentId);
     if (studentShares.length === 0) return 'Sin Cuota';
@@ -122,7 +122,7 @@ const Share = () => {
       return;
     }
     try {
-      const dueDate = calculateDueDate(date); // Calcular fecha de vencimiento desde la fecha ingresada
+      const dueDate = calculateDueDate(date);
       const payload = { quotaName, amount: parseFloat(amount), date, dueDate, year };
       await createMassShare(payload);
       toast.success('Cuota masiva creada exitosamente');
@@ -147,7 +147,7 @@ const Share = () => {
     } else {
       setFilters((prev) => {
         const newFilters = { ...prev, [name]: checked };
-        newFilters.all = Object.values(newFilters).slice(1).every((value) => value); // Actualiza "all" si todos están checked
+        newFilters.all = Object.values(newFilters).slice(1).every((value) => value);
         return newFilters;
       });
     }
@@ -165,6 +165,7 @@ const Share = () => {
         justifyContent: 'flex-start',
         boxSizing: 'border-box',
       }}
+      className="share-container"
     >
       <Box
         sx={{
@@ -177,16 +178,19 @@ const Share = () => {
           background: 'linear-gradient(90deg, #43e97b 0%, #38f9d7 100%)',
           borderRadius: '16px',
           boxShadow: '0 6px 24px rgba(67, 233, 123, 0.15)',
+          transition: 'transform 0.3s',
+          '&:hover': {
+            transform: 'scale(1.01)',
+          },
         }}
       >
         <Typography
-          variant="h4"
+          variant="h3"
           sx={{
             fontWeight: 800,
             color: '#00335c',
-            margin: 0,
-            fontSize: '2.2rem',
-            letterSpacing: '0.07em',
+            textShadow: '2px 2px 6px rgba(56, 249, 215, 0.15)',
+            letterSpacing: '0.08rem',
           }}
         >
           Panel de Cuotas
@@ -264,7 +268,7 @@ const Share = () => {
             variant="contained"
             color="success"
             onClick={handleOpenMassShareDialog}
-            sx={{ borderRadius: '32px', fontWeight: 700, fontSize: { xs: '1.1rem', md: '1.3rem' }, px: { xs: 3, md: 5 }, py: { xs: 1.5, md: 2 }, minWidth: { xs: '180px', md: '220px' }, flex: 1 }}
+            sx={{ borderRadius: '32px', fontWeight: 700, fontSize: { xs: '1.1rem', md: '1.3rem' },   flex: 1 }}
           >
             Crear Cuota Masiva
           </Button>
@@ -332,7 +336,7 @@ const Share = () => {
           </TableBody>
         </Table>
       </TableContainer>
-      <Dialog open={openMassShareDialog} onClose={handleCloseMassShareDialog}>
+      <Dialog open={openMassShareDialog} onClose={handleCloseMassShareDialog} sx={{ '& .MuiDialog-paper': { borderRadius: '12px', boxShadow: '0 8px 16px rgba(0, 0, 0, 0.2)', backgroundColor: '#E6F9EC' } }}>
         <DialogTitle sx={{ background: 'linear-gradient(90deg, #8eeab1, #007e32)', color: '#00335c', fontWeight: 700, borderTopLeftRadius: '12px', borderTopRightRadius: '12px', p: 2 }}>
           Crear Cuota Masiva
         </DialogTitle>
@@ -344,6 +348,7 @@ const Share = () => {
               value={massShareData.year}
               onChange={handleMassShareInputChange}
               label="Año"
+              sx={{ '& .MuiOutlinedInput-root': { '& fieldset': { borderColor: '#38f9d7' }, '&:hover fieldset': { borderColor: '#43e97b' }, '&.Mui-focused fieldset': { borderColor: '#43e97b' } }, '& .MuiInputLabel-root': { color: '#00335c' }, '& .MuiInputLabel-root.Mui-focused': { color: '#43e97b' } }}
             >
               {[2023, 2024, 2025, 2026, 2027].map((year) => (
                 <MenuItem key={year} value={year}>
@@ -358,7 +363,7 @@ const Share = () => {
             value={massShareData.quotaName}
             onChange={handleMassShareInputChange}
             fullWidth
-            sx={{ mb: 2 }}
+            sx={{ mb: 2, '& .MuiOutlinedInput-root': { '& fieldset': { borderColor: '#38f9d7' }, '&:hover fieldset': { borderColor: '#43e97b' }, '&.Mui-focused fieldset': { borderColor: '#43e97b' } }, '& .MuiInputLabel-root': { color: '#00335c' }, '& .MuiInputLabel-root.Mui-focused': { color: '#43e97b' } }}
             required
             placeholder="Ej: Cuota Masiva - Semestre 1 - 2025"
           />
@@ -369,7 +374,7 @@ const Share = () => {
             value={massShareData.amount}
             onChange={handleMassShareInputChange}
             fullWidth
-            sx={{ mb: 2 }}
+            sx={{ mb: 2, '& .MuiOutlinedInput-root': { '& fieldset': { borderColor: '#38f9d7' }, '&:hover fieldset': { borderColor: '#43e97b' }, '&.Mui-focused fieldset': { borderColor: '#43e97b' } }, '& .MuiInputLabel-root': { color: '#00335c' }, '& .MuiInputLabel-root.Mui-focused': { color: '#43e97b' } }}
             required
           />
           <TextField
@@ -379,16 +384,16 @@ const Share = () => {
             value={massShareData.date}
             onChange={handleMassShareInputChange}
             fullWidth
-            sx={{ mb: 2 }}
+            sx={{ mb: 2, '& .MuiOutlinedInput-root': { '& fieldset': { borderColor: '#38f9d7' }, '&:hover fieldset': { borderColor: '#43e97b' }, '&.Mui-focused fieldset': { borderColor: '#43e97b' } }, '& .MuiInputLabel-root': { color: '#00335c' }, '& .MuiInputLabel-root.Mui-focused': { color: '#43e97b' } }}
             required
             InputLabelProps={{ shrink: true }}
           />
         </DialogContent>
         <DialogActions sx={{ p: 2, justifyContent: 'space-between' }}>
-          <Button onClick={handleCloseMassShareDialog} variant="outlined" sx={{ color: '#00335c', borderColor: '#00335c', fontWeight: 700 }}>
+          <Button onClick={handleCloseMassShareDialog} variant="outlined" startIcon={<CancelIcon />} sx={{ color: '#00335c', borderColor: '#00335c', cursor: 'pointer', '&:hover': { backgroundColor: 'rgba(142, 234, 177, 0.1)', borderColor: '#8eeab1' }, fontWeight: 700 }}>
             Cancelar
           </Button>
-          <Button onClick={handleMassShareSubmit} variant="contained" sx={{ backgroundColor: '#43e97b', color: '#00335c', fontWeight: 700 }}>
+          <Button onClick={handleMassShareSubmit} variant="contained" sx={{ backgroundColor: '#43e97b', color: '#ffffff', cursor: 'pointer', '&:hover': { backgroundColor: '#38f9d7' }, fontWeight: 700 }}>
             Guardar
           </Button>
         </DialogActions>
@@ -407,4 +412,4 @@ const Share = () => {
   );
 };
 
-      export default Share;
+export default Share;

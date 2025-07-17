@@ -1,4 +1,3 @@
-// src/components/student/NewStudent.jsx
 import React, { useState, useEffect, useContext } from 'react';
 import {
   Box,
@@ -65,59 +64,56 @@ const NewStudent = () => {
   return (
     <Box
       sx={{
-        background: 'linear-gradient(135deg, #e8f5e9 0%, #b2dfdb 100%)',
+        backgroundColor: '#e0f7f9',
         minHeight: '100vh',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        p: { xs: 1, md: 2, lg: 4 },
+        p: { xs: 2, md: 4 },
       }}
     >
       <Paper
-        elevation={8}
+        elevation={6}
         sx={{
-          maxWidth: 700,
+          maxWidth: 600,
           width: '100%',
-          borderRadius: '40px',
-          background: 'rgba(255,255,255,0.7)',
-          boxShadow: '0 12px 40px rgba(67, 233, 123, 0.18)',
-          backdropFilter: 'blur(8px)',
-          p: { xs: 2, md: 5 },
+          borderRadius: '16px',
+          backgroundColor: '#ffffff',
+          p: { xs: 3, md: 5 },
           mx: 'auto',
+          boxShadow: '0 8px 24px rgba(0, 128, 0, 0.1)',
           transition: 'box-shadow 0.3s',
           '&:hover': {
-            boxShadow: '0 16px 48px rgba(67, 233, 123, 0.25)',
+            boxShadow: '0 12px 32px rgba(0, 128, 0, 0.15)',
           },
         }}
       >
         <Box sx={{ display: 'flex', alignItems: 'center', mb: 4, justifyContent: 'center' }}>
-          <SchoolIcon sx={{ fontSize: 48, color: '#43e97b', mr: 2 }} />
-          <Typography variant="h3" sx={{ fontWeight: 900, color: '#00335c', letterSpacing: '0.07em' }}>
+          <SchoolIcon sx={{ fontSize: 40, color: '#2e7d32', mr: 2 }} />
+          <Typography variant="h4" sx={{ fontWeight: 700, color: '#2e7d32', letterSpacing: '0.05em' }}>
             {id ? 'Editar Estudiante' : 'Nuevo Estudiante'}
           </Typography>
         </Box>
 
         <form onSubmit={handleSubmit} style={{ width: '100%' }}>
-          <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: 3, mb: 3 }}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, mb: 4 }}>
             <TextField
               label="Apellido"
               name="lastname"
               value={student.lastname}
               onChange={handleChange}
               required
+              fullWidth
+              variant="outlined"
               sx={{
-                flex: 1,
                 '& .MuiOutlinedInput-root': {
-                  borderRadius: '20px',
-                  background: 'rgba(232,245,233,0.7)',
-                  fontSize: '1.2rem',
-                  boxShadow: '0 2px 8px rgba(67,233,123,0.08)',
-                  transition: 'box-shadow 0.2s',
-                  '&:hover': { boxShadow: '0 4px 16px rgba(67,233,123,0.15)' },
+                  borderRadius: '12px',
+                  backgroundColor: '#f5f5f5',
+                  '&:hover': { backgroundColor: '#e8f5e9' },
                 },
-                '& .MuiInputLabel-root': { color: '#43e97b', fontWeight: 700 },
-                '& .MuiInputLabel-root.Mui-focused': { color: '#00335c' },
+                '& .MuiInputLabel-root': { color: '#2e7d32', fontWeight: 600 },
+                '& .MuiInputLabel-root.Mui-focused': { color: '#1b5e20' },
               }}
             />
             <TextField
@@ -126,18 +122,16 @@ const NewStudent = () => {
               value={student.name}
               onChange={handleChange}
               required
+              fullWidth
+              variant="outlined"
               sx={{
-                flex: 1,
                 '& .MuiOutlinedInput-root': {
-                  borderRadius: '20px',
-                  background: 'rgba(232,245,233,0.7)',
-                  fontSize: '1.2rem',
-                  boxShadow: '0 2px 8px rgba(67,233,123,0.08)',
-                  transition: 'box-shadow 0.2s',
-                  '&:hover': { boxShadow: '0 4px 16px rgba(67,233,123,0.15)' },
+                  borderRadius: '12px',
+                  backgroundColor: '#f5f5f5',
+                  '&:hover': { backgroundColor: '#e8f5e9' },
                 },
-                '& .MuiInputLabel-root': { color: '#43e97b', fontWeight: 700 },
-                '& .MuiInputLabel-root.Mui-focused': { color: '#00335c' },
+                '& .MuiInputLabel-root': { color: '#2e7d32', fontWeight: 600 },
+                '& .MuiInputLabel-root.Mui-focused': { color: '#1b5e20' },
               }}
             />
             <TextField
@@ -146,42 +140,35 @@ const NewStudent = () => {
               value={student.dni}
               onChange={handleChange}
               required
+              fullWidth
+              variant="outlined"
               sx={{
-                flex: 1,
                 '& .MuiOutlinedInput-root': {
-                  borderRadius: '20px',
-                  background: 'rgba(232,245,233,0.7)',
-                  fontSize: '1.2rem',
-                  boxShadow: '0 2px 8px rgba(67,233,123,0.08)',
-                  transition: 'box-shadow 0.2s',
-                  '&:hover': { boxShadow: '0 4px 16px rgba(67,233,123,0.15)' },
+                  borderRadius: '12px',
+                  backgroundColor: '#f5f5f5',
+                  '&:hover': { backgroundColor: '#e8f5e9' },
                 },
-                '& .MuiInputLabel-root': { color: '#43e97b', fontWeight: 700 },
-                '& .MuiInputLabel-root.Mui-focused': { color: '#00335c' },
+                '& .MuiInputLabel-root': { color: '#2e7d32', fontWeight: 600 },
+                '& .MuiInputLabel-root.Mui-focused': { color: '#1b5e20' },
               }}
             />
           </Box>
 
-          <Box sx={{ display: 'flex', justifyContent: 'center', gap: 3, mt: 5 }}>
+          <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, mt: 4 }}>
             <Button
               variant="outlined"
               startIcon={<CancelIcon />}
               onClick={() => navigate('/students')}
               sx={{
-                color: '#00335c',
-                borderColor: '#43e97b',
-                borderRadius: '32px',
-                fontWeight: 800,
-                fontSize: { xs: '1.2rem', md: '1.3rem' },
-                px: { xs: 4, md: 6 },
-                py: { xs: 2, md: 2.5 },
-                minWidth: { xs: '150px', md: '200px' },
-                boxShadow: '0 2px 8px rgba(67,233,123,0.10)',
-                transition: 'box-shadow 0.2s',
+                color: '#2e7d32',
+                borderColor: '#2e7d32',
+                borderRadius: '20px',
+                fontWeight: 600,
+                px: 3,
+                py: 1.5,
                 '&:hover': {
-                  backgroundColor: 'rgba(67, 233, 123, 0.12)',
-                  borderColor: '#00335c',
-                  boxShadow: '0 4px 16px rgba(67,233,123,0.18)',
+                  backgroundColor: 'rgba(46, 125, 50, 0.1)',
+                  borderColor: '#1b5e20',
                 },
               }}
             >
@@ -192,19 +179,14 @@ const NewStudent = () => {
               variant="contained"
               startIcon={<SaveIcon />}
               sx={{
-                background: 'linear-gradient(90deg, #43e97b 0%, #38f9d7 100%)',
-                color: '#00335c',
-                borderRadius: '32px',
-                fontWeight: 800,
-                fontSize: { xs: '1.2rem', md: '1.3rem' },
-                px: { xs: 4, md: 6 },
-                py: { xs: 2, md: 2.5 },
-                minWidth: { xs: '150px', md: '200px' },
-                boxShadow: '0 2px 8px rgba(67,233,123,0.10)',
-                transition: 'box-shadow 0.2s',
+                backgroundColor: '#2e7d32',
+                color: '#ffffff',
+                borderRadius: '20px',
+                fontWeight: 600,
+                px: 3,
+                py: 1.5,
                 '&:hover': {
-                  background: 'linear-gradient(90deg, #38f9d7 0%, #43e97b 100%)',
-                  boxShadow: '0 4px 16px rgba(67,233,123,0.18)',
+                  backgroundColor: '#1b5e20',
                 },
               }}
             >
@@ -214,27 +196,25 @@ const NewStudent = () => {
         </form>
       </Paper>
 
-      <Box sx={{ mt: 5, display: 'flex', justifyContent: 'center', width: '100%' }}>
+      <Box sx={{ mt: 4, display: 'flex', justifyContent: 'center', width: '100%' }}>
         <Button
           variant="outlined"
           color="success"
           onClick={() => navigate(-1)}
           sx={{
-            borderRadius: '32px',
-            fontWeight: 800,
-            fontSize: { xs: '1.2rem', md: '1.3rem' },
-            px: { xs: 4, md: 6 },
-            py: { xs: 2, md: 2.5 },
-            minWidth: { xs: '150px', md: '200px' },
-            boxShadow: '0 2px 8px rgba(67,233,123,0.10)',
-            transition: 'box-shadow 0.2s',
+            color: '#2e7d32',
+            borderColor: '#2e7d32',
+            borderRadius: '20px',
+            fontWeight: 600,
+            px: 3,
+            py: 1.5,
             '&:hover': {
-              backgroundColor: 'rgba(67, 233, 123, 0.12)',
-              boxShadow: '0 4px 16px rgba(67,233,123,0.18)',
+              backgroundColor: 'rgba(46, 125, 50, 0.1)',
+              borderColor: '#1b5e20',
             },
           }}
         >
-          Volver
+          Volverrrrrrrr
         </Button>
       </Box>
     </Box>
