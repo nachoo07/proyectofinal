@@ -303,7 +303,7 @@ const StudentDetail = () => {
             onChange={handleChange}
             disabled={isView}
           ></textarea>
-        </div>
+        </div> 
 
         {/* Foto y carga solo para crear/editar */}
         {!isView && (

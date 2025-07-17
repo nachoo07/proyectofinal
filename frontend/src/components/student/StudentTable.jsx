@@ -26,6 +26,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import CancelIcon from '@mui/icons-material/Cancel';
 import './student.css';
+import { FaBell, FaUserCheck, FaUser, FaUserGraduate } from "react-icons/fa";
 
 
 
@@ -188,7 +189,7 @@ const StudentTable = () => {
           gap: 2,
           width: '100%',
           maxWidth: '1200px',
-        }}
+        }} 
       >
         <Box
           sx={{
@@ -339,66 +340,6 @@ const StudentTable = () => {
                         <DeleteIcon />
                       </Button>
                     </Tooltip>
-
-                  <TableCell sx={{ color: '#00335c', fontWeight: 500, textAlign: 'center' }}>{student.name}</TableCell>
-                  <TableCell sx={{ color: '#00335c', fontWeight: 500, textAlign: 'center' }}>{student.lastName}</TableCell>
-                  <TableCell sx={{ color: '#00335c', fontWeight: 500, textAlign: 'center' }}>{student.dni}</TableCell>
-                  <TableCell sx={{ color: student.state === 'Activo' ? '#388e3c' : '#d32f2f', fontWeight: 700, textAlign: 'center' }}>{student.state}</TableCell>
-                  <TableCell sx={{ textAlign: 'center' }}>
-                    <Box sx={{ display: 'flex', gap: 1, justifyContent: 'center' }}>
-                      <Tooltip title="Ver estudiante">
-                        <Button
-                          component={Link}
-                          to={`/students/${student.id}`}
-                          variant="contained"
-                          color="primary"
-                          size="small"
-                          sx={{ borderRadius: '50%', minWidth: 40, height: 40, p: 0 }}
-                        >
-                          <SchoolIcon />
-                        </Button>
-                      </Tooltip>
-                      {isAdmin && (
-                        <>
-                          <Tooltip title="Editar estudiante">
-                            <Button
-                              component={Link}
-                              to={`/students/${student.id}?edit=true`}
-                              variant="contained"
-                              color="info"
-                              size="small"
-                              sx={{ borderRadius: '50%', minWidth: 40, height: 40, p: 0 }}
-                            >
-                              <EditIcon />
-                            </Button>
-                          </Tooltip>
-                          <Tooltip title="Ver cuotas">
-                            <Button
-                              component={Link}
-                              to={`/shares/student/${student.id}`}
-                              variant="contained"
-                              color="success"
-                              size="small"
-                              sx={{ borderRadius: '50%', minWidth: 40, height: 40, p: 0 }}
-                            >
-                              $ {/* Puedes cambiar por un ícono de dinero si lo prefieres */}
-                            </Button>
-                          </Tooltip>
-                          <Tooltip title="Eliminar estudiante">
-                            <Button
-                              variant="contained"
-                              color="error"
-                              size="small"
-                              onClick={() => handleOpenDeleteDialog(student.id)}
-                              sx={{ borderRadius: '50%', minWidth: 40, height: 40, p: 0 }}
-                            >
-                              <DeleteIcon />
-                            </Button>
-                          </Tooltip>
-                        </>
-                      )}
-                    </Box>
-
                   </TableCell>
                 </TableRow>
               ))
