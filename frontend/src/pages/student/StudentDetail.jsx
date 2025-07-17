@@ -106,53 +106,77 @@ const StudentDetail = () => {
   return (
     <div className="container mt-4 text-center">
 
-      {/* Imagen, nombre y botones arriba si está en modo vista */}
+      {/* Imagen y botones arriba solo en vista */}
       {isView && (
-  <div className="d-flex justify-content-center align-items-center gap-4 mb-4 flex-wrap">
-    {/* Imagen */}
-    <div className="text-center">
-      
-       <h2 className="mb-4">
-        {isNew ? "Nuevo Estudiante" : isView ? "Detalle del Estudiante" : "Editar Estudiante"}
-      </h2>
+        <div className="d-flex justify-content-center align-items-center gap-4 mb-4 flex-wrap">
+          <div className="text-center">
+            <h2 className="mb-4">Detalle del Estudiante</h2>
+            <img
+              src={
+                student.profileImage && !student.profileImage.includes("pinimg.com")
+                  ? `http://localhost:4000${student.profileImage}`
+                  : "https://i.pinimg.com/736x/24/f2/25/24f22516ec47facdc2dc114f8c3de7db.jpg"
+              }
+              alt="Foto de perfil"
+              style={{ maxWidth: "180px", borderRadius: "8px" }}
+            />
+            <h3 className="mt-3">{student.name} {student.lastName}</h3>
+          </div>
 
-      <img
-        src={
-          student.profileImage && !student.profileImage.includes("pinimg.com")
-            ? `http://localhost:4000${student.profileImage}`
-            : "https://i.pinimg.com/736x/24/f2/25/24f22516ec47facdc2dc114f8c3de7db.jpg"
-        }
-        alt="Foto de perfil"
-        style={{ maxWidth: "180px", borderRadius: "8px" }}
-      />
-      <h3 className="mt-3">{student.name} {student.lastName}</h3>
-    </div>
-
-    {/* Botones */}
-    <div className="d-flex flex-column gap-2">
-     
-      <button className="btn btn btn-primary" onClick={() => navigate(-1)}>
-        Volver atrás
-      </button>
-
-      
-    </div>
-  </div>
-)}
-
-     
+          <div className="d-flex flex-column gap-2">
+            <button className="btn btn-primary" onClick={() => navigate(-1)}>
+              Volver atrás
+            </button>
+          </div>
+        </div>
+      )}
 
       <form onSubmit={handleSubmit}>
+        {/* Nombre y apellido */}
+        <div className="row mb-3 justify-content-center">
+          {isView ? (
+            // Ya está mostrado arriba, podés dejar vacío o poner texto si querés
+            <></>
+          ) : (
+            <>
+              <div className="col-md-4">
+                <label>Nombre</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  name="name"
+                  value={student.name}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+              <div className="col-md-4">
+                <label>Apellido</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  name="lastName"
+                  value={student.lastName}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+            </>
+          )}
+        </div>
+
+        {/* Resto de campos */}
         <div className="row mb-3">
           <div className="col-md-4">
             <label>DNI</label>
-           <input
+            <input
               type="text"
               className="form-control"
               name="dni"
               value={student.dni}
               onChange={handleChange}
               disabled={isView}
+              required
             />
           </div>
           <div className="col-md-4">
@@ -167,7 +191,7 @@ const StudentDetail = () => {
             />
           </div>
           <div className="col-md-4">
-           <label>Dirección</label>
+            <label>Dirección</label>
             <input
               type="text"
               className="form-control"
@@ -180,17 +204,6 @@ const StudentDetail = () => {
         </div>
 
         <div className="row mb-3">
-          <div className="col-md-4">
-            <label>Fecha de nacimiento</label>
-            <input
-              type="date"
-              className="form-control"
-              name="birthDate"
-              value={student.birthDate ? student.birthDate.substring(0, 10) : ""}
-              onChange={handleChange}
-              disabled={isView}
-            />
-          </div>
           <div className="col-md-4">
             <label>Email</label>
             <input
@@ -212,6 +225,19 @@ const StudentDetail = () => {
               onChange={handleChange}
               disabled={isView}
             />
+          </div>
+          <div className="col-md-4">
+            <label>Estado</label>
+            <select
+              name="state"
+              className="form-select"
+              value={student.state}
+              onChange={handleChange}
+              disabled={isView}
+            >
+              <option value="Activo">Activo</option>
+              <option value="Inactivo">Inactivo</option>
+            </select>
           </div>
         </div>
 
@@ -239,18 +265,7 @@ const StudentDetail = () => {
             />
           </div>
           <div className="col-md-4">
-             <label>Estado</label>
-            <select
-              name="state"
-              className="form-select"
-              value={student.state}
-              onChange={handleChange}
-              disabled={isView}
-            >
-              <option value="Activo">Activo</option>
-              <option value="Inactivo">Inactivo</option>
-            </select>
-            
+            {/* Estado ya está arriba, podés eliminar o mover esta fila si querés */}
           </div>
         </div>
 
@@ -277,7 +292,6 @@ const StudentDetail = () => {
               disabled={isView}
             />
           </div>
-          
         </div>
 
         <div className="mb-3">
@@ -296,13 +310,13 @@ const StudentDetail = () => {
           <div className="mb-3">
             <label>Foto de perfil</label>
             <br />
-            {imagePreview ? (
+            {imagePreview && (
               <img
                 src={imagePreview}
                 alt="Vista previa"
                 style={{ maxWidth: "250px", borderRadius: "8px" }}
               />
-            ) : null}
+            )}
             <input
               type="file"
               className="form-control mt-2"
