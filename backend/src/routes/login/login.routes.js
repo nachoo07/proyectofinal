@@ -11,8 +11,8 @@ router.post('/logout', logoutUser);
 
 router.post('/refresh', refreshAccessToken);
 
-// Ejemplo de ruta protegida
-router.get('/protected', authenticate, authorizeRole(['admin']), (req, res) => {
+// Ejemplo de ruta protegida - permite admin y user
+router.get('/protected', authenticate, authorizeRole(['admin', 'user']), (req, res) => {
   res.json({ message: 'Ruta protegida', user: req.user });
 });
 

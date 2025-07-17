@@ -1,4 +1,3 @@
-// src/controllers/share/share.controller.js
 import connection from '../../db/db.connection.js';
 
 // Obtener todos los shares (para el Panel de Cuotas)
@@ -11,13 +10,13 @@ export const allShares = async (req, res) => {
         s.dni,
         s.state AS student_status,
         sh.id AS share_id,
-        sh.date,
+        DATE_FORMAT(sh.date, '%Y-%m-%d') AS date,
         sh.amount,
         sh.state,
-        sh.paymentdate AS due_date,
-        sh.paymentdate_actual AS payment_date,
+        DATE_FORMAT(sh.paymentdate, '%Y-%m-%d') AS paymentdate,
+        DATE_FORMAT(sh.paymentdate_actual, '%Y-%m-%d') AS paymentdate_actual,
         sh.paymentmethod,
-        sh.paymentdate AS paymentdate
+        sh.quota_name
     FROM students s
     LEFT JOIN shares sh ON s.id = sh.student_id
     ORDER BY s.lastName, s.name, sh.date DESC
@@ -69,6 +68,8 @@ export const getSharesByStudent = async (req, res) => {
       sh.state,
       DATE_FORMAT(sh.paymentdate, '%Y-%m-%d') AS paymentdate,
       DATE_FORMAT(sh.paymentdate_actual, '%Y-%m-%d') AS paymentdate_actual,
+      sh.paymentmethod,
+      sh.quota_name,
       s.name,
       s.lastName,
       s.dni,
@@ -80,7 +81,6 @@ export const getSharesByStudent = async (req, res) => {
   `;
   try {
     const [rows] = await connection.query(query, [studentId]);
-    console.log('Datos devueltos por getSharesByStudent:', rows); // Depuración
     if (rows.length === 0) {
       const studentQuery = "SELECT id, name, lastName, dni, state AS student_status FROM students WHERE id = ?";
       const [studentRows] = await connection.query(studentQuery, [studentId]);
@@ -98,66 +98,55 @@ export const getSharesByStudent = async (req, res) => {
 
 // Crear cuotas masivas
 export const createMassShare = async (req, res) => {
-  const { quotaName, amount, dueDate, year, studentIds } = req.body;
-  console.log('Datos recibidos:', { quotaName, amount, dueDate, year, studentIds });
-
-  if (!quotaName || !amount || !dueDate || !year) {
-    return res.status(400).json({ error: "Faltan campos obligatorios: quotaName, amount, dueDate, year" });
+  const { quotaName, amount, date, dueDate } = req.body;
+  if (!quotaName || !amount || !date || !dueDate) {
+    return res.status(400).json({ error: `Faltan campos: ${!quotaName ? 'quotaName' : ''}${!amount ? ', amount' : ''}${!date ? ', date' : ''}${!dueDate ? ', dueDate' : ''}` });
+  }
+  if (isNaN(amount) || amount < 0) {
+    return res.status(400).json({ error: 'El monto debe ser un número mayor o igual a 0' });
   }
 
-  let studentsToProcess = [];
-  if (studentIds && studentIds.length > 0) {
-    const placeholders = studentIds.map(() => '?').join(',');
-    const queryStudents = `SELECT id FROM students WHERE id IN (${placeholders}) AND state = 'activo'`;
-    const [rows] = await connection.query(queryStudents, studentIds);
-    studentsToProcess = rows;
-  } else {
-    const queryAllStudents = "SELECT id FROM students WHERE state = 'activo'";
-    const [rows] = await connection.query(queryAllStudents);
-    studentsToProcess = rows;
-  }
+  const studentsQuery = "SELECT id FROM students WHERE state = 'activo'";
+  const [students] = await connection.query(studentsQuery);
 
-  if (studentsToProcess.length === 0) {
-    return res.status(400).json({ error: "No hay alumnos activos para crear cuotas" });
+  if (students.length === 0) {
+    return res.status(400).json({ error: 'No hay alumnos activos' });
   }
 
   const query = `
-    INSERT INTO shares (student_id, date, amount, state, paymentdate, paymentdate_actual, quota_name)
-    VALUES (?, CURRENT_DATE, ?, ?, ?, ?, ?)
+    INSERT INTO shares (student_id, date, amount, state, paymentdate, paymentdate_actual, quota_name, paymentmethod, createdAt, updatedAt)
+    VALUES (?, ?, ?, 'Pendiente', ?, NULL, ?, NULL, NOW(), NOW())
   `;
 
   try {
-    for (const student of studentsToProcess) {
-      const values = [
-        student.id,
-        amount,
-        'Pendiente',
-        dueDate,
-        null,
-        quotaName,
-      ];
-      console.log('Valores de inserción:', values);
-      const [result] = await connection.query(query, values);
-      console.log('Resultado de la inserción:', result);
+    const valuesArray = students.map(student => [
+      student.id,
+      date,
+      amount,
+      dueDate,
+      quotaName,
+    ]);
+    for (const values of valuesArray) {
+      await connection.query(query, values);
     }
-    res.status(201).json({ message: "Cuotas masivas creadas exitosamente" });
+    res.status(201).json({ message: 'Cuotas masivas creadas exitosamente' });
   } catch (err) {
-    console.error('Error detallado:', err);
-    res.status(500).json({ error: "Error al crear cuotas masivas: " + err.message });
+    console.error('Error en la inserción:', err);
+    res.status(500).json({ error: 'Error al crear cuotas masivas: ' + err.message });
   }
 };
 
 // Crear un nuevo share
 export const createShare = async (req, res) => {
-  const { student_id, date, amount, state, paymentdate, paymentdate_actual } = req.body;
+  const { student_id, date, amount, state, paymentdate, quotaName, paymentmethod } = req.body;
 
-  if (!student_id || !date || !amount) {
-    return res.status(400).json({ error: "Faltan campos obligatorios: student_id, date, amount" });
+  if (!student_id || !date || !amount || !quotaName) {
+    return res.status(400).json({ error: "Faltan campos obligatorios: student_id, date, amount, quotaName" });
   }
 
   const query = `
-    INSERT INTO shares (student_id, date, amount, state, paymentdate, paymentdate_actual)
-    VALUES (?, ?, ?, ?, ?, ?)
+    INSERT INTO shares (student_id, date, amount, state, paymentdate, paymentdate_actual, quota_name, paymentmethod, createdAt, updatedAt)
+    VALUES (?, ?, ?, ?, ?, NULL, ?, ?, NOW(), NOW())
   `;
   const values = [
     student_id,
@@ -165,7 +154,8 @@ export const createShare = async (req, res) => {
     amount,
     state || 'Pendiente',
     paymentdate || null,
-    paymentdate_actual || null,
+    quotaName,
+    paymentmethod || null, // Método de pago vacío por defecto
   ];
 
   try {
@@ -183,30 +173,17 @@ export const createShare = async (req, res) => {
   }
 };
 
-// Actualizar un share (renombrado de editShare a updateShare)
 export const updateShare = async (req, res) => {
   const { id } = req.params;
-  console.log('Intentando actualizar share con id:', id); // Depuración
-  const { student_id, date, amount, state, paymentdate, paymentdate_actual } = req.body;
+  const { student_id, date, amount, state, paymentdate, paymentdate_actual, quotaName, paymentmethod } = req.body;
 
-  // Validaciones básicas
-  if (!student_id || !date || !amount) {
-    return res.status(400).json({ error: "Faltan campos obligatorios: student_id, date, amount" });
+  if (!student_id || !date || !amount || !quotaName) {
+    return res.status(400).json({ error: "Faltan campos obligatorios: student_id, date, amount, quotaName" });
   }
-  if (isNaN(student_id)) {
-    return res.status(400).json({ error: "student_id debe ser un número válido" });
-  }
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
-    return res.status(400).json({ error: `date '${date}' no cumple con el formato YYYY-MM-DD` });
-  }
-  if (isNaN(amount) || amount <= 0) {
-    return res.status(400).json({ error: "amount debe ser un número positivo" });
-  }
-  if (paymentdate && !/^\d{4}-\d{2}-\d{2}$/.test(paymentdate)) {
-    return res.status(400).json({ error: `paymentdate '${paymentdate}' no cumple con el formato YYYY-MM-DD` });
-  }
-  if (paymentdate_actual && !/^\d{4}-\d{2}-\d{2}$/.test(paymentdate_actual)) {
-    return res.status(400).json({ error: `paymentdate_actual '${paymentdate_actual}' no cumple con el formato YYYY-MM-DD` });
+
+  let paymentdateActualFormatted = null;
+  if (paymentdate_actual) {
+    paymentdateActualFormatted = new Date(paymentdate_actual).toISOString().split('T')[0];
   }
 
   const query = `
@@ -216,8 +193,11 @@ export const updateShare = async (req, res) => {
       date = ?,
       amount = ?,
       state = ?,
-      paymentdate = COALESCE(?, paymentdate),
-      paymentdate_actual = ?
+      paymentdate = ?,
+      paymentdate_actual = ?,
+      quota_name = ?,
+      paymentmethod = ?,
+      updatedAt = NOW()
     WHERE id = ?
   `;
   const values = [
@@ -226,29 +206,24 @@ export const updateShare = async (req, res) => {
     amount,
     state || 'Pendiente',
     paymentdate || null,
-    paymentdate_actual || null,
+    paymentdateActualFormatted,
+    quotaName,
+    paymentmethod || null,
     id,
   ];
 
   try {
     const [result] = await connection.query(query, values);
     if (result.affectedRows === 0) {
-      console.log('No se encontró share con id:', id); // Depuración
       return res.status(404).json({ error: "Share no encontrado" });
     }
     res.json({ message: "Share actualizado exitosamente" });
   } catch (err) {
     console.error("Error detallado en la consulta:", err);
-    if (err.code === 'ER_NO_REFERENCED_ROW_2') {
-      return res.status(400).json({ error: "El student_id no existe en la tabla students" });
-    } else if (err.code === 'ER_TRUNCATED_WRONG_VALUE') {
-      return res.status(400).json({ error: "Valor inválido en uno de los campos (ej. date)" });
-    } else if (err.code === 'ER_DATA_TOO_LONG') {
-      return res.status(400).json({ error: "Uno de los valores excede el tamaño permitido" });
-    }
     res.status(500).json({ error: "Error al actualizar el share", details: err.message });
   }
 };
+
 
 // Eliminar un share
 export const eraseShare = async (req, res) => {
@@ -287,4 +262,3 @@ export const updateStudentStatus = async (req, res) => {
     res.status(500).json({ error: 'Error al actualizar el estado' });
   }
 };
-

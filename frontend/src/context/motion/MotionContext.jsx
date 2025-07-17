@@ -8,6 +8,7 @@ const MotionContext = createContext();
 export const MotionProvider = ({ children }) => {
   const { auth, loading: authLoading } = useContext(LoginContext);
   const [motions, setMotions] = useState([]);
+  const [count, setCount] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [summary, setSummary] = useState({
@@ -35,11 +36,16 @@ export const MotionProvider = ({ children }) => {
       if (activeFilters.endDate) params.append('endDate', activeFilters.endDate);
       if (activeFilters.type) params.append('type', activeFilters.type);
       if (activeFilters.paymentMethod) params.append('paymentMethod', activeFilters.paymentMethod);
+      if (activeFilters.page) params.append('page', activeFilters.page);
+      if (activeFilters.pageSize) params.append('pageSize', activeFilters.pageSize);
 
-      const response = await axios.get(`http://localhost:4000/api/motion?${params.toString()}`, {
+      const isPaginated = activeFilters.page ? true : false;
+
+      const response = await axios.get(`http://localhost:4000/api/motion${isPaginated ? '/paginated' : ''}?${params.toString()}`, {
         withCredentials: true,
       });
-      setMotions(response.data);
+      setMotions(response.data.motions);
+      setCount(response.data.count ?? 0);
       setError(null);
     } catch (err) {
       console.error('Error fetching motions:', err.response?.data || err.message);
@@ -135,14 +141,11 @@ export const MotionProvider = ({ children }) => {
     }
   };
 
-  useEffect(() => {
-    fetchMotions();
-  }, [auth, authLoading]);
-
   return (
     <MotionContext.Provider
       value={{
         motions,
+        count,
         loading,
         error,
         summary,

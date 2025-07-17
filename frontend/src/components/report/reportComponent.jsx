@@ -100,6 +100,7 @@ const ReportComponent = () => {
 
   if (loading) {
     return (
+      
       <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
         <CircularProgress />
       </Box>
@@ -124,7 +125,7 @@ const ReportComponent = () => {
 
   return (
     <Box sx={{ p: 4, bgcolor: 'background.paper' }} className="min-h-screen">
-      <Typography variant="h4" gutterBottom className="text-center">
+      <Typography variant="h4" gutterBottom className="text-center" color='#2e7d32'>
         Reporte Financiero
       </Typography>
 

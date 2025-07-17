@@ -38,7 +38,248 @@ export const getAllMotion = async (request, response) => {
     const result = await connection.query(query, queryParams);
 
     // Enviar los resultados como JSON
-    response.status(200).json(result[0]);
+    response.status(200).json({motions: result[0]});
+  } catch (error) {
+    console.error('Error al obtener movimientos:', error);
+    response.status(500).json({ error: 'Error al obtener movimientos' });
+  }
+};
+export const getMotionsByQuarter = async (request, response) => {
+  try {
+    const { type, page = 1, pageSize = 10 } = request.query;
+
+    // Validar type
+    if (type && !["ingreso", "egreso"].includes(type)) {
+      return response.status(400).json({ error: "El tipo debe ser 'ingreso' o 'egreso'" });
+    }
+
+    // Validar page y pageSize
+    if (isNaN(page) || page < 1 || isNaN(pageSize) || pageSize < 1) {
+      return response.status(400).json({ error: "page y pageSize deben ser números positivos" });
+    }
+
+    const query = `
+      SELECT 
+          YEAR(date) AS year,
+          QUARTER(date) AS quarter,
+          incomeType,
+          COUNT(*) AS motion_count,
+          SUM(amount) AS total_amount
+      FROM motions
+      ${type ? 'WHERE incomeType = ?' : ''}
+      GROUP BY YEAR(date), QUARTER(date), incomeType
+      ORDER BY year DESC, quarter DESC
+      LIMIT ? OFFSET ?
+    `;
+    const queryParams = type ? [type, parseInt(pageSize), (parseInt(page) - 1) * parseInt(pageSize)] : [parseInt(pageSize), (parseInt(page) - 1) * parseInt(pageSize)];
+
+    // Query para contar el total de grupos
+    const countQuery = `
+      SELECT COUNT(DISTINCT CONCAT(YEAR(date), QUARTER(date), incomeType)) as count
+      FROM motions
+      ${type ? 'WHERE incomeType = ?' : ''}
+    `;
+    const countParams = type ? [type] : [];
+
+    // Ejecutar consultas
+    const [result] = await connection.query(query, queryParams);
+    const [countResult] = await connection.query(countQuery, countParams);
+
+    // Enviar resultados
+    response.status(200).json({
+      motions: result,
+      count: countResult[0].count
+    });
+  } catch (error) {
+    console.error("Error al obtener movimientos por trimestre:", error);
+    response.status(500).json({ error: "Error al obtener movimientos por trimestre" });
+  }
+};
+// Obtener movimientos por método de pago con paginación
+export const getMotionsByPaymentMethod = async (request, response) => {
+  try {
+    const { type, page = 1, pageSize = 10 } = request.query;
+
+    // Validar type
+    if (type && !["ingreso", "egreso"].includes(type)) {
+      return response.status(400).json({ error: "El tipo debe ser 'ingreso' o 'egreso'" });
+    }
+
+    // Validar page y pageSize
+    if (isNaN(page) || page < 1 || isNaN(pageSize) || pageSize < 1) {
+      return response.status(400).json({ error: "page y pageSize deben ser números positivos" });
+    }
+
+    const query = `
+      SELECT 
+          paymentMethod,
+          incomeType,
+          COUNT(*) AS motion_count,
+          SUM(amount) AS total_amount
+      FROM motions
+      ${type ? 'WHERE incomeType = ?' : ''}
+      GROUP BY paymentMethod, incomeType
+      ORDER BY paymentMethod, incomeType
+      LIMIT ? OFFSET ?
+    `;
+    const queryParams = type ? [type, parseInt(pageSize), (parseInt(page) - 1) * parseInt(pageSize)] : [parseInt(pageSize), (parseInt(page) - 1) * parseInt(pageSize)];
+
+    const countQuery = `
+      SELECT COUNT(DISTINCT CONCAT(paymentMethod, incomeType)) as count
+      FROM motions
+      ${type ? 'WHERE incomeType = ?' : ''}
+    `;
+    const countParams = type ? [type] : [];
+
+    const [result] = await connection.query(query, queryParams);
+    const [countResult] = await connection.query(countQuery, countParams);
+
+    response.status(200).json({
+      motions: result,
+      count: countResult[0].count
+    });
+  } catch (error) {
+    console.error("Error al obtener movimientos por método de pago:", error);
+    response.status(500).json({ error: "Error al obtener movimientos por método de pago" });
+  }
+};
+// Obtener movimientos por mes con paginación
+export const getMotionsByMonth = async (request, response) => {
+  try {
+    const { type, page = 1, pageSize = 10 } = request.query;
+
+    // Validar type
+    if (type && !["ingreso", "egreso"].includes(type)) {
+      return response.status(400).json({ error: "El tipo debe ser 'ingreso' o 'egreso'" });
+    }
+
+    // Validar page y pageSize
+    if (isNaN(page) || page < 1 || isNaN(pageSize) || pageSize < 1) {
+      return response.status(400).json({ error: "page y pageSize deben ser números positivos" });
+    }
+
+    const query = `
+      SELECT 
+          YEAR(date) AS year,
+          MONTH(date) AS month,
+          MONTHNAME(date) AS month_name,
+          incomeType,
+          COUNT(*) AS motion_count,
+          SUM(amount) AS total_amount
+      FROM motions
+      ${type ? 'WHERE incomeType = ?' : ''}
+      GROUP BY YEAR(date), MONTH(date), incomeType
+      ORDER BY year DESC, month DESC
+      LIMIT ? OFFSET ?
+    `;
+    const queryParams = type ? [type, parseInt(pageSize), (parseInt(page) - 1) * parseInt(pageSize)] : [parseInt(pageSize), (parseInt(page) - 1) * parseInt(pageSize)];
+
+    // Query para contar el total de grupos
+    const countQuery = `
+      SELECT COUNT(DISTINCT CONCAT(YEAR(date), MONTH(date), incomeType)) as count
+      FROM motions
+      ${type ? 'WHERE incomeType = ?' : ''}
+    `;
+    const countParams = type ? [type] : [];
+
+    // Ejecutar consultas
+    const [result] = await connection.query(query, queryParams);
+    const [countResult] = await connection.query(countQuery, countParams);
+
+    // Enviar resultados
+    response.status(200).json({
+      motions: result,
+      count: countResult[0].count
+    });
+  } catch (error) {
+    console.error("Error al obtener movimientos por mes:", error);
+    response.status(500).json({ error: "Error al obtener movimientos por mes" });
+  }
+};
+
+// Obtener movimientos por semana con paginación
+export const getMotionsByWeek = async (request, response) => {
+  try {
+    const { type, page = 1, pageSize = 10 } = request.query;
+
+    // Validar type
+    if (type && !["ingreso", "egreso"].includes(type)) {
+      return response.status(400).json({ error: "El tipo debe ser 'ingreso' o 'egreso'" });
+    }
+
+    // Validar page y pageSize
+    if (isNaN(page) || page < 1 || isNaN(pageSize) || pageSize < 1) {
+      return response.status(400).json({ error: "page y pageSize deben ser números positivos" });
+    }
+
+    const query = `
+      SELECT 
+          YEAR(date) AS year,
+          WEEK(date, 1) AS week,
+          incomeType,
+          COUNT(*) AS motion_count,
+          SUM(amount) AS total_amount
+      FROM motions
+      ${type ? 'WHERE incomeType = ?' : ''}
+      GROUP BY YEAR(date), WEEK(date, 1), incomeType
+      ORDER BY year DESC, week DESC
+      LIMIT ? OFFSET ?
+ Juno
+    `;
+    const queryParams = type ? [type, parseInt(pageSize), (parseInt(page) - 1) * parseInt(pageSize)] : [parseInt(pageSize), (parseInt(page) - 1) * parseInt(pageSize)];
+
+    // Query para contar el total de grupos
+    const countQuery = `
+      SELECT COUNT(DISTINCT CONCAT(YEAR(date), WEEK(date, 1), incomeType)) as count
+      FROM motions
+      ${type ? 'WHERE incomeType = ?' : ''}
+    `;
+    const countParams = type ? [type] : [];
+
+    // Ejecutar consultas
+    const [result] = await connection.query(query, queryParams);
+    const [countResult] = await connection.query(countQuery, countParams);
+
+    // Enviar resultados
+    response.status(200).json({
+      motions: result,
+      count: countResult[0].count
+    });
+  } catch (error) {
+    console.error("Error al obtener movimientos por semana:", error);
+    response.status(500).json({ error: "Error al obtener movimientos por semana" });
+  }
+};
+// Get all motions
+export const getAllMotionPaginated = async (request, response) => {
+  try {
+    const { type, page, pageSize } = request.query; // Obtener el parámetro 'type' de la URL
+    let query = `SELECT * FROM motions ${type ? 'WHERE incomeType = ?' : ''} ORDER BY id DESC LIMIT ${pageSize} OFFSET ${(page - 1) * pageSize}`;
+    let queryParams = [];
+
+    // Si se proporciona el parámetro 'type', agregar un WHERE
+    if (type) {
+      queryParams.push(type);
+    }
+
+    // Ejecutar la consulta
+    const result = await connection.query(query, queryParams);
+
+    let queryCount = `SELECT COUNT(id) as count FROM motions ${type ? 'WHERE incomeType = ?' : ''}`;
+    let queryCountParams = [];
+    
+
+    if (type) {
+      queryParams.push(type);
+    }
+
+    // Ejecutar la consulta
+    const [count] = (await connection.query(queryCount, queryCountParams))[0];
+
+    console.log(count)
+
+    // Enviar los resultados como JSON
+    response.status(200).json({motions: result[0], count: count.count});
   } catch (error) {
     console.error('Error al obtener movimientos:', error);
     response.status(500).json({ error: 'Error al obtener movimientos' });
