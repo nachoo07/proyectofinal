@@ -2,6 +2,20 @@ import React, { useState, useEffect, useContext } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { StudentContext } from "../../context/student/StudentContext";
 import { toast } from "react-toastify";
+import {
+  Box,
+  Typography,
+  TextField,
+  Button,
+  Select,
+  MenuItem,
+  InputLabel,
+  FormControl,
+  TextareaAutosize,
+  Avatar,
+  Stack,
+  Divider
+} from "@mui/material";
 
 const StudentDetail = () => {
   const { id } = useParams();
@@ -62,7 +76,6 @@ const StudentDetail = () => {
     e.preventDefault();
 
     const formData = new FormData();
-
     for (let key in student) {
       formData.append(key, student[key]);
     }
@@ -104,245 +117,191 @@ const StudentDetail = () => {
   };
 
   return (
-    <div className="container mt-4 text-center">
-
-      {/* Imagen y botones arriba solo en vista */}
+    <Box maxWidth="1000px" mx="auto" p={{ xs: 3, md: 5 }} mt={4} bgcolor="white" borderRadius={4} boxShadow={3}>
       {isView && (
-        <div className="d-flex justify-content-center align-items-center gap-4 mb-4 flex-wrap">
-          <div className="text-center">
-            <h2 className="mb-4">Detalle del Estudiante</h2>
-            <img
-              src={
-                student.profileImage && !student.profileImage.includes("pinimg.com")
-                  ? `http://localhost:4000${student.profileImage}`
-                  : "https://i.pinimg.com/736x/24/f2/25/24f22516ec47facdc2dc114f8c3de7db.jpg"
-              }
-              alt="Foto de perfil"
-              style={{ maxWidth: "180px", borderRadius: "8px" }}
-            />
-            <h3 className="mt-3">{student.name} {student.lastName}</h3>
-          </div>
+        <Box textAlign="center" mb={3}>
+          <Typography variant="h4" gutterBottom>Detalle del Estudiante</Typography>
+          <Avatar
+            src={
+              student.profileImage && !student.profileImage.includes("pinimg.com")
+                ? `http://localhost:4000${student.profileImage}`
+                : "https://i.pinimg.com/736x/24/f2/25/24f22516ec47facdc2dc114f8c3de7db.jpg"
+            }
+            alt="Foto de perfil"
+            sx={{ width: 120, height: 120, mx: "auto", mb: 1 }}
+          />
+          <Typography variant="h6">{student.name} {student.lastName}</Typography>
+          <Button variant="outlined" onClick={() => navigate(-1)} sx={{ mt: 2 }}>
+            Volver atrás
+          </Button>
+          <Divider sx={{ my: 3 }} />
+        </Box>
+      )}
 
-          <div className="d-flex flex-column gap-2">
-            <button className="btn btn-primary" onClick={() => navigate(-1)}>
-              Volver atrás
-            </button>
-          </div>
-        </div>
+      {!isView && (
+        <Typography variant="h5" gutterBottom textAlign="center">
+          {isEdit ? "Editar Estudiante" : "Nuevo Estudiante"}
+        </Typography>
       )}
 
       <form onSubmit={handleSubmit}>
-        {/* Nombre y apellido */}
-        <div className="row mb-3 justify-content-center">
-          {isView ? (
-            // Ya está mostrado arriba, podés dejar vacío o poner texto si querés
-            <></>
-          ) : (
+        <Stack spacing={2}>
+          {!isView && (
             <>
-              <div className="col-md-4">
-                <label>Nombre</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  name="name"
-                  value={student.name}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-              <div className="col-md-4">
-                <label>Apellido</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  name="lastName"
-                  value={student.lastName}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
+              <TextField
+                label="Nombre"
+                name="name"
+                value={student.name}
+                onChange={handleChange}
+                fullWidth
+                required
+              />
+              <TextField
+                label="Apellido"
+                name="lastName"
+                value={student.lastName}
+                onChange={handleChange}
+                fullWidth
+                required
+              />
             </>
           )}
-        </div>
 
-        {/* Resto de campos */}
-        <div className="row mb-3">
-          <div className="col-md-4">
-            <label>DNI</label>
-            <input
-              type="text"
-              className="form-control"
-              name="dni"
-              value={student.dni}
-              onChange={handleChange}
-              disabled={isView}
-              required
-            />
-          </div>
-          <div className="col-md-4">
-            <label>Fecha de nacimiento</label>
-            <input
-              type="date"
-              className="form-control"
-              name="birthDate"
-              value={student.birthDate ? student.birthDate.substring(0, 10) : ""}
-              onChange={handleChange}
-              disabled={isView}
-            />
-          </div>
-          <div className="col-md-4">
-            <label>Dirección</label>
-            <input
-              type="text"
-              className="form-control"
-              name="address"
-              value={student.address}
-              onChange={handleChange}
-              disabled={isView}
-            />
-          </div>
-        </div>
+          <TextField
+            label="DNI"
+            name="dni"
+            value={student.dni}
+            onChange={handleChange}
+            fullWidth
+            required
+            disabled={isView}
+          />
 
-        <div className="row mb-3">
-          <div className="col-md-4">
-            <label>Email</label>
-            <input
-              type="email"
-              className="form-control"
-              name="mail"
-              value={student.mail}
-              onChange={handleChange}
-              disabled={isView}
-            />
-          </div>
-          <div className="col-md-4">
-            <label>Categoría</label>
-            <input
-              type="text"
-              className="form-control"
-              name="category"
-              value={student.category}
-              onChange={handleChange}
-              disabled={isView}
-            />
-          </div>
-          <div className="col-md-4">
-            <label>Estado</label>
-            <select
+          <TextField
+            label="Fecha de nacimiento"
+            type="date"
+            name="birthDate"
+            value={student.birthDate ? student.birthDate.substring(0, 10) : ""}
+            onChange={handleChange}
+            fullWidth
+            InputLabelProps={{ shrink: true }}
+            disabled={isView}
+          />
+
+          <TextField
+            label="Dirección"
+            name="address"
+            value={student.address}
+            onChange={handleChange}
+            fullWidth
+            disabled={isView}
+          />
+
+          <TextField
+            label="Email"
+            name="mail"
+            type="email"
+            value={student.mail}
+            onChange={handleChange}
+            fullWidth
+            disabled={isView}
+          />
+
+          <TextField
+            label="Categoría"
+            name="category"
+            value={student.category}
+            onChange={handleChange}
+            fullWidth
+            disabled={isView}
+          />
+
+          <FormControl fullWidth disabled={isView}>
+            <InputLabel>Estado</InputLabel>
+            <Select
               name="state"
-              className="form-select"
               value={student.state}
               onChange={handleChange}
-              disabled={isView}
+              label="Estado"
             >
-              <option value="Activo">Activo</option>
-              <option value="Inactivo">Inactivo</option>
-            </select>
-          </div>
-        </div>
+              <MenuItem value="Activo">Activo</MenuItem>
+              <MenuItem value="Inactivo">Inactivo</MenuItem>
+            </Select>
+          </FormControl>
 
-        <div className="row mb-3">
-          <div className="col-md-4">
-            <label>Nombre de la madre</label>
-            <input
-              type="text"
-              className="form-control"
-              name="motherName"
-              value={student.motherName}
-              onChange={handleChange}
-              disabled={isView}
-            />
-          </div>
-          <div className="col-md-4">
-            <label>Teléfono madre</label>
-            <input
-              type="text"
-              className="form-control"
-              name="motherPhone"
-              value={student.motherPhone}
-              onChange={handleChange}
-              disabled={isView}
-            />
-          </div>
-          <div className="col-md-4">
-            {/* Estado ya está arriba, podés eliminar o mover esta fila si querés */}
-          </div>
-        </div>
+          <TextField
+            label="Nombre de la madre"
+            name="motherName"
+            value={student.motherName}
+            onChange={handleChange}
+            fullWidth
+            disabled={isView}
+          />
+          <TextField
+            label="Teléfono madre"
+            name="motherPhone"
+            value={student.motherPhone}
+            onChange={handleChange}
+            fullWidth
+            disabled={isView}
+          />
+          <TextField
+            label="Nombre del padre"
+            name="fatherName"
+            value={student.fatherName}
+            onChange={handleChange}
+            fullWidth
+            disabled={isView}
+          />
+          <TextField
+            label="Teléfono padre"
+            name="fatherPhone"
+            value={student.fatherPhone}
+            onChange={handleChange}
+            fullWidth
+            disabled={isView}
+          />
 
-        <div className="row mb-3">
-          <div className="col-md-6">
-            <label>Nombre del padre</label>
-            <input
-              type="text"
-              className="form-control"
-              name="fatherName"
-              value={student.fatherName}
-              onChange={handleChange}
-              disabled={isView}
-            />
-          </div>
-          <div className="col-md-6">
-            <label>Teléfono padre</label>
-            <input
-              type="text"
-              className="form-control"
-              name="fatherPhone"
-              value={student.fatherPhone}
-              onChange={handleChange}
-              disabled={isView}
-            />
-          </div>
-        </div>
-
-        <div className="mb-3">
-          <label>Comentario</label>
-          <textarea
+          <TextField
+            label="Comentario"
             name="comment"
-            className="form-control"
+            multiline
+            minRows={3}
             value={student.comment}
             onChange={handleChange}
+            fullWidth
             disabled={isView}
-          ></textarea>
-        </div> 
+          />
 
-        {/* Foto y carga solo para crear/editar */}
-        {!isView && (
-          <div className="mb-3">
-            <label>Foto de perfil</label>
-            <br />
-            {imagePreview && (
-              <img
-                src={imagePreview}
-                alt="Vista previa"
-                style={{ maxWidth: "250px", borderRadius: "8px" }}
-              />
-            )}
-            <input
-              type="file"
-              className="form-control mt-2"
-              accept="image/*"
-              onChange={handleImageChange}
-            />
-          </div>
-        )}
+          {!isView && (
+            <Box textAlign="center">
+              {imagePreview && (
+                <Avatar
+                  src={imagePreview}
+                  alt="Preview"
+                  sx={{ width: 120, height: 120, mx: "auto", mb: 2 }}
+                />
+              )}
+              <Button variant="outlined" component="label">
+                Subir Foto
+                <input type="file" hidden accept="image/*" onChange={handleImageChange} />
+              </Button>
+            </Box>
+          )}
 
-        {/* Botones Crear/Editar */}
-        {!isView && (
-          <div className="d-flex gap-2 mt-3 justify-content-center">
-            <button type="submit" className="btn btn-primary">
-              {isEdit ? "Actualizar" : "Crear"}
-            </button>
-            <button
-              type="button"
-              className="btn btn-outline-primary"
-              onClick={() => navigate(-1)}
-            >
-              <i className="bi bi-arrow-left"></i> Volver
-            </button>
-          </div>
-        )}
+          {!isView && (
+            <Stack direction="row" spacing={2} justifyContent="center" mt={2}>
+              <Button type="submit" variant="contained" color="primary">
+                {isEdit ? "Actualizar" : "Crear"}
+              </Button>
+              <Button variant="outlined" onClick={() => navigate(-1)}>
+                Volver
+              </Button>
+            </Stack>
+          )}
+        </Stack>
       </form>
-    </div>
+    </Box>
   );
 };
 
