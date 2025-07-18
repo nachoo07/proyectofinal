@@ -285,61 +285,6 @@ const StudentTable = () => {
                     '&:hover': { background: '#b2dfdb' },
                   }}
                 >
-
-                  <TableCell className="table-cell">{student.name}</TableCell>
-                  <TableCell className="table-cell">{student.lastName}</TableCell>
-                  <TableCell className="table-cell">{student.dni}</TableCell>
-                  <TableCell className="table-cell">{capitalizeFirstLetter(student.state)}</TableCell>
-
-                  <TableCell className="table-cell">
-                    <Tooltip title="Ver estudiante">
-                      <Button
-                        component={Link}
-                        to={`/students/${student.id}`}
-                        variant="outlined"
-                        color="primary"
-                        size="small"
-                        sx={{ minWidth: 'auto', mr: 1, cursor: 'pointer' }}
-                      >
-                        Ver
-                      </Button>
-                    </Tooltip>
-                    <Tooltip title="Editar estudiante">
-                      <Button
-                        component={Link}
-                        to={`/students/${student.id}?edit=true`}
-                        variant="outlined"
-                        color="primary"
-                        size="small"
-                        sx={{ minWidth: 'auto', mr: 1, cursor: 'pointer' }}
-                      >
-                        <EditIcon />
-                      </Button>
-                    </Tooltip>
-                    <Tooltip title="Ver cuotas">
-                      <Button
-                        component={Link}
-                        to={`/shares/student/${student.id}`}
-                        variant="outlined"
-                        color="primary"
-                        size="small"
-                        sx={{ minWidth: 'auto', mr: 1, cursor: 'pointer' }}
-                      >
-                        Cuotas
-                      </Button>
-                    </Tooltip>
-                    <Tooltip title="Eliminar estudiante">
-                      <Button
-                        variant="outlined"
-                        color="error"
-                        size="small"
-                        onClick={() => handleOpenDeleteDialog(student.id)}
-                        sx={{ minWidth: 'auto', cursor: 'pointer' }}
-                      >
-                        <DeleteIcon />
-                      </Button>
-                    </Tooltip>
-
                   <TableCell sx={{ color: '#00335c', fontWeight: 500, textAlign: 'center' }}>{student.name}</TableCell>
                   <TableCell sx={{ color: '#00335c', fontWeight: 500, textAlign: 'center' }}>{student.lastName}</TableCell>
                   <TableCell sx={{ color: '#00335c', fontWeight: 500, textAlign: 'center' }}>{student.dni}</TableCell>
@@ -398,7 +343,6 @@ const StudentTable = () => {
                         </>
                       )}
                     </Box>
-
                   </TableCell>
                 </TableRow>
               ))
