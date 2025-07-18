@@ -4,12 +4,10 @@ import Share from '../../components/share/Share'; // Ajusta la ruta según la ub
 
 const SharesPage = () => {
   return (
-    <Box sx={{ maxWidth: '1200px', margin: '0 auto' }}>
-      <Typography variant="h4" gutterBottom>
-        Estado de Cuotas
-      </Typography>
+    
+
       <Share />
-    </Box>
+    
   );
 };
 

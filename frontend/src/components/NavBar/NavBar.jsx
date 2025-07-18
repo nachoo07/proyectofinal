@@ -43,14 +43,15 @@ const NavBar = () => {
   const [currentSubmenu, setCurrentSubmenu] = useState(null);
   const isMobileMenuOpen = Boolean(mobileMenuAnchorEl);
   const isSubmenuOpen = Boolean(submenuAnchorEl);
-  const { logout, userData } = useContext(LoginContext);
+  const { logout, userData, auth } = useContext(LoginContext);
   const navigate = useNavigate();
   const location = useLocation();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const isHome = location.pathname === '/'
 
-  console.log(location.pathname)
+  // Verificar si el usuario es admin
+  const isAdmin = auth === 'admin';
 
   const handleMobileMenuOpen = (event) => {
     setMobileMenuAnchorEl(event.currentTarget);
@@ -81,29 +82,44 @@ const NavBar = () => {
     if (isMobile) handleMobileMenuClose();
   };
 
-  const navItems = [
-    { text: 'Todos', icon: <HomeIcon />, url: '/' },
-    {
-      text: 'Principal',
-      icon: <PrincipalIcon />,
-      submenu: [
-        { text: 'Alumnos', url: '/students', icon: <PeopleIcon /> },
-        { text: 'Asistencia', url: '/attendance', icon: <AsistenciaIcon /> },
-        { text: 'Profesores', icon: <ProfesoresIcon />, url: '/teachers' },
-      ],
-    },
-    {
-      text: 'Finanzas',
-      icon: <FinanzasIcon />,
-      submenu: [
-        { text: 'Movimientos', url: '/motions', icon: <MovimientosIcon /> },
-        { text: 'Informes', icon: <InformesIcon />, url: '/reports' },
-      ],
-    },
-    { text: 'Usuarios', icon: <UsuariosIcon />, url: '/user' },
-    { text: 'Notificaciones', icon: <NotificacionesIcon />, url: '/notifications' },
-    { text: 'Configuración', icon: <ConfiguracionIcon />, url: '/settings' },
-  ];
+  // Elementos de navegación según el rol
+  const getNavItems = () => {
+    if (isAdmin) {
+      // Navegación completa para admin
+      return [
+        { text: 'Todos', icon: <HomeIcon />, url: '/' },
+        {
+          text: 'Principal',
+          icon: <PrincipalIcon />,
+          submenu: [
+            { text: 'Alumnos', url: '/students', icon: <PeopleIcon /> },
+            { text: 'Asistencia', url: '/attendance', icon: <AsistenciaIcon /> },
+            { text: 'Profesores', icon: <ProfesoresIcon />, url: '/teachers' },
+          ],
+        },
+        {
+          text: 'Finanzas',
+          icon: <FinanzasIcon />,
+          submenu: [
+            { text: 'Movimientos', url: '/motions', icon: <MovimientosIcon /> },
+            { text: 'Informes', icon: <InformesIcon />, url: '/reports' },
+          ],
+        },
+        { text: 'Usuarios', icon: <UsuariosIcon />, url: '/user' },
+        { text: 'Notificaciones', icon: <NotificacionesIcon />, url: '/notifications' },
+        { text: 'Configuración', icon: <ConfiguracionIcon />, url: '/settings' },
+      ];
+    } else {
+      // Navegación limitada para usuarios no admin
+      return [
+        { text: 'Inicio', icon: <HomeIcon />, url: '/homeuser' },
+        { text: 'Asistencia', icon: <AsistenciaIcon />, url: '/attendance' },
+        { text: 'Notificaciones', icon: <NotificacionesIcon />, url: '/notifications' },
+      ];
+    }
+  };
+
+  const navItems = getNavItems();
 
   const tabItems = navItems.filter(item => !item.submenu && !item.variant);
 

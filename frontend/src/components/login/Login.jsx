@@ -1,4 +1,4 @@
-import  { useState, useContext, useEffect } from 'react';
+import { useState, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { LoginContext } from '../../context/login/LoginContext';
 import {
@@ -10,7 +10,8 @@ import {
   Row,
   Col,
 } from 'react-bootstrap';
-import fondoLogin from '../../assets/ninos-futbol.webp'; 
+import fondoLogin from '../../assets/ninos-futbol.webp';
+import './login.css';
 
 const PageLogin = () => {
   const { login, auth, loading } = useContext(LoginContext);
@@ -64,88 +65,74 @@ const PageLogin = () => {
   };
 
   return (
-    <div
-      className="position-relative d-flex align-items-center justify-content-center"
-      style={{
-        backgroundImage: `url(${fondoLogin})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        minHeight: '100vh',
-      }}
-    >
+    <div className="login-wrapper">
       {/* Overlay oscuro */}
-      <div
-        className="position-absolute top-0 start-0 w-100 h-100"
-        style={{
-          backgroundColor: 'rgba(0,0,0,0.5)',
-          zIndex: 1,
-        }}
-      ></div>
+      <div className="login-overlay"></div>
 
       {/* Login */}
-      <Container
-        fluid
-        className="position-relative z-2 d-flex align-items-center justify-content-center"
-        style={{ zIndex: 2 }}
-      >
+      <Container fluid className="login-container">
         {loading ? (
-          <div className="text-center text-white">
+          <div className="login-loading">
             <Spinner animation="border" variant="light" />
-            <p className="mt-3">Cargando...</p>
+            <p className="login-loading-text">Cargando...</p>
           </div>
         ) : (
-          <Row className="justify-content-center w-100">
-            <Col xs={11} sm={8} md={6} lg={4}>
-              <Card
-                className="shadow border-0 rounded-4 p-3"
-                style={{ backgroundColor: '#e8f5e9' }} // verde muy suave
-              >
-                <Card.Body>
-                  <h3 className="text-center mb-4 text-success fw-bold">
-                    Iniciar Sesión
+          <Row className="login-row">
+            <Col xs={11} sm={9} md={7} lg={5} xl={4}>
+              <Card className="login-card">
+                <Card.Body className="login-card-body">
+                  <h3 className="login-title">
+                    <i className="fas fa-futbol" style={{marginRight: '10px', fontSize: '2rem'}}></i>
+                    Bienvenido
                   </h3>
-                  <Form onSubmit={handleSubmit} className="text-center">
-                    <Form.Group controlId="email" className="mb-3">
-                      <Form.Label className="fw-semibold">Correo</Form.Label>
+                  <Form onSubmit={handleSubmit} className="login-form">
+                    <Form.Group controlId="email" className="login-form-group">
+                      <Form.Label className="login-form-label">
+                        <i className="fas fa-envelope" style={{marginRight: '8px'}}></i>
+                        Correo Electrónico
+                      </Form.Label>
                       <Form.Control
                         type="email"
-                        placeholder="ej: usuario@gmail.com"
-                        className="mx-auto rounded-pill p-2 text-center"
-                        style={{ maxWidth: '300px' }}
+                        placeholder="Ingresa tu correo electrónico"
+                        className="login-form-control"
                         value={email}
                         isInvalid={!!formErrors.email}
                         onChange={(e) => setEmail(e.target.value)}
                       />
-                      <Form.Control.Feedback type="invalid">
+                      <Form.Control.Feedback type="invalid" className="login-form-feedback">
                         {formErrors.email}
                       </Form.Control.Feedback>
                     </Form.Group>
 
-                    <Form.Group controlId="password" className="mb-3">
-                      <Form.Label className="fw-semibold">Contraseña</Form.Label>
+                    <Form.Group controlId="password" className="login-form-group">
+                      <Form.Label className="login-form-label">
+                        <i className="fas fa-lock" style={{marginRight: '8px'}}></i>
+                        Contraseña
+                      </Form.Label>
                       <Form.Control
                         type="password"
-                        placeholder="********"
-                        className="mx-auto rounded-pill p-2 text-center"
-                        style={{ maxWidth: '300px' }}
+                        placeholder="Ingresa tu contraseña"
+                        className="login-form-control"
                         value={password}
                         isInvalid={!!formErrors.password}
                         onChange={(e) => setPassword(e.target.value)}
                       />
-                      <Form.Control.Feedback type="invalid">
+                      <Form.Control.Feedback type="invalid" className="login-form-feedback">
                         {formErrors.password}
                       </Form.Control.Feedback>
                     </Form.Group>
 
                     {error && (
-                      <div className="text-danger text-center mb-3">{error}</div>
+                      <div className="login-error">{error}</div>
                     )}
 
                     <Button
                       type="submit"
-                      variant="success"
-                      className="w-75 rounded-pill mt-2"
+                      variant="primary"
+                      className="login-button"
+                      disabled={loading}
                     >
+                      <i className="fas fa-sign-in-alt" style={{marginRight: '8px'}}></i>
                       Iniciar Sesión
                     </Button>
                   </Form>

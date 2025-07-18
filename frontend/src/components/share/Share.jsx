@@ -25,6 +25,7 @@ import {
 } from '@mui/material';
 import { SharesContext } from '../../context/share/ShareContext';
 import { toast } from 'react-toastify';
+import CancelIcon from '@mui/icons-material/Cancel'; // Importación añadida
 import { calculateDueDate } from '../../utils/dateUtils';
 
 const Share = () => {
@@ -41,11 +42,11 @@ const Share = () => {
   const [massShareData, setMassShareData] = useState({
     quotaName: '',
     amount: '',
-    date: '', // Nuevo campo para la fecha
+    date: '',
     year: new Date().getFullYear(),
   });
   const [filters, setFilters] = useState({
-    all: true, // Nuevo checkbox "Todos"
+    all: true,
     pendiente: true,
     vencido: true,
     pagado: true,
@@ -53,7 +54,6 @@ const Share = () => {
   });
   const navigate = useNavigate();
 
-  // Obtener la última cuota de cada alumno
   const getLatestShareStatus = (studentId) => {
     const studentShares = studentsWithShares.filter((share) => share.student_id === studentId);
     if (studentShares.length === 0) return 'Sin Cuota';
@@ -122,7 +122,7 @@ const Share = () => {
       return;
     }
     try {
-      const dueDate = calculateDueDate(date); // Calcular fecha de vencimiento desde la fecha ingresada
+      const dueDate = calculateDueDate(date);
       const payload = { quotaName, amount: parseFloat(amount), date, dueDate, year };
       await createMassShare(payload);
       toast.success('Cuota masiva creada exitosamente');
@@ -147,174 +147,269 @@ const Share = () => {
     } else {
       setFilters((prev) => {
         const newFilters = { ...prev, [name]: checked };
-        newFilters.all = Object.values(newFilters).slice(1).every((value) => value); // Actualiza "all" si todos están checked
+        newFilters.all = Object.values(newFilters).slice(1).every((value) => value);
         return newFilters;
       });
     }
   };
 
   return (
-
-    <Box sx={{ padding: '20px' }}>
-      <Typography variant="h4" gutterBottom>
-        Panel de Cuotas
-      </Typography>
-      <Box sx={{ mb: 3, display: 'flex', flexWrap: 'wrap', gap: 2, alignItems: 'center' }}>
-
-        <Box sx={{}}>
-          <Box sx={{ mb: 3, display: 'flex', flexWrap: 'wrap', gap: 2 }}>
-
-            <TextField
-              sx={{ flex: 1, minWidth: '250px' }}
-              label="Buscar por nombre, apellido o DNI"
-              value={searchQuery}
-              onChange={handleSearchChange}
-              variant="outlined"
+    <Box
+      sx={{
+        background: 'linear-gradient(135deg, #e8f5e9 0%, #b2dfdb 100%)',
+        minHeight: '100vh',
+        p: { xs: 1, md: 2, lg: 2 },
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'flex-start',
+        boxSizing: 'border-box',
+      }}
+      className="share-container"
+    >
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          width: '100%',
+          mb: 4,
+          p: 2,
+          background: 'linear-gradient(90deg, #43e97b 0%, #38f9d7 100%)',
+          borderRadius: '16px',
+          boxShadow: '0 6px 24px rgba(67, 233, 123, 0.15)',
+          transition: 'transform 0.3s',
+          '&:hover': {
+            transform: 'scale(1.01)',
+          },
+        }}
+      >
+        <Typography
+          variant="h3"
+          sx={{
+            fontWeight: 800,
+            color: '#00335c',
+            textShadow: '2px 2px 6px rgba(56, 249, 215, 0.15)',
+            letterSpacing: '0.08rem',
+          }}
+        >
+          Panel de Cuotas
+        </Typography>
+      </Box>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: { xs: 'column', md: 'row' },
+          justifyContent: 'center',
+          alignItems: 'center',
+          mb: { xs: 2, md: 4 },
+          flexWrap: 'wrap',
+          gap: 2,
+          width: '100%',
+          maxWidth: '1200px',
+        }}
+      >
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: { xs: 'column', md: 'row' },
+            gap: 2,
+            flexGrow: 1,
+            width: '100%',
+            minWidth: '260px',
+            background: '#fff',
+            borderRadius: '12px',
+            boxShadow: '0 2px 8px rgba(56, 249, 215, 0.08)',
+            p: 2,
+            alignItems: { xs: 'stretch', md: 'center' },
+            justifyContent: 'space-between',
+          }}
+        >
+          <TextField
+            label="Buscar por nombre, apellido o DNI"
+            value={searchQuery}
+            onChange={handleSearchChange}
+            sx={{
+              flex: 2,
+              minWidth: '250px',
+              maxWidth: { xs: '100%', md: '350px' },
+              '& .MuiOutlinedInput-root': {
+                '& fieldset': { borderColor: '#38f9d7' },
+                '&:hover fieldset': { borderColor: '#43e97b' },
+                '&.Mui-focused fieldset': { borderColor: '#43e97b' },
+              },
+              '& .MuiInputLabel-root': { color: '#00335c' },
+              '& .MuiInputLabel-root.Mui-focused': { color: '#43e97b' },
+            }}
+          />
+          <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mx: { xs: 0, md: 2 }, flex: 3, justifyContent: { xs: 'flex-start', md: 'center' } }}>
+            <FormControlLabel
+              control={<Checkbox checked={filters.all} onChange={handleFilterChange} name="all" />}
+              label="Todos"
             />
-            <Button variant="contained" color="primary" onClick={handleOpenMassShareDialog}>
-              Crear Cuota Masiva
-            </Button>
-            <Box sx={{ display: 'flex', gap: 1, ml: 2 }}>
-              <FormControlLabel
-                control={<Checkbox checked={filters.all} onChange={handleFilterChange} name="all" />}
-                label="Todos"
-              />
-              <FormControlLabel
-                control={<Checkbox checked={filters.pendiente} onChange={handleFilterChange} name="pendiente" />}
-                label="Pendiente"
-              />
-              <FormControlLabel
-                control={<Checkbox checked={filters.vencido} onChange={handleFilterChange} name="vencido" />}
-                label="Vencido"
-              />
-              <FormControlLabel
-                control={<Checkbox checked={filters.pagado} onChange={handleFilterChange} name="pagado" />}
-                label="Pagado"
-              />
-              <FormControlLabel
-                control={<Checkbox checked={filters.sinCuotas} onChange={handleFilterChange} name="sinCuotas" />}
-                label="Sin Cuotas"
-              />
-            </Box>
+            <FormControlLabel
+              control={<Checkbox checked={filters.pendiente} onChange={handleFilterChange} name="pendiente" />}
+              label="Pendiente"
+            />
+            <FormControlLabel
+              control={<Checkbox checked={filters.vencido} onChange={handleFilterChange} name="vencido" />}
+              label="Vencido"
+            />
+            <FormControlLabel
+              control={<Checkbox checked={filters.pagado} onChange={handleFilterChange} name="pagado" />}
+              label="Pagado"
+            />
+            <FormControlLabel
+              control={<Checkbox checked={filters.sinCuotas} onChange={handleFilterChange} name="sinCuotas" />}
+              label="Sin Cuotas"
+            />
           </Box>
-          <TableContainer component={Paper} sx={{ mb: 4 }}>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>#</TableCell>
-                  <TableCell>Nombre</TableCell>
-                  <TableCell>Apellido</TableCell>
-                  <TableCell>DNI</TableCell>
-                  <TableCell>Estado del Alumno</TableCell>
-                  <TableCell>Acciones</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {filteredStudents.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={6} sx={{ textAlign: 'center' }}>
-                      No se encontraron alumnos
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  filteredStudents.map((student, index) => (
-                    <TableRow key={student.id}>
-                      <TableCell>{index + 1}</TableCell>
-                      <TableCell>{student.name}</TableCell>
-                      <TableCell>{student.lastName}</TableCell>
-                      <TableCell>{student.dni}</TableCell>
-                      <TableCell>{getLatestShareStatus(student.id)}</TableCell>
-                      <TableCell>
-                        <Button
-                          variant="contained"
-                          color="primary"
-                          onClick={() => handleViewShares(student.id)}
-                          disabled={loading}
-                        >
-                          Ver Cuotas
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
-          </TableContainer>
-
-          <Dialog open={openMassShareDialog} onClose={handleCloseMassShareDialog}>
-            <DialogTitle>Crear Cuota Masiva</DialogTitle>
-            <DialogContent>
-              <FormControl fullWidth sx={{ mt: 2, mb: 2 }}>
-                <InputLabel>Año</InputLabel>
-                <Select
-                  name="year"
-                  value={massShareData.year}
-                  onChange={handleMassShareInputChange}
-                  label="Año"
-                >
-                  {[2023, 2024, 2025, 2026, 2027].map((year) => (
-                    <MenuItem key={year} value={year}>
-                      {year}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-              <TextField
-                label="Cuota"
-                name="quotaName"
-                value={massShareData.quotaName}
-                onChange={handleMassShareInputChange}
-                fullWidth
-                sx={{ mb: 2 }}
-                required
-                placeholder="Ej: Cuota Masiva - Semestre 1 - 2025"
-              />
-              <TextField
-                label="Monto"
-                name="amount"
-                type="number"
-                value={massShareData.amount}
-                onChange={handleMassShareInputChange}
-                fullWidth
-                sx={{ mb: 2 }}
-                required
-              />
-              <TextField
-                label="Fecha de Inicio"
-                name="date"
-                type="date"
-                value={massShareData.date}
-                onChange={handleMassShareInputChange}
-                fullWidth
-                sx={{ mb: 2 }}
-                required
-                InputLabelProps={{ shrink: true }}
-              />
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={handleCloseMassShareDialog} color="secondary">
-                Cancelar
-              </Button>
-              <Button onClick={handleMassShareSubmit} color="primary">
-                Guardar
-              </Button>
-            </DialogActions>
-          </Dialog>
-
-          {loading && (
-            <Typography variant="body1" sx={{ textAlign: 'center', mt: 2 }}>
-              Cargando datos...
-            </Typography>
-          )}
-          {error && (
-            <Typography variant="body1" color="error" sx={{ textAlign: 'center', mt: 2 }}>
-              {error}
-            </Typography>
-          )}
+          <Button
+            variant="contained"
+            color="success"
+            onClick={handleOpenMassShareDialog}
+            sx={{ borderRadius: '32px', fontWeight: 700, fontSize: { xs: '1.1rem', md: '1.3rem' },   flex: 1 }}
+          >
+            Crear Cuota Masiva
+          </Button>
         </Box>
       </Box>
+      <TableContainer
+        component={Paper}
+        sx={{
+          mb: 4,
+          borderRadius: '16px',
+          boxShadow: '0 6px 24px rgba(67, 233, 123, 0.10)',
+          overflow: 'auto',
+          width: '100%',
+          maxWidth: '1200px',
+          mx: 'auto',
+        }}
+      >
+        <Table sx={{ minWidth: 650 }}>
+          <TableHead>
+            <TableRow sx={{ background: 'linear-gradient(90deg, #43e97b 0%, #38f9d7 100%)' }}>
+              <TableCell sx={{ color: '#00335c', fontWeight: 700, fontSize: { xs: '1rem', md: '1.1rem' }, borderTopLeftRadius: '16px', textAlign: 'center' }}>#</TableCell>
+              <TableCell sx={{ color: '#00335c', fontWeight: 700, fontSize: { xs: '1rem', md: '1.1rem' }, textAlign: 'center' }}>Nombre</TableCell>
+              <TableCell sx={{ color: '#00335c', fontWeight: 700, fontSize: { xs: '1rem', md: '1.1rem' }, textAlign: 'center' }}>Apellido</TableCell>
+              <TableCell sx={{ color: '#00335c', fontWeight: 700, fontSize: { xs: '1rem', md: '1.1rem' }, textAlign: 'center' }}>DNI</TableCell>
+              <TableCell sx={{ color: '#00335c', fontWeight: 700, fontSize: { xs: '1rem', md: '1.1rem' }, textAlign: 'center' }}>Estado del Alumno</TableCell>
+              <TableCell sx={{ color: '#00335c', fontWeight: 700, fontSize: { xs: '1rem', md: '1.1rem' }, borderTopRightRadius: '16px', textAlign: 'center' }}>Acciones</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {filteredStudents.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={6} sx={{ textAlign: 'center', color: '#00335c', fontWeight: 600, fontSize: { xs: '1rem', md: '1.1rem' }, py: 4 }}>
+                  No se encontraron alumnos
+                </TableCell>
+              </TableRow>
+            ) : (
+              filteredStudents.map((student, index) => (
+                <TableRow
+                  key={student.id}
+                  sx={{
+                    background: index % 2 === 0 ? '#f8fafc' : '#e0f7fa',
+                    transition: 'background 0.2s',
+                    '&:hover': { background: '#b2dfdb' },
+                  }}
+                >
+                  <TableCell sx={{ color: '#00335c', fontWeight: 600, textAlign: 'center' }}>{index + 1}</TableCell>
+                  <TableCell sx={{ color: '#00335c', fontWeight: 500, textAlign: 'center' }}>{student.name}</TableCell>
+                  <TableCell sx={{ color: '#00335c', fontWeight: 500, textAlign: 'center' }}>{student.lastName}</TableCell>
+                  <TableCell sx={{ color: '#00335c', fontWeight: 500, textAlign: 'center' }}>{student.dni}</TableCell>
+                  <TableCell sx={{ color: '#00335c', fontWeight: 500, textAlign: 'center' }}>{getLatestShareStatus(student.id)}</TableCell>
+                  <TableCell sx={{ textAlign: 'center' }}>
+                    <Button
+                      variant="contained"
+                      color="info"
+                      onClick={() => handleViewShares(student.id)}
+                      disabled={loading}
+                      sx={{ borderRadius: '50%', minWidth: 40, height: 40, p: 0, fontWeight: 700 }}
+                    >
+                      💲
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
+      </TableContainer>
+      <Dialog open={openMassShareDialog} onClose={handleCloseMassShareDialog} sx={{ '& .MuiDialog-paper': { borderRadius: '12px', boxShadow: '0 8px 16px rgba(0, 0, 0, 0.2)', backgroundColor: '#E6F9EC' } }}>
+        <DialogTitle sx={{ background: 'linear-gradient(90deg, #8eeab1, #007e32)', color: '#00335c', fontWeight: 700, borderTopLeftRadius: '12px', borderTopRightRadius: '12px', p: 2 }}>
+          Crear Cuota Masiva
+        </DialogTitle>
+        <DialogContent sx={{ p: 3, pt: 4 }}>
+          <FormControl fullWidth sx={{ mt: 2, mb: 2 }}>
+            <InputLabel>Año</InputLabel>
+            <Select
+              name="year"
+              value={massShareData.year}
+              onChange={handleMassShareInputChange}
+              label="Año"
+              sx={{ '& .MuiOutlinedInput-root': { '& fieldset': { borderColor: '#38f9d7' }, '&:hover fieldset': { borderColor: '#43e97b' }, '&.Mui-focused fieldset': { borderColor: '#43e97b' } }, '& .MuiInputLabel-root': { color: '#00335c' }, '& .MuiInputLabel-root.Mui-focused': { color: '#43e97b' } }}
+            >
+              {[2023, 2024, 2025, 2026, 2027].map((year) => (
+                <MenuItem key={year} value={year}>
+                  {year}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          <TextField
+            label="Cuota"
+            name="quotaName"
+            value={massShareData.quotaName}
+            onChange={handleMassShareInputChange}
+            fullWidth
+            sx={{ mb: 2, '& .MuiOutlinedInput-root': { '& fieldset': { borderColor: '#38f9d7' }, '&:hover fieldset': { borderColor: '#43e97b' }, '&.Mui-focused fieldset': { borderColor: '#43e97b' } }, '& .MuiInputLabel-root': { color: '#00335c' }, '& .MuiInputLabel-root.Mui-focused': { color: '#43e97b' } }}
+            required
+            placeholder="Ej: Cuota Masiva - Semestre 1 - 2025"
+          />
+          <TextField
+            label="Monto"
+            name="amount"
+            type="number"
+            value={massShareData.amount}
+            onChange={handleMassShareInputChange}
+            fullWidth
+            sx={{ mb: 2, '& .MuiOutlinedInput-root': { '& fieldset': { borderColor: '#38f9d7' }, '&:hover fieldset': { borderColor: '#43e97b' }, '&.Mui-focused fieldset': { borderColor: '#43e97b' } }, '& .MuiInputLabel-root': { color: '#00335c' }, '& .MuiInputLabel-root.Mui-focused': { color: '#43e97b' } }}
+            required
+          />
+          <TextField
+            label="Fecha de Inicio"
+            name="date"
+            type="date"
+            value={massShareData.date}
+            onChange={handleMassShareInputChange}
+            fullWidth
+            sx={{ mb: 2, '& .MuiOutlinedInput-root': { '& fieldset': { borderColor: '#38f9d7' }, '&:hover fieldset': { borderColor: '#43e97b' }, '&.Mui-focused fieldset': { borderColor: '#43e97b' } }, '& .MuiInputLabel-root': { color: '#00335c' }, '& .MuiInputLabel-root.Mui-focused': { color: '#43e97b' } }}
+            required
+            InputLabelProps={{ shrink: true }}
+          />
+        </DialogContent>
+        <DialogActions sx={{ p: 2, justifyContent: 'space-between' }}>
+          <Button onClick={handleCloseMassShareDialog} variant="outlined" startIcon={<CancelIcon />} sx={{ color: '#00335c', borderColor: '#00335c', cursor: 'pointer', '&:hover': { backgroundColor: 'rgba(142, 234, 177, 0.1)', borderColor: '#8eeab1' }, fontWeight: 700 }}>
+            Cancelar
+          </Button>
+          <Button onClick={handleMassShareSubmit} variant="contained" sx={{ backgroundColor: '#43e97b', color: '#ffffff', cursor: 'pointer', '&:hover': { backgroundColor: '#38f9d7' }, fontWeight: 700 }}>
+            Guardar
+          </Button>
+        </DialogActions>
+      </Dialog>
+      {loading && (
+        <Typography variant="body1" sx={{ textAlign: 'center', mt: 2 }}>
+          Cargando datos...
+        </Typography>
+      )}
+      {error && (
+        <Typography variant="body1" color="error" sx={{ textAlign: 'center', mt: 2 }}>
+          {error}
+        </Typography>
+      )}
     </Box>
-      );
+  );
 };
 
-      export default Share;
+export default Share;

@@ -149,9 +149,11 @@ export const SharesProvider = ({ children }) => {
   useEffect(() => {
     if (auth === 'admin') {
       fetchStudentsWithShares();
-    } else if (auth === 'user' && userData) {
-      fetchSharesByStudent(userData.id);
     }
+    // Comentado: Los usuarios no admin no tienen acceso a cuotas
+    // else if (auth === 'user' && userData) {
+    //   fetchSharesByStudent(userData.id);
+    // }
   }, [auth, userData, fetchStudentsWithShares, fetchSharesByStudent]);
 
   return (

@@ -1,4 +1,3 @@
-// src/components/student/NewStudent.jsx
 import React, { useState, useEffect, useContext } from 'react';
 import {
   Box,
@@ -65,70 +64,111 @@ const NewStudent = () => {
   return (
     <Box
       sx={{
-        mt: 8,
-        backgroundColor: '#E6F9EC',
+        backgroundColor: '#e0f7f9',
         minHeight: '100vh',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
+        justifyContent: 'center',
+        p: { xs: 2, md: 4 },
       }}
     >
       <Paper
-        elevation={3}
+        elevation={6}
         sx={{
-          maxWidth: 500,
+          maxWidth: 600,
           width: '100%',
-          borderRadius: '12px',
+          borderRadius: '16px',
           backgroundColor: '#ffffff',
+          p: { xs: 3, md: 5 },
+          mx: 'auto',
+          boxShadow: '0 8px 24px rgba(0, 128, 0, 0.1)',
+          transition: 'box-shadow 0.3s',
+          '&:hover': {
+            boxShadow: '0 12px 32px rgba(0, 128, 0, 0.15)',
+          },
         }}
       >
-        <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-          <SchoolIcon sx={{ fontSize: 30, color: '#00335c', mr: 1 }} />
-          <Typography variant="h5" sx={{ fontWeight: 700, color: '#00335c' }}>
-            {id ? 'Editar Estudiante' : 'Crear Nuevo Estudiante'}
+        <Box sx={{ display: 'flex', alignItems: 'center', mb: 4, justifyContent: 'center' }}>
+          <SchoolIcon sx={{ fontSize: 40, color: '#2e7d32', mr: 2 }} />
+          <Typography variant="h4" sx={{ fontWeight: 700, color: '#2e7d32', letterSpacing: '0.05em' }}>
+            {id ? 'Editar Estudiante' : 'Nuevo Estudiante'}
           </Typography>
         </Box>
 
-        <form onSubmit={handleSubmit}>
-          <TextField
-            label="Apellido"
-            name="lastname"
-            value={student.lastname}
-            onChange={handleChange}
-            fullWidth
-            required
-            sx={{ mb: 3 }}
-          />
-          <TextField
-            label="Nombre"
-            name="name"
-            value={student.name}
-            onChange={handleChange}
-            fullWidth
-            required
-            sx={{ mb: 3 }}
-          />
-          <TextField
-            label="DNI"
-            name="dni"
-            value={student.dni}
-            onChange={handleChange}
-            fullWidth
-            required
-            sx={{ mb: 3 }}
-          />
+        <form onSubmit={handleSubmit} style={{ width: '100%' }}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, mb: 4 }}>
+            <TextField
+              label="Apellido"
+              name="lastname"
+              value={student.lastname}
+              onChange={handleChange}
+              required
+              fullWidth
+              variant="outlined"
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: '12px',
+                  backgroundColor: '#f5f5f5',
+                  '&:hover': { backgroundColor: '#e8f5e9' },
+                },
+                '& .MuiInputLabel-root': { color: '#2e7d32', fontWeight: 600 },
+                '& .MuiInputLabel-root.Mui-focused': { color: '#1b5e20' },
+              }}
+            />
+            <TextField
+              label="Nombre"
+              name="name"
+              value={student.name}
+              onChange={handleChange}
+              required
+              fullWidth
+              variant="outlined"
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: '12px',
+                  backgroundColor: '#f5f5f5',
+                  '&:hover': { backgroundColor: '#e8f5e9' },
+                },
+                '& .MuiInputLabel-root': { color: '#2e7d32', fontWeight: 600 },
+                '& .MuiInputLabel-root.Mui-focused': { color: '#1b5e20' },
+              }}
+            />
+            <TextField
+              label="DNI"
+              name="dni"
+              value={student.dni}
+              onChange={handleChange}
+              required
+              fullWidth
+              variant="outlined"
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: '12px',
+                  backgroundColor: '#f5f5f5',
+                  '&:hover': { backgroundColor: '#e8f5e9' },
+                },
+                '& .MuiInputLabel-root': { color: '#2e7d32', fontWeight: 600 },
+                '& .MuiInputLabel-root.Mui-focused': { color: '#1b5e20' },
+              }}
+            />
+          </Box>
 
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 3 }}>
+          <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, mt: 4 }}>
             <Button
               variant="outlined"
               startIcon={<CancelIcon />}
               onClick={() => navigate('/students')}
               sx={{
-                color: '#00335c',
-                borderColor: '#00335c',
+                color: '#2e7d32',
+                borderColor: '#2e7d32',
+                borderRadius: '20px',
+                fontWeight: 600,
+                px: 3,
+                py: 1.5,
                 '&:hover': {
-                  backgroundColor: 'rgba(142, 234, 177, 0.1)',
-                  borderColor: '#8eeab1',
+                  backgroundColor: 'rgba(46, 125, 50, 0.1)',
+                  borderColor: '#1b5e20',
                 },
               }}
             >
@@ -139,10 +179,14 @@ const NewStudent = () => {
               variant="contained"
               startIcon={<SaveIcon />}
               sx={{
-                backgroundColor: '#8eeab1',
-                color: '#00335c',
+                backgroundColor: '#2e7d32',
+                color: '#ffffff',
+                borderRadius: '20px',
+                fontWeight: 600,
+                px: 3,
+                py: 1.5,
                 '&:hover': {
-                  backgroundColor: '#007e32',
+                  backgroundColor: '#1b5e20',
                 },
               }}
             >
@@ -152,14 +196,25 @@ const NewStudent = () => {
         </form>
       </Paper>
 
-      {/* Botón volver afuera */}
-      <Box sx={{ mt: 4 }}>
+      <Box sx={{ mt: 4, display: 'flex', justifyContent: 'center', width: '100%' }}>
         <Button
           variant="outlined"
           color="success"
           onClick={() => navigate(-1)}
+          sx={{
+            color: '#2e7d32',
+            borderColor: '#2e7d32',
+            borderRadius: '20px',
+            fontWeight: 600,
+            px: 3,
+            py: 1.5,
+            '&:hover': {
+              backgroundColor: 'rgba(46, 125, 50, 0.1)',
+              borderColor: '#1b5e20',
+            },
+          }}
         >
-          Volver
+          Volverrrrrrrr
         </Button>
       </Box>
     </Box>

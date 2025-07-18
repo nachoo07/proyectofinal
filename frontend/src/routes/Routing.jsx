@@ -3,6 +3,7 @@ import ErrorBoundary from '../components/ErrorBoundary/ErrorBoundary';
 import ProtectedRoute from '../routes/protectRoutes/ProtectedRoute';
 import PageLogin from '../components/login/Login';
 import PageHomeAdmin from '../pages/homeAdmin/PageHomeAdmin';
+import PageHomeUser from '../pages/homeUser/PageHomeUser';
 import PageUser from '../pages/user/PageUser';
 import PageMotion from '../pages/motion/PageMotion';
 import PageNotification from '../pages/notification/PageNotification';
@@ -29,23 +30,33 @@ const Routing = () => {
       }
       <Routes>
         <Route path="/login" element={<PageLogin />} />
+        
+        {/* Rutas para Administradores */}
         <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
           <Route path="/" element={<PageHomeAdmin />} />
-
           <Route path="/user" element={<PageUser />} />
           <Route path="/motions" element={<PageMotion />} />
-          <Route path="/students" element={<PageStudent />} />
-          <Route path="/students/:id" element={<StudentDetail />} />
           <Route path="/students/:id/edit" element={<PageEditStudent />} />
           <Route path="/teachers" element={<PageTeacher />} />
           <Route path="/reports" element={<PageReport />} />
           <Route path="/settings" element={<PageSettings />} />
           <Route path="/shares" element={<SharesPage />} />
-          <Route path="/homeuser" element={<PageUser />} />
-          <Route path="/notifications" element={<PageNotification />} />
           <Route path="/shares/student/:studentId" element={<PageStudentShares />} />
+        </Route>
+
+        {/* Rutas para Usuarios No Admin */}
+        <Route element={<ProtectedRoute allowedRoles={['user']} />}>
+          <Route path="/homeuser" element={<PageHomeUser />} />
+        </Route>
+
+        {/* Rutas Compartidas (Admin y User) */}
+        <Route element={<ProtectedRoute allowedRoles={['admin', 'user']} />}>
+          <Route path="/students" element={<PageStudent />} />
+          <Route path="/students/:id" element={<StudentDetail />} />
+          <Route path="/notifications" element={<PageNotification />} />
           <Route path="/attendance" element={<PageAttendance />} />
         </Route>
+
         <Route path="*" element={<NotFound />} />
       </Routes>
     </ErrorBoundary>

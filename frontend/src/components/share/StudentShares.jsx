@@ -22,10 +22,9 @@ import {
 } from '@mui/material';
 import { SharesContext } from '../../context/share/ShareContext';
 import { toast } from 'react-toastify';
-
+import CancelIcon from '@mui/icons-material/Cancel'; // Importado para el botón Cancelar
 import { calculateDueDate } from '../../utils/dateUtils';
 
-// Función para determinar el estado y recargos basada en la fecha de vencimiento
 const getShareStatusAndAmount = (share, today) => {
   if (!share.date) return { state: 'Sin Cuota', amount: 0 };
   const dueDate = new Date(calculateDueDate(share.date));
@@ -179,15 +178,14 @@ const StudentShares = ({ studentId, onBack }) => {
     try {
       const share = studentsWithShares.find((s) => s.share_id === editingShare);
       const updatedData = {
-                student_id: parseInt(studentId),
-                date: editData.date,
-                amount: amountValue,
-                state: share.state,
-                quotaName: editData.quotaName.trim(),
-                paymentmethod: editData.paymentmethod || 'Efectivo',
-                paymentdate_actual: editData.paymentdate_actual || '', // <- Esto es clave
-              };
-
+        student_id: parseInt(studentId),
+        date: editData.date,
+        amount: amountValue,
+        state: share.state,
+        quotaName: editData.quotaName.trim(),
+        paymentmethod: editData.paymentmethod || 'Efectivo',
+        paymentdate_actual: editData.paymentdate_actual || '',
+      };
 
       await updateShare(editingShare, updatedData);
       toast.success('Cuota actualizada exitosamente');
@@ -234,118 +232,211 @@ const StudentShares = ({ studentId, onBack }) => {
   };
 
   const handleConfirmPay = async () => {
-  if (!payShareId) return;
-  try {
-    const share = studentsWithShares.find((s) => s.share_id === payShareId);
-    const dueDate = calculateDueDate(share.date);
-    
-    const { amount } = getShareStatusAndAmount(share, today); // 👈 monto con recargo si corresponde
+    if (!payShareId) return;
+    try {
+      const share = studentsWithShares.find((s) => s.share_id === payShareId);
+      const dueDate = calculateDueDate(share.date);
+      
+      const { amount } = getShareStatusAndAmount(share, today);
 
-    const updatedData = {
-      student_id: parseInt(studentId),
-      date: share.date,
-      amount: amount, // 👈 monto final con posible recargo
-      state: 'Pagado',
-      paymentdate: dueDate,
-      quotaName: share.quota_name,
-      paymentmethod: payMethod,
-      paymentdate_actual: new Date().toISOString().split('T')[0],
-    };
+      const updatedData = {
+        student_id: parseInt(studentId),
+        date: share.date,
+        amount: amount,
+        state: 'Pagado',
+        paymentdate: dueDate,
+        quotaName: share.quota_name,
+        paymentmethod: payMethod,
+        paymentdate_actual: new Date().toISOString().split('T')[0],
+      };
 
-    await updateShare(payShareId, updatedData);
-    toast.success('Cuota marcada como pagada');
-    await fetchSharesByStudent(studentId);
-    handleClosePayDialog();
-  } catch (err) {
-    toast.error(`Error al marcar como pagado: ${err.response?.data?.error || err.message || 'Desconocido'}`);
-    console.error(err);
-  }
-};
-
+      await updateShare(payShareId, updatedData);
+      toast.success('Cuota marcada como pagada');
+      await fetchSharesByStudent(studentId);
+      handleClosePayDialog();
+    } catch (err) {
+      toast.error(`Error al marcar como pagado: ${err.response?.data?.error || err.message || 'Desconocido'}`);
+      console.error(err);
+    }
+  };
 
   return (
-
-    <Box sx={{ padding: '20px' }}>
-     
-      <Typography variant="h4" gutterBottom>
-        Cuotas de {student?.name} {student?.lastName}
-      </Typography>
-      <Box sx={{ mb: 2, display: 'flex', alignItems: 'center', gap: 2 }}>
-        <FormControl sx={{ minWidth: 120 }}>
-          <InputLabel>Año</InputLabel>
-          <Select
-            value={selectedYear}
-            onChange={(e) => setSelectedYear(e.target.value)}
-            label="Año"
-          >
-            {[2023, 2024, 2025, 2026, 2027].map((year) => (
-              <MenuItem key={year} value={year}>
-                {year}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-        <Button variant="contained" color="primary" onClick={handleOpenCreateDialog}>
-          Crear Nueva Cuota
-        </Button>
-        <Button variant="outlined" onClick={onBack} sx={{ ml: 2 }}>
-          Volver
-        </Button>
+    <Box
+      sx={{
+        background: 'linear-gradient(135deg, #e8f5e9 0%, #b2dfdb 100%)',
+        minHeight: '100vh',
+        p: { xs: 1, md: 2, lg: 2 },
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'flex-start',
+        boxSizing: 'border-box',
+      }}
+      className="student-shares-container"
+    >
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          width: '100%',
+          mb: 4,
+          p: 2,
+          background: 'linear-gradient(90deg, #43e97b 0%, #38f9d7 100%)',
+          borderRadius: '16px',
+          boxShadow: '0 6px 24px rgba(67, 233, 123, 0.15)',
+          transition: 'transform 0.3s',
+          '&:hover': {
+            transform: 'scale(1.01)',
+          },
+        }}
+      >
+        <Typography
+          variant="h3"
+          sx={{
+            fontWeight: 800,
+            color: '#00335c',
+            textShadow: '2px 2px 6px rgba(56, 249, 215, 0.15)',
+            letterSpacing: '0.08rem',
+          }}
+        >
+          Cuotas de {student?.name} {student?.lastName}
+        </Typography>
       </Box>
-      <TableContainer component={Paper} sx={{ mb: 4 }}>
-        <Table>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: { xs: 'column', md: 'row' },
+          justifyContent: 'center',
+          alignItems: 'center',
+          mb: { xs: 2, md: 4 },
+          flexWrap: 'wrap',
+          gap: 2,
+          width: '100%',
+          maxWidth: '1200px',
+        }}
+      >
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: { xs: 'column', md: 'row' },
+            gap: 2,
+            flexGrow: 1,
+            width: '100%',
+            minWidth: '260px',
+            background: '#fff',
+            borderRadius: '12px',
+            boxShadow: '0 2px 8px rgba(56, 249, 215, 0.08)',
+            p: 2,
+            alignItems: { xs: 'stretch', md: 'center' },
+            justifyContent: 'space-between',
+          }}
+        >
+          <FormControl sx={{ minWidth: 120 }}>
+            <InputLabel>Año</InputLabel>
+            <Select
+              value={selectedYear}
+              onChange={(e) => setSelectedYear(e.target.value)}
+              label="Año"
+              sx={{ '& .MuiOutlinedInput-root': { '& fieldset': { borderColor: '#38f9d7' }, '&:hover fieldset': { borderColor: '#43e97b' }, '&.Mui-focused fieldset': { borderColor: '#43e97b' } }, '& .MuiInputLabel-root': { color: '#00335c' }, '& .MuiInputLabel-root.Mui-focused': { color: '#43e97b' } }}
+            >
+              {[2023, 2024, 2025, 2026, 2027].map((year) => (
+                <MenuItem key={year} value={year}>
+                  {year}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          <Button
+            variant="contained"
+            color="success"
+            onClick={handleOpenCreateDialog}
+            sx={{ borderRadius: '32px', fontWeight: 700, fontSize: { xs: '1.1rem', md: '1.3rem' }, px: { xs: 3, md: 5 }, py: { xs: 1.5, md: 2 }, minWidth: { xs: '180px', md: '220px' }, flex: 1 }}
+          >
+            Crear Nueva Cuota
+          </Button>
+          <Button
+            variant="outlined"
+            onClick={onBack}
+            sx={{ borderRadius: '32px', fontWeight: 700, fontSize: { xs: '1.1rem', md: '1.3rem' }, px: { xs: 3, md: 5 }, py: { xs: 1.5, md: 2 }, minWidth: { xs: '180px', md: '220px' }, color: '#00335c', borderColor: '#00335c', '&:hover': { backgroundColor: 'rgba(142, 234, 177, 0.1)', borderColor: '#8eeab1' } }}
+          >
+            Volver
+          </Button>
+        </Box>
+      </Box>
+      <TableContainer
+        component={Paper}
+        sx={{
+          mb: 4,
+          borderRadius: '16px',
+          boxShadow: '0 6px 24px rgba(67, 233, 123, 0.10)',
+          overflow: 'auto',
+          width: '100%',
+          maxWidth: '1200px',
+          mx: 'auto',
+        }}
+      >
+        <Table sx={{ minWidth: 650 }}>
           <TableHead>
-            <TableRow>
-              <TableCell>Cuota</TableCell>
-              <TableCell>Monto</TableCell>
-              <TableCell>Fecha de Pago</TableCell>
-              <TableCell>Método de Pago</TableCell>
-              <TableCell>Estado</TableCell>
-              <TableCell>Acciones</TableCell>
+            <TableRow sx={{ background: 'linear-gradient(90deg, #43e97b 0%, #38f9d7 100%)' }}>
+              <TableCell sx={{ color: '#00335c', fontWeight: 700, fontSize: { xs: '1rem', md: '1.1rem' }, borderTopLeftRadius: '16px', textAlign: 'center' }}>Cuota</TableCell>
+              <TableCell sx={{ color: '#00335c', fontWeight: 700, fontSize: { xs: '1rem', md: '1.1rem' }, textAlign: 'center' }}>Monto</TableCell>
+              <TableCell sx={{ color: '#00335c', fontWeight: 700, fontSize: { xs: '1rem', md: '1.1rem' }, textAlign: 'center' }}>Fecha de Pago</TableCell>
+              <TableCell sx={{ color: '#00335c', fontWeight: 700, fontSize: { xs: '1rem', md: '1.1rem' }, textAlign: 'center' }}>Método de Pago</TableCell>
+              <TableCell sx={{ color: '#00335c', fontWeight: 700, fontSize: { xs: '1rem', md: '1.1rem' }, textAlign: 'center' }}>Estado</TableCell>
+              <TableCell sx={{ color: '#00335c', fontWeight: 700, fontSize: { xs: '1rem', md: '1.1rem' }, borderTopRightRadius: '16px', textAlign: 'center' }}>Acciones</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {studentShares.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={6} sx={{ textAlign: 'center' }}>
+                <TableCell colSpan={6} sx={{ textAlign: 'center', color: '#00335c', fontWeight: 600, fontSize: { xs: '1rem', md: '1.1rem' }, py: 4 }}>
                   Sin Cuota
                 </TableCell>
               </TableRow>
             ) : (
               studentShares.map((share) => (
-                <TableRow key={share.share_id}>
-                  <TableCell>{share.quota_name || '-'}</TableCell>
-                  <TableCell>${(Number(share.amount) || 0).toFixed(2)}</TableCell>
-                  <TableCell>{share.paymentdate_actual || '-'}</TableCell>
-                  <TableCell>{share.paymentmethod || '-'}</TableCell>
-                  <TableCell>{share.state}</TableCell>
-                  <TableCell>
+                <TableRow
+                  key={share.share_id}
+                  sx={{
+                    background: studentShares.indexOf(share) % 2 === 0 ? '#f8fafc' : '#e0f7fa',
+                    transition: 'background 0.2s',
+                    '&:hover': { background: '#b2dfdb' },
+                  }}
+                >
+                  <TableCell sx={{ color: '#00335c', fontWeight: 500, textAlign: 'center' }}>{share.quota_name || '-'}</TableCell>
+                  <TableCell sx={{ color: '#00335c', fontWeight: 500, textAlign: 'center' }}>${(Number(share.amount) || 0).toFixed(2)}</TableCell>
+                  <TableCell sx={{ color: '#00335c', fontWeight: 500, textAlign: 'center' }}>{share.paymentdate_actual || '-'}</TableCell>
+                  <TableCell sx={{ color: '#00335c', fontWeight: 500, textAlign: 'center' }}>{share.paymentmethod || '-'}</TableCell>
+                  <TableCell sx={{ color: '#00335c', fontWeight: 500, textAlign: 'center' }}>{share.state}</TableCell>
+                  <TableCell sx={{ textAlign: 'center' }}>
                     <Button
-                      variant="outlined"
-                      color="primary"
+                      variant="contained"
+                      color="info"
                       size="small"
                       onClick={() => handleEditShare(share)}
-                      sx={{ mr: 1 }}
+                      sx={{ mr: 1, borderRadius: '50%', minWidth: 40, height: 40, p: 0 }}
                     >
-                      Editar
+                      ✎
                     </Button>
                     <Button
-                      variant="outlined"
+                      variant="contained"
                       color="error"
                       size="small"
                       onClick={() => handleOpenDeleteDialog(share.share_id)}
-                      sx={{ mr: 1 }}
+                      sx={{ mr: 1, borderRadius: '50%', minWidth: 40, height: 40, p: 0 }}
                     >
-                      Eliminar
+                      ✗
                     </Button>
                     {share.state !== 'Pagado' && (
                       <Button
-                        variant="outlined"
+                        variant="contained"
                         color="success"
                         size="small"
                         onClick={() => handleOpenPayDialog(share.share_id)}
+                        sx={{ borderRadius: '50%', minWidth: 40, height: 40, p: 0 }}
                       >
-                        Pagado
+                        ✔
                       </Button>
                     )}
                   </TableCell>
@@ -356,17 +447,24 @@ const StudentShares = ({ studentId, onBack }) => {
         </Table>
       </TableContainer>
 
-      {/* Diálogo de creación */}
-      <Dialog open={openCreateDialog} onClose={handleCloseCreateDialog}>
-        <DialogTitle>Crear Nueva Cuota</DialogTitle>
-        <DialogContent>
+      <Dialog
+        open={openCreateDialog}
+        onClose={handleCloseCreateDialog}
+        sx={{ '& .MuiDialog-paper': { borderRadius: '12px', boxShadow: '0 8px 16px rgba(0, 0, 0, 0.2)', backgroundColor: '#E6F9EC' } }}
+      >
+        <DialogTitle
+          sx={{ background: 'linear-gradient(90deg, #8eeab1, #007e32)', color: '#00335c', fontWeight: 700, borderTopLeftRadius: '12px', borderTopRightRadius: '12px', p: 2 }}
+        >
+          Crear Nueva Cuota
+        </DialogTitle>
+        <DialogContent sx={{ p: 3, pt: 4 }}>
           <TextField
             label="Nombre de la Cuota"
             name="quotaName"
             value={newShareData.quotaName}
             onChange={(e) => setNewShareData((prev) => ({ ...prev, quotaName: e.target.value }))}
             fullWidth
-            sx={{ mb: 2 }}
+            sx={{ mb: 2, '& .MuiOutlinedInput-root': { '& fieldset': { borderColor: '#38f9d7' }, '&:hover fieldset': { borderColor: '#43e97b' }, '&.Mui-focused fieldset': { borderColor: '#43e97b' } }, '& .MuiInputLabel-root': { color: '#00335c' }, '& .MuiInputLabel-root.Mui-focused': { color: '#43e97b' } }}
             required
             placeholder="Ej: Cuota Escuela 2025"
           />
@@ -377,7 +475,7 @@ const StudentShares = ({ studentId, onBack }) => {
             value={newShareData.amount}
             onChange={(e) => setNewShareData((prev) => ({ ...prev, amount: e.target.value }))}
             fullWidth
-            sx={{ mb: 2 }}
+            sx={{ mb: 2, '& .MuiOutlinedInput-root': { '& fieldset': { borderColor: '#38f9d7' }, '&:hover fieldset': { borderColor: '#43e97b' }, '&.Mui-focused fieldset': { borderColor: '#43e97b' } }, '& .MuiInputLabel-root': { color: '#00335c' }, '& .MuiInputLabel-root.Mui-focused': { color: '#43e97b' } }}
             required
           />
           <TextField
@@ -387,11 +485,11 @@ const StudentShares = ({ studentId, onBack }) => {
             value={newShareData.date}
             onChange={(e) => setNewShareData((prev) => ({ ...prev, date: e.target.value }))}
             fullWidth
-            sx={{ mb: 2 }}
+            sx={{ mb: 2, '& .MuiOutlinedInput-root': { '& fieldset': { borderColor: '#38f9d7' }, '&:hover fieldset': { borderColor: '#43e97b' }, '&.Mui-focused fieldset': { borderColor: '#43e97b' } }, '& .MuiInputLabel-root': { color: '#00335c' }, '& .MuiInputLabel-root.Mui-focused': { color: '#43e97b' } }}
             required
             InputLabelProps={{ shrink: true }}
           />
-          <FormControl fullWidth sx={{ mb: 2 }}>
+          <FormControl fullWidth sx={{ mb: 2, '& .MuiOutlinedInput-root': { '& fieldset': { borderColor: '#38f9d7' }, '&:hover fieldset': { borderColor: '#43e97b' }, '&.Mui-focused fieldset': { borderColor: '#43e97b' } }, '& .MuiInputLabel-root': { color: '#00335c' }, '& .MuiInputLabel-root.Mui-focused': { color: '#43e97b' } }}>
             <InputLabel>Año</InputLabel>
             <Select
               name="year"
@@ -407,99 +505,145 @@ const StudentShares = ({ studentId, onBack }) => {
             </Select>
           </FormControl>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseCreateDialog} color="secondary">
+        <DialogActions sx={{ p: 2, justifyContent: 'space-between' }}>
+          <Button
+            onClick={handleCloseCreateDialog}
+            variant="outlined"
+            startIcon={<CancelIcon />}
+            sx={{ color: '#00335c', borderColor: '#00335c', cursor: 'pointer', '&:hover': { backgroundColor: 'rgba(142, 234, 177, 0.1)', borderColor: '#8eeab1' }, fontWeight: 700 }}
+          >
             Cancelar
           </Button>
-          <Button onClick={handleSaveNewShare} color="primary">
+          <Button
+            onClick={handleSaveNewShare}
+            variant="contained"
+            sx={{ backgroundColor: '#43e97b', color: '#ffffff', cursor: 'pointer', '&:hover': { backgroundColor: '#38f9d7' }, fontWeight: 700 }}
+          >
             Guardar
           </Button>
         </DialogActions>
       </Dialog>
 
-      {/* Diálogo de edición */}
-      {/* Diálogo de edición */}
-<Dialog open={openEditDialog} onClose={handleCloseEditDialog}>
-  <DialogTitle>Editar Cuota</DialogTitle>
-  <DialogContent>
-    <TextField
-      label="Nombre de la Cuota"
-      name="quotaName"
-      value={editData.quotaName}
-      onChange={(e) => setEditData((prev) => ({ ...prev, quotaName: e.target.value }))}
-      fullWidth
-      sx={{ mb: 2 }}
-      required
-      placeholder="Ej: Cuota Escuela 2025"
-    />
-    <TextField
-      label="Monto"
-      name="amount"
-      type="number"
-      value={editData.amount}
-      onChange={(e) => setEditData((prev) => ({ ...prev, amount: e.target.value }))}
-      fullWidth
-      sx={{ mb: 2 }}
-      required
-    />
-    <TextField
-      label="Fecha de Pago"
-      name="paymentdate_actual"
-      type="date"
-      value={editData.paymentdate_actual}
-      onChange={(e) => setEditData((prev) => ({ ...prev, paymentdate_actual: e.target.value }))}
-      fullWidth
-      sx={{ mb: 2 }}
-      required
-      InputLabelProps={{ shrink: true }}
-    />
-    <FormControl fullWidth sx={{ mb: 2 }}>
-      <InputLabel>Método de Pago</InputLabel>
-      <Select
-        name="paymentmethod"
-        value={editData.paymentmethod}
-        onChange={(e) => setEditData((prev) => ({ ...prev, paymentmethod: e.target.value }))}
-        label="Método de Pago"
-        required
+      <Dialog
+        open={openEditDialog}
+        onClose={handleCloseEditDialog}
+        sx={{ '& .MuiDialog-paper': { borderRadius: '12px', boxShadow: '0 8px 16px rgba(0, 0, 0, 0.2)', backgroundColor: '#E6F9EC' } }}
       >
-        <MenuItem value="Efectivo">Efectivo</MenuItem>
-        <MenuItem value="Tarjeta">Tarjeta</MenuItem>
-        <MenuItem value="Transferencia">Transferencia</MenuItem>
-      </Select>
-    </FormControl>
-  </DialogContent>
-  <DialogActions>
-    <Button onClick={handleCloseEditDialog} color="secondary">
-      Cancelar
-    </Button>
-    <Button onClick={handleSaveEdit} color="primary">
-      Guardar
-    </Button>
-  </DialogActions>
-</Dialog>
-
-
-      {/* Diálogo de eliminación */}
-      <Dialog open={openDeleteDialog} onClose={handleCloseDeleteDialog}>
-        <DialogTitle>Confirmar Eliminación</DialogTitle>
-        <DialogContent>
-          <Typography>¿Estás seguro de que quieres eliminar esta cuota? Esta acción no se puede deshacer.</Typography>
+        <DialogTitle
+          sx={{ background: 'linear-gradient(90deg, #8eeab1, #007e32)', color: '#00335c', fontWeight: 700, borderTopLeftRadius: '12px', borderTopRightRadius: '12px', p: 2 }}
+        >
+          Editar Cuota
+        </DialogTitle>
+        <DialogContent sx={{ p: 3, pt: 4 }}>
+          <TextField
+            label="Nombre de la Cuota"
+            name="quotaName"
+            value={editData.quotaName}
+            onChange={(e) => setEditData((prev) => ({ ...prev, quotaName: e.target.value }))}
+            fullWidth
+            sx={{ mb: 2, '& .MuiOutlinedInput-root': { '& fieldset': { borderColor: '#38f9d7' }, '&:hover fieldset': { borderColor: '#43e97b' }, '&.Mui-focused fieldset': { borderColor: '#43e97b' } }, '& .MuiInputLabel-root': { color: '#00335c' }, '& .MuiInputLabel-root.Mui-focused': { color: '#43e97b' } }}
+            required
+            placeholder="Ej: Cuota Escuela 2025"
+          />
+          <TextField
+            label="Monto"
+            name="amount"
+            type="number"
+            value={editData.amount}
+            onChange={(e) => setEditData((prev) => ({ ...prev, amount: e.target.value }))}
+            fullWidth
+            sx={{ mb: 2, '& .MuiOutlinedInput-root': { '& fieldset': { borderColor: '#38f9d7' }, '&:hover fieldset': { borderColor: '#43e97b' }, '&.Mui-focused fieldset': { borderColor: '#43e97b' } }, '& .MuiInputLabel-root': { color: '#00335c' }, '& .MuiInputLabel-root.Mui-focused': { color: '#43e97b' } }}
+            required
+          />
+          <TextField
+            label="Fecha de Pago"
+            name="paymentdate_actual"
+            type="date"
+            value={editData.paymentdate_actual}
+            onChange={(e) => setEditData((prev) => ({ ...prev, paymentdate_actual: e.target.value }))}
+            fullWidth
+            sx={{ mb: 2, '& .MuiOutlinedInput-root': { '& fieldset': { borderColor: '#38f9d7' }, '&:hover fieldset': { borderColor: '#43e97b' }, '&.Mui-focused fieldset': { borderColor: '#43e97b' } }, '& .MuiInputLabel-root': { color: '#00335c' }, '& .MuiInputLabel-root.Mui-focused': { color: '#43e97b' } }}
+            required
+            InputLabelProps={{ shrink: true }}
+          />
+          <FormControl fullWidth sx={{ mb: 2, '& .MuiOutlinedInput-root': { '& fieldset': { borderColor: '#38f9d7' }, '&:hover fieldset': { borderColor: '#43e97b' }, '&.Mui-focused fieldset': { borderColor: '#43e97b' } }, '& .MuiInputLabel-root': { color: '#00335c' }, '& .MuiInputLabel-root.Mui-focused': { color: '#43e97b' } }}>
+            <InputLabel>Método de Pago</InputLabel>
+            <Select
+              name="paymentmethod"
+              value={editData.paymentmethod}
+              onChange={(e) => setEditData((prev) => ({ ...prev, paymentmethod: e.target.value }))}
+              label="Método de Pago"
+              required
+            >
+              <MenuItem value="Efectivo">Efectivo</MenuItem>
+              <MenuItem value="Tarjeta">Tarjeta</MenuItem>
+              <MenuItem value="Transferencia">Transferencia</MenuItem>
+            </Select>
+          </FormControl>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseDeleteDialog} color="secondary">
+        <DialogActions sx={{ p: 2, justifyContent: 'space-between' }}>
+          <Button
+            onClick={handleCloseEditDialog}
+            variant="outlined"
+            startIcon={<CancelIcon />}
+            sx={{ color: '#00335c', borderColor: '#00335c', cursor: 'pointer', '&:hover': { backgroundColor: 'rgba(142, 234, 177, 0.1)', borderColor: '#8eeab1' }, fontWeight: 700 }}
+          >
             Cancelar
           </Button>
-          <Button onClick={handleConfirmDelete} color="error">
+          <Button
+            onClick={handleSaveEdit}
+            variant="contained"
+            sx={{ backgroundColor: '#43e97b', color: '#ffffff', cursor: 'pointer', '&:hover': { backgroundColor: '#38f9d7' }, fontWeight: 700 }}
+          >
+            Guardar
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog
+        open={openDeleteDialog}
+        onClose={handleCloseDeleteDialog}
+        sx={{ '& .MuiDialog-paper': { borderRadius: '12px', boxShadow: '0 8px 16px rgba(0, 0, 0, 0.2)', backgroundColor: '#E6F9EC' } }}
+      >
+        <DialogTitle
+          sx={{ background: 'linear-gradient(90deg, #8eeab1, #007e32)', color: '#00335c', fontWeight: 700, borderTopLeftRadius: '12px', borderTopRightRadius: '12px', p: 2 }}
+        >
+          Confirmar Eliminación
+        </DialogTitle>
+        <DialogContent sx={{ p: 3, pt: 4 }}>
+          <Typography sx={{ color: '#00335c', textAlign: 'center' }}>¿Estás seguro de que quieres eliminar esta cuota? Esta acción no se puede deshacer.</Typography>
+        </DialogContent>
+        <DialogActions sx={{ p: 2, justifyContent: 'space-between' }}>
+          <Button
+            onClick={handleCloseDeleteDialog}
+            variant="outlined"
+            startIcon={<CancelIcon />}
+            sx={{ color: '#00335c', borderColor: '#00335c', cursor: 'pointer', '&:hover': { backgroundColor: 'rgba(142, 234, 177, 0.1)', borderColor: '#8eeab1' }, fontWeight: 700 }}
+          >
+            Cancelar
+          </Button>
+          <Button
+            onClick={handleConfirmDelete}
+            variant="contained"
+            sx={{ backgroundColor: '#d32f2f', color: '#ffffff', cursor: 'pointer', '&:hover': { backgroundColor: '#b71c1c' }, fontWeight: 700 }}
+          >
             Eliminar
           </Button>
         </DialogActions>
       </Dialog>
 
-      {/* Diálogo de pago */}
-      <Dialog open={openPayDialog} onClose={handleClosePayDialog}>
-        <DialogTitle>Marcar como Pagado</DialogTitle>
-        <DialogContent>
-          <FormControl fullWidth sx={{ mb: 2 }}>
+      <Dialog
+        open={openPayDialog}
+        onClose={handleClosePayDialog}
+        sx={{ '& .MuiDialog-paper': { borderRadius: '12px', boxShadow: '0 8px 16px rgba(0, 0, 0, 0.2)', backgroundColor: '#E6F9EC' } }}
+      >
+        <DialogTitle
+          sx={{ background: 'linear-gradient(90deg, #8eeab1, #007e32)', color: '#00335c', fontWeight: 700, borderTopLeftRadius: '12px', borderTopRightRadius: '12px', p: 2 }}
+        >
+          Marcar como Pagado
+        </DialogTitle>
+        <DialogContent sx={{ p: 3, pt: 4 }}>
+          <FormControl fullWidth sx={{ mb: 2, '& .MuiOutlinedInput-root': { '& fieldset': { borderColor: '#38f9d7' }, '&:hover fieldset': { borderColor: '#43e97b' }, '&.Mui-focused fieldset': { borderColor: '#43e97b' } }, '& .MuiInputLabel-root': { color: '#00335c' }, '& .MuiInputLabel-root.Mui-focused': { color: '#43e97b' } }}>
             <InputLabel>Método de Pago</InputLabel>
             <Select
               name="paymentmethod"
@@ -514,23 +658,32 @@ const StudentShares = ({ studentId, onBack }) => {
             </Select>
           </FormControl>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClosePayDialog} color="secondary">
+        <DialogActions sx={{ p: 2, justifyContent: 'space-between' }}>
+          <Button
+            onClick={handleClosePayDialog}
+            variant="outlined"
+            startIcon={<CancelIcon />}
+            sx={{ color: '#00335c', borderColor: '#00335c', cursor: 'pointer', '&:hover': { backgroundColor: 'rgba(142, 234, 177, 0.1)', borderColor: '#8eeab1' }, fontWeight: 700 }}
+          >
             Cancelar
           </Button>
-          <Button onClick={handleConfirmPay} color="primary">
+          <Button
+            onClick={handleConfirmPay}
+            variant="contained"
+            sx={{ backgroundColor: '#43e97b', color: '#ffffff', cursor: 'pointer', '&:hover': { backgroundColor: '#38f9d7' }, fontWeight: 700 }}
+          >
             Confirmar
           </Button>
         </DialogActions>
       </Dialog>
 
       {loading && (
-        <Typography variant="body1" sx={{ textAlign: 'center', my: 2 }}>
+        <Typography variant="body1" sx={{ textAlign: 'center', mt: 2 }}>
           Cargando datos...
         </Typography>
       )}
       {error && (
-        <Typography variant="body1" color="error" sx={{ textAlign: 'center', my: 2 }}>
+        <Typography variant="body1" color="error" sx={{ textAlign: 'center', mt: 2 }}>
           {error}
         </Typography>
       )}
