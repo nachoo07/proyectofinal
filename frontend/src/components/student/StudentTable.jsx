@@ -26,6 +26,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import CancelIcon from '@mui/icons-material/Cancel';
 import './student.css';
+import { FaBell, FaUserCheck, FaUser, FaUserGraduate } from "react-icons/fa";
 
 
 
@@ -188,7 +189,7 @@ const StudentTable = () => {
           gap: 2,
           width: '100%',
           maxWidth: '1200px',
-        }}
+        }} 
       >
         <Box
           sx={{

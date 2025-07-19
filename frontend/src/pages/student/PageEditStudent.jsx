@@ -44,7 +44,7 @@ const PageEditStudent = () => {
 
       const updatedStudent = await res.json();
       updateStudent(id, updatedStudent);
-      alert('Estudiante actualizado con éxito');
+      alert('Estudiant55e actualizado con éxito');
       navigate('/');
     } catch (err) {
       console.error(err);
