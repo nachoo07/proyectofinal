@@ -20,7 +20,7 @@ const HomeAdmin = () => {
     { title: 'Usuarios', route: '/user', icon: <FaUsers size={40} color={textColor} /> },
     { title: 'Profesores', route: '/teachers', icon: <FaChalkboardTeacher size={40} color={textColor} /> },
     { title: 'Configuración', route: '/settings', icon: <FaCogs size={40} color={textColor} /> },
-    { title: 'Reportes', route: '/panel-reports', icon: <FaChartBar size={40} color={textColor} /> },
+    { title: 'Reportes', route: '/reports', icon: <FaChartBar size={40} color={textColor} /> },
     { title: 'Notificaciones', route: '/notifications', icon: <FaBell size={40} color={textColor} /> },
     { title: 'Movimientos', route: '/motions', icon: <FaExchangeAlt size={40} color={textColor} /> },
   ];

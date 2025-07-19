@@ -34,7 +34,7 @@ export const MotionProvider = ({ children }) => {
       const dateFrom = `${year}-01-01`;
       const dateTo = `${year}-12-31`;
       const response = await axios.get(
-        `http://localhost:4000/api/motion/paginated?dateFrom=${dateFrom}&dateTo=${dateTo}`,
+        `http://localhost:4000/api/motion?dateFrom=${dateFrom}&dateTo=${dateTo}`,
         { withCredentials: true }
       );
       setMotions(response.data.motions);

@@ -16,11 +16,9 @@ import PageStudentShares from '../pages/share/PageStudentShares';
 import PageEditStudent from '../pages/student/PageEditStudent';
 import StudentDetail from '../pages/student/StudentDetail';
 import NavBar from '../components/NavBar/NavBar'; // Lo usaremos solo en algunas rutas
-import DashboardReportPage from '../pages/dashboard report/dashboardReportPage';
 import PageAttendance from '../pages/attendance/PageAttendance';
 import NotFound from '../pages/notFound/NotFound';
-import PageReportbyQuarter from '../pages/report by quarter/PageReportbyQuarter';
-import PageReportByMonth from '../pages/reportbymonth/PageReportByMonth';
+
 const Routing = () => {
   const location = useLocation();
   const isLoginRoute = location.pathname.includes('login')
@@ -42,9 +40,7 @@ const Routing = () => {
           <Route path="/teachers" element={<PageTeacher />} />
 
           <Route path="/reports" element={<PageReport />} />
-          <Route path="/panel-reports" element={<DashboardReportPage />} />
-          <Route path="/reportbyquarter" element={<PageReportbyQuarter/>}/>
-          <Route path="/reportbymonth" element={<PageReportByMonth/>} />
+         
 
           <Route path="/settings" element={<PageSettings />} />
           <Route path="/shares" element={<SharesPage />} />
