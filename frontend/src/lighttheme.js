@@ -11,7 +11,7 @@ const lightTheme = (fontSize = 16) => createTheme({
     warning: { main: '#ed6c02' },
     info: { main: '#0288d1' },
     success: { main: '#2e7d32' },
-    background: { default: '#f5f5f5', paper: '#ffffff' },
+    background: { default: '#a5d6a7', paper: '#f5f5f5' },
     text: {
       primary: '#000000',
       secondary: 'rgba(0, 0, 0, 0.7)',

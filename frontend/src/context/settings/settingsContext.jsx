@@ -5,41 +5,57 @@ const SettingsContext = createContext();
 
 export function SettingsProvider({ children }) {
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
-  const [themeMode, setThemeMode] = useState(() => {
-    const savedMode = localStorage.getItem('themeMode');
-    return savedMode || (prefersDarkMode ? 'dark' : 'light');
-  });
-  const [fontSize, setFontSize] = useState(() => {
-    return localStorage.getItem('fontSize') || 'normal';
-  });
-
-  useEffect(() => {
+  
+  // 1. Corregir inicialización y guardado automático
+  const [themeMode, setThemeMode] = useState('light');
+  const [fontSize, setFontSize] = useState(16); // 2. Usar número en vez de string
+useEffect(() => {
+  if (themeMode) {
     localStorage.setItem('themeMode', themeMode);
+    document.body.setAttribute('data-bs-theme', themeMode);
+  }
+}, [themeMode]);
+  // Cargar configuración inicial
+  useEffect(() => {
+    const savedMode = localStorage.getItem('themeMode');
+    const savedFontSize = localStorage.getItem('fontSize');
+    
+    setThemeMode(savedMode || (prefersDarkMode ? 'dark' : 'light'));
+    setFontSize(savedFontSize ? parseInt(savedFontSize) : 16);
+  }, [prefersDarkMode]);
+
+  // 3. Sincronizar con Bootstrap y guardar
+  useEffect(() => {
+    if (themeMode) {
+      localStorage.setItem('themeMode', themeMode);
+      document.body.setAttribute('data-bs-theme', themeMode);
+    }
   }, [themeMode]);
 
   useEffect(() => {
-    localStorage.setItem('fontSize', fontSize);
+    if (fontSize) localStorage.setItem('fontSize', fontSize.toString());
   }, [fontSize]);
 
   const toggleTheme = () => {
-    setThemeMode((prevMode) => (prevMode === 'light' ? 'dark' : 'light'));
+    setThemeMode((prev) => (prev === 'light' ? 'dark' : 'light'));
   };
 
+  // 4. Convertir a rem basado en tamaño numérico
   const getFontSize = (size) => {
-    switch (size) {
-      case 'small':
-        return '0.875rem';
-      case 'normal':
-        return '1rem';
-      case 'large':
-        return '1.125rem';
-      default:
-        return '1rem';
-    }
+    // Tamaño base: 16px = 1rem
+    return `${size / 16}rem`; // Ej: 18px → 1.125rem
   };
 
   return (
-    <SettingsContext.Provider value={{ themeMode, toggleTheme, fontSize, setFontSize, getFontSize }}>
+    <SettingsContext.Provider
+      value={{
+        themeMode,
+        toggleTheme,
+        fontSize,
+        setFontSize,
+        getFontSize
+      }}
+    >
       {children}
     </SettingsContext.Provider>
   );

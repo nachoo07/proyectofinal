@@ -36,14 +36,19 @@ const processChartData = (motions, selectedYear) => {
         motionDate.getMonth() === index
       );
     });
+    
+    const ingresos = monthMotions
+      .filter((m) => m.incomeType === 'ingreso')
+      .reduce((sum, m) => sum + (parseFloat(m.amount) || 0), 0);
+      
+    const egresos = monthMotions
+      .filter((m) => m.incomeType === 'egreso')
+      .reduce((sum, m) => sum + (parseFloat(m.amount) || 0), 0);
+
     return {
       month,
-      ingresos: monthMotions
-        .filter((m) => m.incomeType === 'ingreso')
-        .reduce((sum, m) => sum + (parseFloat(m.amount) || 0), 0),
-      egresos: monthMotions
-        .filter((m) => m.incomeType === 'egreso')
-        .reduce((sum, m) => sum + (parseFloat(m.amount) || 0), 0),
+      ingresos,
+      egresos,
     };
   });
   return data;
@@ -54,7 +59,6 @@ const calculateMetrics = (motions, selectedYear) => {
   const yearMotions = motions.filter(
     (m) => new Date(m.date).getFullYear() === selectedYear
   );
-  console.log("Motions del año:", yearMotions);
   const totalIngresos = yearMotions
     .filter((m) => m.incomeType === 'ingreso')
     .reduce((sum, m) => sum + (parseFloat(m.amount) || 0), 0);
@@ -80,27 +84,49 @@ const ReportComponent = () => {
     motions = [],
     loading,
     error,
-    fetchMotions,
+    fetchMotionsByYear,  // Usamos la nueva función específica por año
+    fetchMotions,         // Mantenemos la función general por si acaso
   } = useMotions();
+  
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [showDetails, setShowDetails] = useState(false);
+  const [availableYears, setAvailableYears] = useState([]);
 
-  // Obtener años disponibles
-  const years = Array.from(
-    new Set(motions.map((m) => new Date(m.date).getFullYear()))
-  ).sort((a, b) => b - a);
+  // Obtener años disponibles (ahora se carga desde el backend)
+  useEffect(() => {
+    const fetchYears = async () => {
+      try {
+        // Suponiendo que tienes un endpoint para obtener los años disponibles
+        const response = await axios.get('http://localhost:4000/api/motion/years', {
+          withCredentials: true,
+        });
+        setAvailableYears(response.data.sort((a, b) => b - a));
+      } catch (err) {
+        console.error('Error fetching years:', err);
+        // Si falla, intentamos obtener de los movimientos existentes
+        const yearsFromMotions = Array.from(
+          new Set(motions.map((m) => new Date(m.date).getFullYear()))
+        ).sort((a, b) => b - a);
+        setAvailableYears(yearsFromMotions);
+      }
+    };
+    
+    fetchYears();
+  }, [motions]);
 
   // Procesar datos para el gráfico
   const chartData = processChartData(motions, selectedYear);
   const metrics = calculateMetrics(motions, selectedYear);
 
+  // Cargar movimientos cuando cambia el año
   useEffect(() => {
-    fetchMotions({ year: selectedYear }); // Ajusta según la API
-  }, [selectedYear]);
+    if (selectedYear) {
+      fetchMotionsByYear(selectedYear);
+    }
+  }, [selectedYear, fetchMotionsByYear]);
 
   if (loading) {
     return (
-      
       <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
         <CircularProgress />
       </Box>
@@ -118,7 +144,7 @@ const ReportComponent = () => {
   if (!motions.length) {
     return (
       <Box sx={{ p: 4 }}>
-        <Typography>No hay datos disponibles</Typography>
+        <Typography>No hay datos disponibles para el año seleccionado</Typography>
       </Box>
     );
   }
@@ -126,7 +152,7 @@ const ReportComponent = () => {
   return (
     <Box sx={{ p: 4, bgcolor: 'background.paper' }} className="min-h-screen">
       <Typography variant="h4" gutterBottom className="text-center" color='#2e7d32'>
-        Reporte Financiero
+        Reporte Financiero Anual
       </Typography>
 
       {/* Filtro de año */}
@@ -137,7 +163,7 @@ const ReportComponent = () => {
           onChange={(e) => setSelectedYear(Number(e.target.value))}
           label="Año"
         >
-          {years.map((year) => (
+          {availableYears.map((year) => (
             <MenuItem key={year} value={year}>
               {year}
             </MenuItem>
@@ -170,7 +196,7 @@ const ReportComponent = () => {
         <Grid item xs={12} sm={4}>
           <Card sx={{ boxShadow: '0px 8px 16px rgba(0, 0, 0, 0.3)' }}>
             <CardContent>
-              <Typography color="textSecondary">Balance</Typography>
+              <Typography color="textSecondary">Balance Anual</Typography>
               <Typography
                 variant="h5"
                 color={metrics.balance >= 0 ? 'green' : 'red'}
@@ -206,7 +232,7 @@ const ReportComponent = () => {
             legend: 'Monto ($)',
             legendPosition: 'middle',
             legendOffset: -40,
-            domain: [0, Math.max(...chartData.flatMap(d => [d.ingresos, d.egresos])) * 1.1],
+            domain: [0, Math.max(1, ...chartData.flatMap(d => [d.ingresos, d.egresos])) * 1.1],
           }}
           labelSkipWidth={12}
           labelSkipHeight={12}
@@ -229,7 +255,7 @@ const ReportComponent = () => {
           ]}
           tooltip={({ id, value, indexValue }) => (
             <div className="bg-white p-2 border rounded shadow">
-              <strong>{indexValue}</strong>: {id} = ${value.toLocaleString()}
+              <strong>{indexValue}</strong>: {id} = {formatAsCurrency(value)}
             </div>
           )}
           groupMode="grouped"
@@ -242,7 +268,7 @@ const ReportComponent = () => {
         onClick={() => setShowDetails(!showDetails)}
         sx={{ mb: 2 }}
       >
-        {showDetails ? 'Ocultar Detalles' : 'Mostrar Detalles'}
+        {showDetails ? 'Ocultar Detalles Mensuales' : 'Mostrar Detalles Mensuales'}
       </Button>
 
       {/* Tabla de detalles */}
@@ -254,7 +280,7 @@ const ReportComponent = () => {
                 <TableCell>Mes</TableCell>
                 <TableCell>Ingresos</TableCell>
                 <TableCell>Egresos</TableCell>
-                <TableCell>Balance</TableCell>
+                <TableCell>Balance Mensual</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>

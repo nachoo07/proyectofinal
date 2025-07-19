@@ -12,17 +12,23 @@ import { SettingsProvider, useSettings } from './context/settings/settingsContex
 import { LoginProvider } from './context/login/LoginContext';
 import { TeacherProvider } from './context/teacher/TeacherContext';
 import { AttendanceProvider } from './context/attendance/AttendanceContext';
-
+import { useEffect } from 'react';
+import { MotionProvider } from './context/motion/MotionContext';
 // Componente interno para usar el hook correctamente
 function AppContent() {
   const { themeMode, fontSize, getFontSize } = useSettings();
+  useEffect(() => {
+    document.body.setAttribute('data-bs-theme', themeMode);
+  }, [themeMode]);
 
-  const remValue = getFontSize(fontSize); // ej. "1rem", "1.125rem"
-  const fontSizeNumber = parseFloat(remValue) * 16; // pasa rem a px base 16
+
+  const remValue = getFontSize(fontSize);
+  // ej. "1rem", "1.125rem"
+
 
   const appliedTheme = themeMode === 'dark'
-    ? darkTheme(fontSizeNumber)
-    : lightTheme(fontSizeNumber);
+    ? darkTheme(getFontSize())
+    : lightTheme(getFontSize());
 
   return (
     <ThemeProvider theme={appliedTheme}>

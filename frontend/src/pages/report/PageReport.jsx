@@ -1,6 +1,6 @@
 import { Box, Container, Typography } from '@mui/material';
 import { MotionProvider } from '../../context/motion/MotionContext.jsx';
-import ErrorBoundary from '../../components/ErrorBoundary/errorBoundary.jsx'; // Crear este componente
+import ErrorBoundary from '../../components/ErrorBoundary/ErrorBoundary.jsx'; // Crear este componente
 import ReportComponent from '../../components/report/reportComponent.jsx';
 
 const PageReport = () => {

@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import axios from 'axios';
 import { LoginContext } from '../login/LoginContext';
@@ -19,41 +19,64 @@ export const MotionProvider = ({ children }) => {
     expenseByCategory: {},
   });
   const [filters, setFilters] = useState({
-    startDate: '',
-    endDate: '',
-    type: '',
+    dateFrom: '',
+    dateTo: '',
+    amountMin: '',
+    amountMax: '',
     paymentMethod: '',
+    incomeType: '',
   });
 
-  const fetchMotions = async (customFilters = {}) => {
-    if (authLoading || !auth || auth !== 'admin') return; // Solo admins
-
+  // Función para obtener movimientos por año
+  const fetchMotionsByYear = useCallback(async (year) => {
     setLoading(true);
     try {
-      const activeFilters = { ...filters, ...customFilters };
-      const params = new URLSearchParams();
-      if (activeFilters.startDate) params.append('startDate', activeFilters.startDate);
-      if (activeFilters.endDate) params.append('endDate', activeFilters.endDate);
-      if (activeFilters.type) params.append('type', activeFilters.type);
-      if (activeFilters.paymentMethod) params.append('paymentMethod', activeFilters.paymentMethod);
-      if (activeFilters.page) params.append('page', activeFilters.page);
-      if (activeFilters.pageSize) params.append('pageSize', activeFilters.pageSize);
-
-      const isPaginated = activeFilters.page ? true : false;
-
-      const response = await axios.get(`http://localhost:4000/api/motion${isPaginated ? '/paginated' : ''}?${params.toString()}`, {
-        withCredentials: true,
-      });
+      const dateFrom = `${year}-01-01`;
+      const dateTo = `${year}-12-31`;
+      const response = await axios.get(
+        `http://localhost:4000/api/motion/paginated?dateFrom=${dateFrom}&dateTo=${dateTo}`,
+        { withCredentials: true }
+      );
       setMotions(response.data.motions);
-      setCount(response.data.count ?? 0);
+      setCount(response.data.count);
       setError(null);
     } catch (err) {
-      console.error('Error fetching motions:', err.response?.data || err.message);
       setError(err.response?.data?.error || 'Error al cargar movimientos');
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  // Función general para obtener movimientos
+  const fetchMotions = useCallback(async (customFilters = {}) => {
+    setLoading(true);
+    try {
+      const activeFilters = { ...filters, ...customFilters };
+      const params = new URLSearchParams();
+      
+      if (activeFilters.dateFrom) params.append('dateFrom', activeFilters.dateFrom);
+      if (activeFilters.dateTo) params.append('dateTo', activeFilters.dateTo);
+      if (activeFilters.amountMin) params.append('amountMin', activeFilters.amountMin);
+      if (activeFilters.amountMax) params.append('amountMax', activeFilters.amountMax);
+      if (activeFilters.paymentMethod) params.append('paymentMethod', activeFilters.paymentMethod);
+      if (activeFilters.incomeType) params.append('incomeType', activeFilters.incomeType);
+      if (activeFilters.page) params.append('page', activeFilters.page);
+      if (activeFilters.pageSize) params.append('pageSize', activeFilters.pageSize);
+
+      const response = await axios.get(
+        `http://localhost:4000/api/motion/paginated?${params.toString()}`,
+        { withCredentials: true }
+      );
+      
+      setMotions(response.data.motions);
+      setCount(response.data.count);
+      setError(null);
+    } catch (err) {
+      setError(err.response?.data?.error || 'Error al cargar movimientos');
+    } finally {
+      setLoading(false);
+    }
+  }, [filters]);
 
   const createMotion = async (motionData) => {
     setLoading(true);
@@ -111,15 +134,19 @@ export const MotionProvider = ({ children }) => {
   };
 
   const fetchSummary = async (periodFilters = {}) => {
+    setLoading(true);
     try {
       const params = new URLSearchParams(periodFilters);
       const response = await axios.get(`http://localhost:4000/api/motion/summary?${params.toString()}`, {
         withCredentials: true,
       });
       setSummary(response.data);
+      setError(null);
     } catch (err) {
       console.error('Error fetching summary:', err.response?.data || err.message);
       setError(err.response?.data?.error || 'Error al cargar resumen');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -152,6 +179,7 @@ export const MotionProvider = ({ children }) => {
         filters,
         setFilters,
         fetchMotions,
+        fetchMotionsByYear, // Nueva función
         createMotion,
         updateMotion,
         deleteMotion,

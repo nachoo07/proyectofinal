@@ -339,6 +339,7 @@ const StudentTable = () => {
                         <DeleteIcon />
                       </Button>
                     </Tooltip>
+                  </TableCell>
 
                   <TableCell sx={{ color: '#00335c', fontWeight: 500, textAlign: 'center' }}>{student.name}</TableCell>
                   <TableCell sx={{ color: '#00335c', fontWeight: 500, textAlign: 'center' }}>{student.lastName}</TableCell>

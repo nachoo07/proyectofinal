@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import {
   Box,
   Typography,
@@ -6,7 +6,12 @@ import {
   CircularProgress,
   Tabs,
   Tab,
-  Button
+  Button,
+  Modal,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions
 } from '@mui/material';
 import { ArrowBack as ArrowBackIcon } from '@mui/icons-material';
 import { useMotions } from '../../context/motion/MotionContext';
@@ -19,18 +24,27 @@ const MotionComponent = () => {
     error,
     createMotion,
     updateMotion,
+    deleteMotion,
+    fetchMotions
   } = useMotions();
 
   const [formData, setFormData] = useState({
     id: null,
     concept: '',
     amount: '',
+    date: null,
     paymentMethod: '',
     incomeType: '',
   });
+
   const [isEditing, setIsEditing] = useState(false);
   const [localError, setLocalError] = useState('');
   const [tabValue, setTabValue] = useState(0);
+  const [openModal, setOpenModal] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [motionToDelete, setMotionToDelete] = useState(null);
+  const [successDialogOpen, setSuccessDialogOpen] = useState(false);
+  const [errorDialogOpen, setErrorDialogOpen] = useState(false);
 
   const formatDateToYYYYMMDD = (date) => {
     if (!date) return null;
@@ -49,31 +63,36 @@ const MotionComponent = () => {
   };
 
   const handleSubmit = async (motion) => {
-    console.log("AAAAAAAAAAAAAAAAAAAAA")
     try {
       const formattedData = {
         ...motion,
         date: formatDateToYYYYMMDD(new Date()),
       };
-      console.log(formattedData)
+
       if (motion.id) {
         await updateMotion(motion.id, formattedData);
       } else {
         await createMotion(formattedData);
       }
+
       setFormData({
         id: null,
-        concept: "",
-        amount: "",
+        concept: '',
+        amount: '',
         date: null,
-        paymentMethod: "",
-        incomeType: tabValue === 0 ? "egreso" : "ingreso",
+        paymentMethod: '',
+        incomeType: tabValue === 0 ? 'egreso' : 'ingreso',
       });
+
       setIsEditing(false);
-      setLocalError("");
+      setLocalError('');
+      setOpenModal(false);
+      setSuccessDialogOpen(true); // Mostrar modal de éxito
     } catch (err) {
       console.error(err);
-      setLocalError(err.message || "Error al guardar el movimiento");
+      setLocalError('');
+      setOpenModal(false);
+      setErrorDialogOpen(true); // Mostrar modal de error
     }
   };
 
@@ -88,6 +107,40 @@ const MotionComponent = () => {
     });
     setIsEditing(false);
     setLocalError('');
+    setOpenModal(false);
+  };
+
+  const handleEditMotion = (motion) => {
+    setFormData(motion);
+    setIsEditing(true);
+    setOpenModal(true);
+  };
+
+  const handleDeleteMotion = (id) => {
+    setMotionToDelete(id);
+    setDeleteDialogOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    try {
+      await deleteMotion(motionToDelete);
+      setDeleteDialogOpen(false);
+      setMotionToDelete(null);
+      await fetchMotions();
+    } catch (err) {
+      console.error('Error al eliminar movimiento', err);
+    }
+  };
+
+  const cancelDelete = () => {
+    setDeleteDialogOpen(false);
+    setMotionToDelete(null);
+  };
+
+  const closeSuccessDialog = async () => {
+    setSuccessDialogOpen(false);
+    setTabValue(1); // Ir a "Todos los Movimientos"
+    await fetchMotions();
   };
 
   return (
@@ -101,8 +154,9 @@ const MotionComponent = () => {
           Volver
         </Button>
       </Box>
+
       <Box sx={{ p: 4, maxWidth: 1000, mx: 'auto' }}>
-        <Typography variant="h4" gutterBottom color='#007F5F'>
+        <Typography variant="h4" gutterBottom color="#007F5F">
           Gestión de Movimientos
         </Typography>
 
@@ -129,13 +183,81 @@ const MotionComponent = () => {
           </>
         )}
 
-        {tabValue === 1 && <MotionList />}
-        <Box sx={{ mt: 4 }}>
-          <Box sx={{ height: 300 }}>
-            {/* Aquí irá el chart si confirmas */}
-          </Box>
-        </Box>
+        {tabValue === 1 && (
+          <MotionList
+            onEdit={handleEditMotion}
+            onDelete={handleDeleteMotion}
+          />
+        )}
       </Box>
+
+      {/* Modal para editar */}
+      <Modal open={openModal} onClose={handleCancel}>
+        <Box
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            bgcolor: "background.paper",
+            borderRadius: 2,
+            boxShadow: 24,
+            p: 4,
+            maxWidth: 600,
+            width: "100%",
+          }}
+        >
+          <Formulario
+            formData={formData}
+            setFormData={setFormData}
+            handleSubmit={handleSubmit}
+            isEditing={isEditing}
+            handleCancel={handleCancel}
+          />
+        </Box>
+      </Modal>
+
+      {/* Diálogo de confirmación de eliminación */}
+      <Dialog open={deleteDialogOpen} onClose={cancelDelete}>
+        <DialogTitle>¿Estás segura/o?</DialogTitle>
+        <DialogContent>
+          Esta acción eliminará el movimiento de forma permanente.
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={cancelDelete} color="inherit">
+            Cancelar
+          </Button>
+          <Button onClick={confirmDelete} color="error" variant="contained">
+            Eliminar
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Diálogo de éxito */}
+      <Dialog open={successDialogOpen} onClose={closeSuccessDialog}>
+        <DialogTitle>Movimiento guardado</DialogTitle>
+        <DialogContent>
+          El movimiento se creó o actualizó correctamente.
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={closeSuccessDialog} autoFocus>
+            Ver lista
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Diálogo de error */}
+      <Dialog open={errorDialogOpen} onClose={() => setErrorDialogOpen(false)}>
+        <DialogTitle>Error al guardar</DialogTitle>
+        <DialogContent>
+          Ocurrió un error al intentar guardar el movimiento.
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setErrorDialogOpen(false)} autoFocus>
+            Cerrar
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 };
