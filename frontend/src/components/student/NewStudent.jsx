@@ -209,12 +209,12 @@ const NewStudent = () => {
             px: 3,
             py: 1.5,
             '&:hover': {
-              backgroundColor: 'rgba(46, 125, 50, 0.1)',
+              backgroundColor: 'rgba(125, 46, 46, 0.1)',
               borderColor: '#1b5e20',
             },
           }}
         >
-          Volverrrrrrrr
+          Volverrrrrrrr212
         </Button>
       </Box>
     </Box>
