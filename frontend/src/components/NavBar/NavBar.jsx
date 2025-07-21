@@ -1,8 +1,7 @@
-// imports iguales que antes...
 import React, { useState, useContext } from 'react';
 import {
   AppBar, Toolbar, Box, Typography, Button, Menu, MenuItem, ListItemIcon,
-  ListItemText, Divider, IconButton, useMediaQuery, useTheme,Tooltip
+  ListItemText, Divider, IconButton, useMediaQuery, useTheme, Tooltip
 } from '@mui/material';
 import {
   Home as HomeIcon, Dashboard as PrincipalIcon, AttachMoney as FinanzasIcon,
@@ -30,6 +29,7 @@ const NavBar = () => {
 
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const isTablet = useMediaQuery(theme.breakpoints.between('sm', 'md'));
+  const isDesktop = useMediaQuery(theme.breakpoints.up('lg'));
   const isHome = location.pathname === '/';
 
   const handleMobileMenuOpen = (event) => setMobileMenuAnchorEl(event.currentTarget);
@@ -51,17 +51,22 @@ const NavBar = () => {
     handleSubmenuClose();
     if (isMobile) handleMobileMenuClose();
   };
-const getShortName = (fullName) => {
-  if (!fullName) return 'Usuario';
-  const words = fullName.trim().split(' ');
 
-  if (words.length === 1) return words[0]; // solo un nombre
-  if (words.length === 2) return `${words[0]} ${words[1]}`; // nombre + apellido
+  // Función para obtener nombre corto
+  const getShortName = (fullName) => {
+    if (!fullName) return 'Usuario';
+    const words = fullName.trim().split(' ');
+    if (words.length === 1) return words[0];
+    return `${words[0]} ${words[1]}`;
+  };
 
-  // Si es más largo, devolver solo nombre o nombre + primer apellido si es corto
-  const firstTwo = `${words[0]} ${words[1]}`;
-  return firstTwo.length <= 14 ? firstTwo : words[0];
-};
+  // Función para obtener iniciales
+  const getInitials = (fullName) => {
+    if (!fullName) return 'US';
+    const words = fullName.trim().split(' ');
+    if (words.length === 1) return words[0].substring(0, 2).toUpperCase();
+    return `${words[0][0]}${words[words.length - 1][0]}`.toUpperCase();
+  };
 
   const iconSize = isMobile ? 30 : 36;
   const mobileIconSize = 32;
@@ -84,7 +89,7 @@ const getShortName = (fullName) => {
       submenu: [
         { text: 'Cuotas', url: '/shares', icon: <CuotasIcon sx={{ fontSize: iconSize }} /> },
         { text: 'Movimientos', url: '/motions', icon: <MovimientosIcon sx={{ fontSize: iconSize }} /> },
-        { text: 'Informes', icon: <InformesIcon sx={{ fontSize: iconSize }} />, url: '/panel-reports' },
+        { text: 'Informes', icon: <InformesIcon sx={{ fontSize: iconSize }} />, url: '/reports' },
       ],
     },
     { text: 'Notificaciones', icon: <NotificacionesIcon sx={{ fontSize: iconSize }} />, url: '/notifications' },
@@ -96,75 +101,88 @@ const getShortName = (fullName) => {
       backgroundColor: themeMode === 'dark' ? theme.palette.background.paper : '#007F5F',
       color: themeMode === 'dark' ? theme.palette.text.primary : 'white',
     }}>
-<Toolbar sx={{
-  display: 'flex',
-  flexWrap: 'wrap',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  px: { xs: 1, sm: 2, md: 3 },
-  py: { xs: 0.5, sm: 1 },
-  position: 'relative',
-}}>
-  {/* IZQUIERDA */}
-  <Box
-    sx={{
-      display: 'flex',
-      alignItems: 'center',
-      minWidth: 120,
-      flex: isMobile ? '0 0 auto' : 1,
-    }}
-  >
-    {/* Título Golazo */}
-    <Typography
-      variant="h6"
-      sx={{
-        fontWeight: 'bold',
-        fontSize: { xs: '1.1rem', sm: '1.4rem', md: '1.6rem' },
-        whiteSpace: 'nowrap',
-      }}
-    >
-      Golazo
-    </Typography>
-
-    {/* Saludo solo si no es mobile */}
-    {!isMobile && (
-      <Tooltip title={userData?.name || 'Usuario'}>
-        <Box
-          sx={{
-            ml: { sm: 1, md: 2 },
-            maxWidth: { sm: 120, md: 180 },
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-            whiteSpace: 'nowrap',
-          }}
-        >
+      <Toolbar sx={{
+        display: 'flex',
+        flexWrap: 'wrap',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        px: { xs: 1, sm: 2, md: 3 },
+        py: { xs: 0.5, sm: 1 },
+        gap: { xs: 1, sm: 2 },
+        position: 'relative',
+      }}>
+        {/* IZQUIERDA */}
+        <Box sx={{ 
+          display: 'flex', 
+          alignItems: 'center', 
+          flex: 'none',
+          minWidth: 120
+        }}>
           <Typography
-            variant="body1"
+            variant="h6"
             sx={{
-              fontSize: { xs: '0.9rem', sm: '1rem', md: '1.1rem' },
+              fontWeight: 'bold',
+              fontSize: { xs: '1.1rem', sm: '1.4rem', md: '1.6rem' },
+              whiteSpace: 'nowrap',
             }}
           >
-            ¡Hola, {getShortName(userData?.name)}!
+            Golazo
           </Typography>
+
+          {/* Saludo responsivo */}
+          {userData?.name && (
+            <>
+              {isDesktop && (
+                <Tooltip title={userData.name}>
+                  <Typography
+                    variant="body1"
+                    sx={{
+                      ml: 2,
+                      maxWidth: 150,
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                      fontSize: '0.95rem'
+                    }}
+                  >
+                    ¡Hola, {getShortName(userData.name)}!
+                  </Typography>
+                </Tooltip>
+              )}
+              
+              {isTablet && (
+                <Tooltip title={userData.name}>
+                  <Box sx={{
+                    ml: 1,
+                    bgcolor: 'rgba(255,255,255,0.2)',
+                    borderRadius: '50%',
+                    width: 32,
+                    height: 32,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                  }}>
+                    <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
+                      {getInitials(userData.name)}
+                    </Typography>
+                  </Box>
+                </Tooltip>
+              )}
+            </>
+          )}
         </Box>
-      </Tooltip>
-    )}
-  </Box>
 
-
-        {/* CENTRO (Tabs + Submenus unificados) */}
+        {/* CENTRO */}
         {!isMobile && userData && !isHome && (
           <Box sx={{
-            position: { sm: 'static', md: 'absolute' },
-            left: '50%',
-            transform: { md: 'translateX(-50%)' },
             display: 'flex',
             flexWrap: isTablet ? 'wrap' : 'nowrap',
             justifyContent: 'center',
             alignItems: 'center',
             gap: { xs: 0.5, sm: 1, md: 2 },
-            maxWidth: '100%',
-            overflowX: isTablet ? 'auto' : 'visible',
+            flex: 1,
+            minWidth: '50%',
+            maxWidth: { md: '60%' },
             py: isTablet ? 1 : 0
           }}>
             {navItems.map((item) => {
@@ -176,9 +194,9 @@ const getShortName = (fullName) => {
                     onClick={(e) => handleSubmenuOpen(e, item.submenu, item.url)}
                     sx={{
                       color: 'inherit',
-                      fontSize: { sm: '0.8rem', md: '0.95rem' },
+                      fontSize: { sm: '0.8rem', md: '0.9rem' },
                       textTransform: 'none',
-                      padding: { sm: '6px 8px', md: '8px 16px' },
+                      padding: { sm: '6px 8px', md: '8px 12px' },
                       minWidth: 'max-content',
                     }}
                     startIcon={React.cloneElement(item.icon, {
@@ -194,31 +212,30 @@ const getShortName = (fullName) => {
                 );
               } else {
                 return (
-                <Button
-  key={item.text}
-  onClick={() => handleNavigate(item.url)}
-  sx={{
-    color: selected ? 'secondary.main' : 'inherit',
-    fontWeight: selected ? 'bold' : 'normal',
-    fontSize: { sm: '0.8rem', md: '0.95rem' },
-    textTransform: 'none',
-    padding: { sm: '6px 8px', md: '8px 16px' },
-    minWidth: 'max-content',
-    '&:hover': {
-      color: '#1976d2', // 🔵 Azul MUI (como antes)
-      backgroundColor: 'transparent', // 🧼 evita fondo morado
-    },
-  }}
-  startIcon={React.cloneElement(item.icon, {
-    sx: {
-      fontSize: isTablet ? 28 : iconSize,
-      marginRight: '4px',
-    },
-  })}
->
-  {item.text}
-</Button>
-
+                  <Button
+                    key={item.text}
+                    onClick={() => handleNavigate(item.url)}
+                    sx={{
+                      color: selected ? 'secondary.main' : 'inherit',
+                      fontWeight: selected ? 'bold' : 'normal',
+                      fontSize: { sm: '0.8rem', md: '0.9rem' },
+                      textTransform: 'none',
+                      padding: { sm: '6px 8px', md: '8px 12px' },
+                      minWidth: 'max-content',
+                      '&:hover': {
+                        color: '#1976d2',
+                        backgroundColor: 'transparent',
+                      },
+                    }}
+                    startIcon={React.cloneElement(item.icon, {
+                      sx: {
+                        fontSize: isTablet ? 28 : iconSize,
+                        marginRight: '4px',
+                      },
+                    })}
+                  >
+                    {item.text}
+                  </Button>
                 );
               }
             })}
@@ -227,23 +244,36 @@ const getShortName = (fullName) => {
 
         {/* DERECHA */}
         {!isMobile && userData && (
-          <Box sx={{ display: 'flex', justifyContent: 'flex-end', minWidth: 120, flex: 1 }}>
-            <Button
-              variant="contained"
-              sx={{
-                backgroundColor: '#007F5F',
-                color: 'white',
-                '&:hover': { backgroundColor: '#006647' },
-                fontSize: { sm: '0.8rem', md: '0.95rem' },
-                textTransform: 'none',
-                padding: { sm: '6px 12px', md: '8px 16px' },
-                whiteSpace: 'nowrap'
-              }}
-              onClick={handleLogout}
-              startIcon={<LogoutIcon sx={{ fontSize: isTablet ? 28 : iconSize, mr: '4px' }} />}
-            >
-              Cerrar Sesión
-            </Button>
+          <Box sx={{ 
+            display: 'flex', 
+            justifyContent: 'flex-end', 
+            flex: 'none',
+            minWidth: 'fit-content'
+          }}>
+            {isTablet ? (
+              <Tooltip title="Cerrar sesión">
+                <IconButton onClick={handleLogout} color="inherit">
+                  <LogoutIcon sx={{ fontSize: 28 }} />
+                </IconButton>
+              </Tooltip>
+            ) : (
+              <Button
+                variant="contained"
+                sx={{
+                  backgroundColor: '#007F5F',
+                  color: 'white',
+                  '&:hover': { backgroundColor: '#006647' },
+                  fontSize: '0.9rem',
+                  textTransform: 'none',
+                  padding: '6px 14px',
+                  whiteSpace: 'nowrap'
+                }}
+                onClick={handleLogout}
+                startIcon={<LogoutIcon sx={{ fontSize: iconSize, mr: '4px' }} />}
+              >
+                Cerrar Sesión
+              </Button>
+            )}
           </Box>
         )}
 
