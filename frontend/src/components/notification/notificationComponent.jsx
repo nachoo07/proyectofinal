@@ -148,14 +148,15 @@ const NotificationComponent = () => {
           variant="outlined"
           startIcon={<ArrowBackIcon />}
           onClick={() => { if (typeof window !== 'undefined' && window.history) window.history.back(); }}
-        color='#007F5F'>
+          sx={{ color: '#007F5F', borderColor: '#007F5F' }}
+        >
           Volver
         </Button>
       </Box>
       <Box sx={{ width: '100%' }}>
         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
           <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-            <Typography variant="h1">Notificaciones</Typography>
+            <Typography variant="h1" color='#007F5F'>Notificaciones</Typography>
             <Box>
               <IconButton onClick={() => setNewNotificationOpen(true)} color="primary">
                 <AddIcon />
@@ -166,12 +167,28 @@ const NotificationComponent = () => {
             </Box>
           </Box>
           
+          {/* TABS CON TEXTO BLANCO EN SELECCIONADAS Y FONDO VERDE */}
           <Tabs
             value={activeTab}
             onChange={handleTabChange}
             variant="scrollable"
             scrollButtons="auto"
             allowScrollButtonsMobile
+            sx={{
+              '& .MuiTab-root': {
+                fontWeight: 'bold',
+                textTransform: 'none',
+                color: '#007F5F', // Texto verde para pestañas no seleccionadas
+              },
+              '& .Mui-selected': {
+                backgroundColor: '#007F5F',
+                color: '#ffffff !important', // Texto blanco para pestañas seleccionadas
+                borderRadius: 2,
+              },
+              '& .MuiTabs-indicator': {
+                backgroundColor: 'transparent',
+              }
+            }}
           >
             <Tab 
               value="all" 
@@ -250,8 +267,9 @@ const NotificationComponent = () => {
                     sx={{
                       margin: '8px 0',
                       backgroundColor: isExpired ? 'action.hover' : 'background.paper',
+                      // SIN HOVER AZUL - MISMO COLOR EN HOVER
                       '&:hover': {
-                        backgroundColor: isExpired ? 'action.selected' : 'action.hover'
+                        backgroundColor: isExpired ? 'action.hover' : 'background.paper'
                       }
                     }}
                   >
@@ -320,8 +338,9 @@ const NotificationComponent = () => {
           )}
         </Box>
 
+        {/* Diálogos permanecen iguales */}
         <Dialog open={newNotificationOpen} onClose={() => setNewNotificationOpen(false)}>
-          <DialogTitle>Crear Nueva Notificación</DialogTitle>
+          <DialogTitle color='#007F5F'>Crear Nueva Notificación</DialogTitle>
           <DialogContent>
             <Box sx={{ mt: 2 }}>
               <TextField
@@ -351,11 +370,19 @@ const NotificationComponent = () => {
             </Box>
           </DialogContent>
           <DialogActions>
-            <Button onClick={() => setNewNotificationOpen(false)}>Cancelar</Button>
+            <Button onClick={() => setNewNotificationOpen(false)} sx={{ color: '#007F5F' }}>
+              Cancelar
+            </Button>
             <Button 
               onClick={handleCreateNotification} 
               disabled={!newNotification.message}
               variant="contained"
+              sx={{
+                backgroundColor: '#007F5F',
+                '&:hover': {
+                  backgroundColor: '#005F46'
+                }
+              }}
             >
               Crear
             </Button>

@@ -150,17 +150,57 @@ const MotionComponent = () => {
           variant="outlined"
           startIcon={<ArrowBackIcon />}
           onClick={() => window.history.back()}
+          sx={{
+            borderColor: '#007F5F',
+            color: '#007F5F',
+            // HOVER ELIMINADO - MANTENEMOS EL MISMO ESTILO
+            '&:hover': {
+              backgroundColor: 'transparent', // Fondo transparente en hover
+              color: '#007F5F',               // Texto verde en hover
+              borderColor: '#007F5F',          // Borde verde en hover
+            },
+          }}
         >
           Volver
         </Button>
       </Box>
 
       <Box sx={{ p: 4, maxWidth: 1000, mx: 'auto' }}>
-        <Typography variant="h4" gutterBottom color="#007F5F">
+        <Typography variant="h2" gutterBottom color="#007F5F">
           Gestión de Movimientos
         </Typography>
 
-        <Tabs value={tabValue} onChange={handleTabChange} sx={{ mb: 4 }}>
+        <Tabs
+          value={tabValue}
+          onChange={handleTabChange}
+          sx={{
+            mb: 4,
+            '& .MuiTab-root': {
+              color: '#007F5F',
+              fontWeight: 'bold',
+              textTransform: 'none',
+              borderRadius: 2,
+              mx: 1,
+              // HOVER ELIMINADO PARA PESTAÑAS NO SELECCIONADAS
+              '&:hover': {
+                backgroundColor: 'transparent', // Fondo transparente en hover
+                color: '#007F5F',               // Texto verde en hover
+              },
+            },
+            '& .Mui-selected': {
+              backgroundColor: '#007F5F',
+              color: '#fff',
+              // HOVER ELIMINADO PARA PESTAÑAS SELECCIONADAS
+              '&:hover': {
+                backgroundColor: '#007F5F', // Mantiene fondo verde en hover
+                color: '#fff',              // Mantiene texto blanco en hover
+              },
+            },
+            '& .MuiTabs-indicator': {
+              backgroundColor: 'transparent',
+            },
+          }}
+        >
           <Tab label="Crear" />
           <Tab label="Todos los Movimientos" />
         </Tabs>
@@ -240,7 +280,10 @@ const MotionComponent = () => {
           El movimiento se creó o actualizó correctamente.
         </DialogContent>
         <DialogActions>
-          <Button onClick={closeSuccessDialog} autoFocus>
+          <Button onClick={closeSuccessDialog} autoFocus sx={{
+            color: '#007F5F',
+            fontWeight: 'bold'
+          }}>
             Ver lista
           </Button>
         </DialogActions>
@@ -253,7 +296,10 @@ const MotionComponent = () => {
           Ocurrió un error al intentar guardar el movimiento.
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setErrorDialogOpen(false)} autoFocus>
+          <Button onClick={() => setErrorDialogOpen(false)} autoFocus sx={{
+            color: '#007F5F',
+            fontWeight: 'bold'
+          }}>
             Cerrar
           </Button>
         </DialogActions>

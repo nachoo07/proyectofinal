@@ -52,7 +52,6 @@ const NavBar = () => {
     if (isMobile) handleMobileMenuClose();
   };
 
-  // Función para obtener nombre corto
   const getShortName = (fullName) => {
     if (!fullName) return 'Usuario';
     const words = fullName.trim().split(' ');
@@ -60,7 +59,6 @@ const NavBar = () => {
     return `${words[0]} ${words[1]}`;
   };
 
-  // Función para obtener iniciales
   const getInitials = (fullName) => {
     if (!fullName) return 'US';
     const words = fullName.trim().split(' ');
@@ -111,13 +109,7 @@ const NavBar = () => {
         gap: { xs: 1, sm: 2 },
         position: 'relative',
       }}>
-        {/* IZQUIERDA */}
-        <Box sx={{ 
-          display: 'flex', 
-          alignItems: 'center', 
-          flex: 'none',
-          minWidth: 120
-        }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', flex: 'none', minWidth: 120 }}>
           <Typography
             variant="h6"
             sx={{
@@ -129,7 +121,6 @@ const NavBar = () => {
             Golazo
           </Typography>
 
-          {/* Saludo responsivo */}
           {userData?.name && (
             <>
               {isDesktop && (
@@ -149,7 +140,7 @@ const NavBar = () => {
                   </Typography>
                 </Tooltip>
               )}
-              
+
               {isTablet && (
                 <Tooltip title={userData.name}>
                   <Box sx={{
@@ -172,7 +163,6 @@ const NavBar = () => {
           )}
         </Box>
 
-        {/* CENTRO */}
         {!isMobile && userData && !isHome && (
           <Box sx={{
             display: 'flex',
@@ -198,6 +188,10 @@ const NavBar = () => {
                       textTransform: 'none',
                       padding: { sm: '6px 8px', md: '8px 12px' },
                       minWidth: 'max-content',
+                      '&:hover': {
+                        backgroundColor: 'transparent',
+                        color: 'inherit',
+                      },
                     }}
                     startIcon={React.cloneElement(item.icon, {
                       sx: {
@@ -223,8 +217,8 @@ const NavBar = () => {
                       padding: { sm: '6px 8px', md: '8px 12px' },
                       minWidth: 'max-content',
                       '&:hover': {
-                        color: '#1976d2',
                         backgroundColor: 'transparent',
+                        color: 'inherit',
                       },
                     }}
                     startIcon={React.cloneElement(item.icon, {
@@ -242,11 +236,10 @@ const NavBar = () => {
           </Box>
         )}
 
-        {/* DERECHA */}
         {!isMobile && userData && (
-          <Box sx={{ 
-            display: 'flex', 
-            justifyContent: 'flex-end', 
+          <Box sx={{
+            display: 'flex',
+            justifyContent: 'flex-end',
             flex: 'none',
             minWidth: 'fit-content'
           }}>
@@ -277,7 +270,6 @@ const NavBar = () => {
           </Box>
         )}
 
-        {/* BOTÓN MENÚ MÓVIL */}
         {isMobile && (
           <IconButton edge="end" color="inherit" aria-label="menu" onClick={handleMobileMenuOpen} sx={{ ml: 'auto' }}>
             <MenuIcon sx={{ fontSize: mobileIconSize }} />
@@ -285,7 +277,6 @@ const NavBar = () => {
         )}
       </Toolbar>
 
-      {/* SUBMENÚ DESKTOP */}
       <Menu
         anchorEl={submenuAnchorEl}
         open={isSubmenuOpen}
@@ -317,7 +308,6 @@ const NavBar = () => {
         ))}
       </Menu>
 
-      {/* MENÚ MÓVIL */}
       <Menu
         anchorEl={mobileMenuAnchorEl}
         open={isMobileMenuOpen}
