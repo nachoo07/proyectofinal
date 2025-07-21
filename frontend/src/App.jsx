@@ -14,6 +14,7 @@ import { TeacherProvider } from './context/teacher/TeacherContext';
 import { AttendanceProvider } from './context/attendance/AttendanceContext';
 import { useEffect } from 'react';
 import { MotionProvider } from './context/motion/MotionContext';
+
 // Componente interno para usar el hook correctamente
 function AppContent() {
   const { themeMode, fontSize, getFontSize } = useSettings();

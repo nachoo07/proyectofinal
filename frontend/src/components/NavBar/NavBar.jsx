@@ -2,7 +2,7 @@
 import React, { useState, useContext } from 'react';
 import {
   AppBar, Toolbar, Box, Typography, Button, Menu, MenuItem, ListItemIcon,
-  ListItemText, Divider, IconButton, useMediaQuery, useTheme
+  ListItemText, Divider, IconButton, useMediaQuery, useTheme,Tooltip
 } from '@mui/material';
 import {
   Home as HomeIcon, Dashboard as PrincipalIcon, AttachMoney as FinanzasIcon,
@@ -51,6 +51,17 @@ const NavBar = () => {
     handleSubmenuClose();
     if (isMobile) handleMobileMenuClose();
   };
+const getShortName = (fullName) => {
+  if (!fullName) return 'Usuario';
+  const words = fullName.trim().split(' ');
+
+  if (words.length === 1) return words[0]; // solo un nombre
+  if (words.length === 2) return `${words[0]} ${words[1]}`; // nombre + apellido
+
+  // Si es más largo, devolver solo nombre o nombre + primer apellido si es corto
+  const firstTwo = `${words[0]} ${words[1]}`;
+  return firstTwo.length <= 14 ? firstTwo : words[0];
+};
 
   const iconSize = isMobile ? 30 : 36;
   const mobileIconSize = 32;
@@ -85,26 +96,61 @@ const NavBar = () => {
       backgroundColor: themeMode === 'dark' ? theme.palette.background.paper : '#007F5F',
       color: themeMode === 'dark' ? theme.palette.text.primary : 'white',
     }}>
-      <Toolbar sx={{
-        display: 'flex',
-        flexWrap: 'wrap',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        px: { xs: 1, sm: 2, md: 3 },
-        py: { xs: 0.5, sm: 1 },
-        position: 'relative',
-      }}>
-        {/* IZQUIERDA */}
-        <Box sx={{ display: 'flex', alignItems: 'center', minWidth: 120, flex: isMobile ? '0 0 auto' : 1 }}>
-          <Typography variant="h6" sx={{ fontWeight: 'bold', fontSize: { xs: '1.1rem', sm: '1.4rem', md: '1.6rem' } }}>
-            Golazo
+<Toolbar sx={{
+  display: 'flex',
+  flexWrap: 'wrap',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  px: { xs: 1, sm: 2, md: 3 },
+  py: { xs: 0.5, sm: 1 },
+  position: 'relative',
+}}>
+  {/* IZQUIERDA */}
+  <Box
+    sx={{
+      display: 'flex',
+      alignItems: 'center',
+      minWidth: 120,
+      flex: isMobile ? '0 0 auto' : 1,
+    }}
+  >
+    {/* Título Golazo */}
+    <Typography
+      variant="h6"
+      sx={{
+        fontWeight: 'bold',
+        fontSize: { xs: '1.1rem', sm: '1.4rem', md: '1.6rem' },
+        whiteSpace: 'nowrap',
+      }}
+    >
+      Golazo
+    </Typography>
+
+    {/* Saludo solo si no es mobile */}
+    {!isMobile && (
+      <Tooltip title={userData?.name || 'Usuario'}>
+        <Box
+          sx={{
+            ml: { sm: 1, md: 2 },
+            maxWidth: { sm: 120, md: 180 },
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
+          }}
+        >
+          <Typography
+            variant="body1"
+            sx={{
+              fontSize: { xs: '0.9rem', sm: '1rem', md: '1.1rem' },
+            }}
+          >
+            ¡Hola, {getShortName(userData?.name)}!
           </Typography>
-          {!isMobile && (
-            <Typography variant="body1" sx={{ fontSize: { md: '1.5rem', sm: '1.2rem' }, ml: { sm: 1, md: 2 } }}>
-              ¡Hola, {userData?.name || 'Usuario'}!
-            </Typography>
-          )}
         </Box>
+      </Tooltip>
+    )}
+  </Box>
+
 
         {/* CENTRO (Tabs + Submenus unificados) */}
         {!isMobile && userData && !isHome && (
