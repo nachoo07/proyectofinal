@@ -194,15 +194,15 @@ const StudentTable = () => {
         <Box
           sx={{
             display: 'flex',
-            flexDirection: { xs: 'column', sm: 'row' },
-            gap: 2,
+            flexDirection: 'row',
+            gap: { xs: 1, md: 2 },
             flexGrow: 1,
             maxWidth: '900px',
             minWidth: '260px',
             background: '#fff',
             borderRadius: '12px',
             boxShadow: '0 2px 8px rgba(56, 249, 215, 0.08)',
-            p: 2,
+            p: { xs: 1, md: 2 },
             alignItems: 'center',
             justifyContent: 'center',
           }}
@@ -212,7 +212,9 @@ const StudentTable = () => {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             fullWidth
+            size={window.innerWidth < 768 ? "small" : "medium"}
             sx={{
+              flex: 1,
               '& .MuiOutlinedInput-root': {
                 '& fieldset': { borderColor: '#38f9d7' },
                 '&:hover fieldset': { borderColor: '#43e97b' },
@@ -228,20 +230,21 @@ const StudentTable = () => {
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
             SelectProps={{ native: true }}
-            sx={{ minWidth: 120 }}
+            size={window.innerWidth < 768 ? "small" : "medium"}
+            sx={{ minWidth: { xs: 100, md: 120 }, flexShrink: 0 }}
           >
             <option value="Todos">Todos</option>
             <option value="Activo">Activo</option>
             <option value="Inactivo">Inactivo</option>
           </TextField>
         </Box>
-        <Box sx={{ display: 'flex', gap: 2 }}>
+        <Box sx={{ display: 'flex', gap: { xs: 1, md: 2 }, flexDirection: 'row', width: { xs: '100%', md: 'auto' } }}>
           {isAdmin && (
-            <Button component={Link} to="/students/new" variant="contained" color="success" sx={{ borderRadius: '32px', fontWeight: 700, fontSize: { xs: '1.1rem', md: '1.3rem' }, px: { xs: 3, md: 5 }, py: { xs: 1.5, md: 2 }, minWidth: { xs: '180px', md: '220px' } }}>
+            <Button component={Link} to="/students/new" variant="contained" color="success" sx={{ borderRadius: '32px', fontWeight: 700, fontSize: { xs: '0.9rem', md: '1.3rem' }, px: { xs: 2, md: 5 }, py: { xs: 1, md: 2 }, minWidth: { xs: '140px', md: '220px' }, flex: { xs: 1, md: 'none' } }}>
               Crear Nuevo
             </Button>
           )}
-          <Button variant="outlined" color="success" onClick={() => navigate(-1)} sx={{ borderRadius: '32px', fontWeight: 700, fontSize: { xs: '1.1rem', md: '1.3rem' }, px: { xs: 3, md: 5 }, py: { xs: 1.5, md: 2 }, minWidth: { xs: '180px', md: '220px' } }}>
+          <Button variant="outlined" color="success" onClick={() => navigate(-1)} sx={{ borderRadius: '32px', fontWeight: 700, fontSize: { xs: '0.9rem', md: '1.3rem' }, px: { xs: 2, md: 5 }, py: { xs: 1, md: 2 }, minWidth: { xs: '140px', md: '220px' }, flex: { xs: 1, md: 'none' } }}>
             Volver
           </Button>
         </Box>
@@ -259,49 +262,113 @@ const StudentTable = () => {
           mx: 'auto',
         }}
       >
-        <Table sx={{ minWidth: 650 }}>
+        <Table sx={{ minWidth: { xs: 320, md: 650 } }}>
           <TableHead>
-            <TableRow sx={{ background: 'linear-gradient(90deg, #43e97b 0%, #38f9d7 100%)' }}>
-              <TableCell sx={{ color: '#00335c', fontWeight: 700, fontSize: { xs: '1rem', md: '1.1rem' }, borderTopLeftRadius: '16px', textAlign: 'center' }}>Nombre</TableCell>
-              <TableCell sx={{ color: '#00335c', fontWeight: 700, fontSize: { xs: '1rem', md: '1.1rem' }, textAlign: 'center' }}>Apellido</TableCell>
-              <TableCell sx={{ color: '#00335c', fontWeight: 700, fontSize: { xs: '1rem', md: '1.1rem' }, textAlign: 'center' }}>DNI</TableCell>
-              <TableCell sx={{ color: '#00335c', fontWeight: 700, fontSize: { xs: '1rem', md: '1.1rem' }, textAlign: 'center' }}>Estado</TableCell>
-              <TableCell sx={{ color: '#00335c', fontWeight: 700, fontSize: { xs: '1rem', md: '1.1rem' }, borderTopRightRadius: '16px', textAlign: 'center' }}>Acciones</TableCell>
-            </TableRow>
+              <TableRow sx={{ background: 'linear-gradient(90deg, #43e97b 0%, #38f9d7 100%)' }}>
+    <TableCell sx={{ 
+      color: '#00335c', 
+      fontWeight: 700, 
+      fontSize: { xs: '0.75rem', md: '1.1rem' }, 
+      borderTopLeftRadius: '16px', 
+      textAlign: 'center',
+      p: { xs: 0.5, md: 2 }
+    }}>Nombre</TableCell>
+    <TableCell sx={{ 
+      color: '#00335c', 
+      fontWeight: 700, 
+      fontSize: { xs: '0.75rem', md: '1.1rem' }, 
+      textAlign: 'center',
+      p: { xs: 0.5, md: 2 }
+    }}>Apellido</TableCell>
+    <TableCell sx={{ 
+      color: '#00335c', 
+      fontWeight: 700, 
+      fontSize: { xs: '0.75rem', md: '1.1rem' }, 
+      textAlign: 'center',
+      p: { xs: 0.5, md: 2 }
+    }}>DNI</TableCell>
+    <TableCell sx={{ 
+      color: '#00335c', 
+      fontWeight: 700, 
+      fontSize: { xs: '0.75rem', md: '1.1rem' }, 
+      textAlign: 'center',
+      p: { xs: 0.5, md: 2 }
+    }}>Estado</TableCell>
+    <TableCell sx={{ 
+      color: '#00335c', 
+      fontWeight: 700, 
+      fontSize: { xs: '0.75rem', md: '1.1rem' }, 
+      borderTopRightRadius: '16px', 
+      textAlign: 'center',
+      p: { xs: 0.5, md: 2 }
+    }}>Acciones</TableCell>
+  </TableRow>
           </TableHead>
           <TableBody>
             {currentStudents.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={5} sx={{ textAlign: 'center', color: '#00335c', fontWeight: 600, fontSize: { xs: '1rem', md: '1.1rem' }, py: 4 }}>
+                <TableCell colSpan={5} sx={{ textAlign: 'center', color: '#00335c', fontWeight: 600, fontSize: { xs: '0.875rem', md: '1.1rem' }, p: { xs: 1.5, md: 4 } }}>
                   No se encontraron estudiantes.
                 </TableCell>
               </TableRow>
             ) : (
               currentStudents.map((student, index) => (
-                <TableRow
-                  key={student.id}
-                  sx={{
-                    background: index % 2 === 0 ? '#f8fafc' : '#e0f7fa',
-                    transition: 'background 0.2s',
-                    '&:hover': { background: '#b2dfdb' },
-                  }}
-                >
-                  <TableCell sx={{ color: '#00335c', fontWeight: 500, textAlign: 'center' }}>{student.name}</TableCell>
-                  <TableCell sx={{ color: '#00335c', fontWeight: 500, textAlign: 'center' }}>{student.lastName}</TableCell>
-                  <TableCell sx={{ color: '#00335c', fontWeight: 500, textAlign: 'center' }}>{student.dni}</TableCell>
-                  <TableCell sx={{ color: student.state === 'Activo' ? '#388e3c' : '#d32f2f', fontWeight: 700, textAlign: 'center' }}>{student.state}</TableCell>
-                  <TableCell sx={{ textAlign: 'center' }}>
-                    <Box sx={{ display: 'flex', gap: 1, justifyContent: 'center' }}>
-                      <Tooltip title="Ver estudiante">
-                        <Button
-                          component={Link}
-                          to={`/students/${student.id}`}
-                          variant="contained"
-                          color="primary"
-                          size="small"
-                          sx={{ borderRadius: '50%', minWidth: 40, height: 40, p: 0 }}
-                        >
-                          <SchoolIcon />
+               <TableRow
+        key={student.id}
+        sx={{
+          background: index % 2 === 0 ? '#f8fafc' : '#e0f7fa',
+          transition: 'background 0.2s',
+          '&:hover': { background: '#b2dfdb' },
+        }}
+      >
+        <TableCell sx={{ 
+          color: '#00335c', 
+          fontWeight: 500, 
+          textAlign: 'center',
+          fontSize: { xs: '0.75rem', md: '1rem' },
+          p: { xs: 0.5, md: 2 }
+        }}>{student.name}</TableCell>
+        <TableCell sx={{ 
+          color: '#00335c', 
+          fontWeight: 500, 
+          textAlign: 'center',
+          fontSize: { xs: '0.75rem', md: '1rem' },
+          p: { xs: 0.5, md: 2 }
+        }}>{student.lastName}</TableCell>
+        <TableCell sx={{ 
+          color: '#00335c', 
+          fontWeight: 500, 
+          textAlign: 'center',
+          fontSize: { xs: '0.75rem', md: '1rem' },
+          p: { xs: 0.5, md: 2 }
+        }}>{student.dni}</TableCell>
+        <TableCell sx={{ 
+          color: student.state === 'Activo' ? '#388e3c' : '#d32f2f', 
+          fontWeight: 700, 
+          textAlign: 'center',
+          fontSize: { xs: '0.75rem', md: '1rem' },
+          p: { xs: 0.5, md: 2 }
+        }}>{student.state}</TableCell>
+        <TableCell sx={{ 
+          textAlign: 'center',
+          p: { xs: 0.25, md: 2 }
+        }}>
+                    <Box sx={{ display: 'flex', gap: { xs: 0.5, md: 1 }, justifyContent: 'center', flexWrap: 'wrap' }}>
+            <Tooltip title="Ver estudiante">
+              <Button
+                component={Link}
+                to={`/students/${student.id}`}
+                variant="contained"
+                color="primary"
+                size="small"
+                sx={{ 
+                  borderRadius: '50%', 
+                  minWidth: { xs: 28, md: 40 }, 
+                  height: { xs: 28, md: 40 }, 
+                  p: 0 
+                }}
+              >
+                            <SchoolIcon sx={{ fontSize: { xs: 14, md: 20 } }} />
                         </Button>
                       </Tooltip>
                       {isAdmin && (
@@ -313,9 +380,14 @@ const StudentTable = () => {
                               variant="contained"
                               color="info"
                               size="small"
-                              sx={{ borderRadius: '50%', minWidth: 40, height: 40, p: 0 }}
+                                 sx={{ 
+                  borderRadius: '50%', 
+                  minWidth: { xs: 28, md: 40 }, 
+                  height: { xs: 28, md: 40 }, 
+                  p: 0 
+                }}
                             >
-                              <EditIcon />
+                              <EditIcon sx={{ fontSize: { xs: 14, md: 20 } }} />
                             </Button>
                           </Tooltip>
                           <Tooltip title="Ver cuotas">
@@ -325,7 +397,13 @@ const StudentTable = () => {
                               variant="contained"
                               color="success"
                               size="small"
-                              sx={{ borderRadius: '50%', minWidth: 40, height: 40, p: 0 }}
+                                 sx={{ 
+                  borderRadius: '50%', 
+                  minWidth: { xs: 28, md: 40 }, 
+                  height: { xs: 28, md: 40 }, 
+                  p: 0,
+                  fontSize: { xs: '0.7rem', md: '1rem' }
+                }}
                             >
                               $ {/* Puedes cambiar por un ícono de dinero si lo prefieres */}
                             </Button>
@@ -336,9 +414,14 @@ const StudentTable = () => {
                               color="error"
                               size="small"
                               onClick={() => handleOpenDeleteDialog(student.id)}
-                              sx={{ borderRadius: '50%', minWidth: 40, height: 40, p: 0 }}
+                                 sx={{ 
+                  borderRadius: '50%', 
+                  minWidth: { xs: 28, md: 40 }, 
+                  height: { xs: 28, md: 40 }, 
+                  p: 0 
+                }}
                             >
-                              <DeleteIcon />
+                              <DeleteIcon sx={{ fontSize: { xs: 14, md: 20 } }} />
                             </Button>
                           </Tooltip>
                         </>
@@ -357,12 +440,12 @@ const StudentTable = () => {
         sx={{
           display: 'flex',
           justifyContent: 'center',
-          gap: 1,
+          gap: { xs: 0.5, md: 1 },
           mb: 0,
           flexWrap: 'wrap',
         }}
       >
-        <Button variant="outlined" onClick={handlePrevPage} disabled={currentPage === 1}>
+        <Button variant="outlined" onClick={handlePrevPage} disabled={currentPage === 1} size={window.innerWidth < 768 ? "small" : "medium"} sx={{ fontSize: { xs: '0.75rem', md: '1rem' }, px: { xs: 1, md: 2 } }}>
           Anterior
         </Button>
 
@@ -373,13 +456,19 @@ const StudentTable = () => {
               key={pageNum}
               variant={pageNum === currentPage ? 'contained' : 'outlined'}
               onClick={() => handlePageClick(pageNum)}
+              size={window.innerWidth < 768 ? "small" : "medium"}
+              sx={{ 
+                fontSize: { xs: '0.75rem', md: '1rem' }, 
+                minWidth: { xs: 32, md: 40 },
+                px: { xs: 1, md: 2 }
+              }}
             >
               {pageNum}
             </Button>
           );
         })}
 
-        <Button variant="outlined" onClick={handleNextPage} disabled={currentPage === totalPages || totalPages === 0}>
+        <Button variant="outlined" onClick={handleNextPage} disabled={currentPage === totalPages || totalPages === 0} size={window.innerWidth < 768 ? "small" : "medium"} sx={{ fontSize: { xs: '0.75rem', md: '1rem' }, px: { xs: 1, md: 2 } }}>
           Siguiente
         </Button>
       </Box>

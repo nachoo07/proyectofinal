@@ -46,3 +46,10 @@
     grid-template-columns: 1fr !important;
   }
 }
+
+/* Optimizaciones adicionales para móvil */
+@media (max-width: 599px) {
+  .user-container {
+    padding: 0.5px 1px 1px;
+  }
+}

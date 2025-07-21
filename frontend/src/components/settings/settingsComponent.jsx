@@ -40,38 +40,6 @@ const SettingsComponent = () => {
           <Typography variant="h4" component="h1" gutterBottom sx={{ mb: 3 }}>
             Configuraciones
           </Typography>
-
-          <Box sx={{ mb: 3 }}>
-            <Typography variant="subtitle1" gutterBottom>
-              Tema
-            </Typography>
-            <Button
-              onClick={toggleTheme}
-              variant="contained"
-              color="primary"
-              fullWidth
-            >
-              Cambiar a {themeMode === 'light' ? 'Oscuro' : 'Claro'}
-            </Button>
-          </Box>
-
-          <Box sx={{ mb: 3 }}>
-            <FormControl fullWidth>
-              <InputLabel id="font-size-label">Tamaño de fuente</InputLabel>
-              <Select
-                labelId="font-size-label"
-                value={fontSize}
-                onChange={(e) => setFontSize(e.target.value)}
-                label="Tamaño de fuente"
-              >
-                <MenuItem value="small">Pequeño</MenuItem>
-                <MenuItem value="normal">Normal</MenuItem>
-                <MenuItem value="large">Grande</MenuItem>
-              </Select>
-            </FormControl>
-           
-          </Box>
-
           <Divider sx={{ my: 3 }} />
 
           <Button

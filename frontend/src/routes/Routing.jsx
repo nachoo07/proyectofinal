@@ -15,14 +15,14 @@ import PageTeacher from '../pages/teacher/PageTeacher';
 import PageStudentShares from '../pages/share/PageStudentShares';
 import PageEditStudent from '../pages/student/PageEditStudent';
 import StudentDetail from '../pages/student/StudentDetail';
-import NavBar from '../components/navbar/Navbar'; // Lo usaremos solo en algunas rutas
-
+import NavBar from '../components/NavBar/NavBar'; // Lo usaremos solo en algunas rutas
 import PageAttendance from '../pages/attendance/PageAttendance';
 import NotFound from '../pages/notFound/NotFound';
 
 const Routing = () => {
   const location = useLocation();
   const isLoginRoute = location.pathname.includes('login')
+  
   return (
     <ErrorBoundary>
       {
@@ -38,7 +38,10 @@ const Routing = () => {
           <Route path="/motions" element={<PageMotion />} />
           <Route path="/students/:id/edit" element={<PageEditStudent />} />
           <Route path="/teachers" element={<PageTeacher />} />
+
           <Route path="/reports" element={<PageReport />} />
+         
+
           <Route path="/settings" element={<PageSettings />} />
           <Route path="/shares" element={<SharesPage />} />
           <Route path="/shares/student/:studentId" element={<PageStudentShares />} />
@@ -55,6 +58,7 @@ const Routing = () => {
           <Route path="/students/:id" element={<StudentDetail />} />
           <Route path="/notifications" element={<PageNotification />} />
           <Route path="/attendance" element={<PageAttendance />} />
+
         </Route>
 
         <Route path="*" element={<NotFound />} />

@@ -1,8 +1,8 @@
 import connection from "../../db/db.connection.js";
 
 // Función auxiliar para crear un ingreso automático
-const createAutomaticIncome = async (concept, date, amount, paymentMethod, id_shares) => {
-  const incomeQuery = `INSERT INTO motions (concept, date, amount, paymentMethod, incomeType, id_shares) 
+const createAutomaticIncome = async (concept, date, amount, paymentMethod) => {
+  const incomeQuery = `INSERT INTO motions (concept, date, amount, paymentMethod, incomeType) 
                       VALUES (?, ?, ?, ?, ?, ?)`;
   const incomeConcept = `Ingreso automático por cuota: ${concept}`;
   try {
@@ -12,7 +12,6 @@ const createAutomaticIncome = async (concept, date, amount, paymentMethod, id_sh
       amount,
       paymentMethod,
       "ingreso",
-      id_shares,
     ]);
     return result.insertId;
   } catch (error) {
@@ -253,36 +252,100 @@ export const getMotionsByWeek = async (request, response) => {
 // Get all motions
 export const getAllMotionPaginated = async (request, response) => {
   try {
-    const { type, page, pageSize } = request.query; // Obtener el parámetro 'type' de la URL
-    let query = `SELECT * FROM motions ${type ? 'WHERE incomeType = ?' : ''} ORDER BY id DESC LIMIT ${pageSize} OFFSET ${(page - 1) * pageSize}`;
-    let queryParams = [];
+    // Recibimos filtros y paginación desde query params
+    const {
+      type,            // ingreso / egreso
+      paymentMethod,   // efectivo / transferencia
+      dateFrom,        // YYYY-MM-DD
+      dateTo,          // YYYY-MM-DD
+      amountMin,       // número
+      amountMax,       // número
+      page = 1,
+      pageSize = 10,
+    } = request.query;
 
-    // Si se proporciona el parámetro 'type', agregar un WHERE
-    if (type) {
-      queryParams.push(type);
+    // Validaciones básicas (puedes agregar más si querés)
+    if (type && !["ingreso", "egreso"].includes(type)) {
+      return response.status(400).json({ error: "El tipo debe ser 'ingreso' o 'egreso'" });
+    }
+    if (paymentMethod && !["efectivo", "transferencia"].includes(paymentMethod)) {
+      return response.status(400).json({ error: "Método de pago inválido" });
+    }
+    const pageNum = parseInt(page);
+    const limit = parseInt(pageSize);
+    if (isNaN(pageNum) || pageNum < 1 || isNaN(limit) || limit < 1) {
+      return response.status(400).json({ error: "page y pageSize deben ser números positivos" });
     }
 
-    // Ejecutar la consulta
-    const result = await connection.query(query, queryParams);
-
-    let queryCount = `SELECT COUNT(id) as count FROM motions ${type ? 'WHERE incomeType = ?' : ''}`;
-    let queryCountParams = [];
-    
+    // Construir consulta dinámica
+    let query = "SELECT * FROM motions WHERE 1=1";
+    let queryCount = "SELECT COUNT(id) AS count FROM motions WHERE 1=1";
+    const queryParams = [];
+    const countParams = [];
 
     if (type) {
+      query += " AND incomeType = ?";
+      queryCount += " AND incomeType = ?";
       queryParams.push(type);
+      countParams.push(type);
     }
 
-    // Ejecutar la consulta
-    const [count] = (await connection.query(queryCount, queryCountParams))[0];
+    if (paymentMethod) {
+      query += " AND paymentMethod = ?";
+      queryCount += " AND paymentMethod = ?";
+      queryParams.push(paymentMethod);
+      countParams.push(paymentMethod);
+    }
 
-    console.log(count)
+    if (dateFrom) {
+      query += " AND date >= ?";
+      queryCount += " AND date >= ?";
+      queryParams.push(dateFrom);
+      countParams.push(dateFrom);
+    }
 
-    // Enviar los resultados como JSON
-    response.status(200).json({motions: result[0], count: count.count});
+    if (dateTo) {
+      query += " AND date <= ?";
+      queryCount += " AND date <= ?";
+      queryParams.push(dateTo);
+      countParams.push(dateTo);
+    }
+
+    if (amountMin) {
+      query += " AND amount >= ?";
+      queryCount += " AND amount >= ?";
+      queryParams.push(amountMin);
+      countParams.push(amountMin);
+    }
+
+    if (amountMax) {
+      query += " AND amount <= ?";
+      queryCount += " AND amount <= ?";
+      queryParams.push(amountMax);
+      countParams.push(amountMax);
+    }
+
+    // Ordenar y paginar
+    query += " ORDER BY id DESC LIMIT ? OFFSET ?";
+    queryParams.push(limit, (pageNum - 1) * limit);
+
+    // Ejecutar consultas
+    const [motionsResult] = await connection.query(query, queryParams);
+    const [countResult] = await connection.query(queryCount, countParams);
+
+    const totalCount = countResult[0].count;
+
+    // Enviar resultados con paginación
+    response.status(200).json({
+      motions: motionsResult,
+      totalItems: totalCount,
+      totalPages: Math.ceil(totalCount / limit),
+      currentPage: pageNum,
+    });
+
   } catch (error) {
-    console.error('Error al obtener movimientos:', error);
-    response.status(500).json({ error: 'Error al obtener movimientos' });
+    console.error("Error al obtener movimientos:", error);
+    response.status(500).json({ error: "Error al obtener movimientos" });
   }
 };
 
@@ -310,7 +373,7 @@ export const getMotionByMotion = async(request, response) => {
 
 // Create new motion
 export const createMotion = async (req, res) => {
-  const { concept, date, amount, paymentMethod, incomeType, id_shares } = req.body;
+  const { concept, date, amount, paymentMethod, incomeType } = req.body;
 
   // Validar paymentMethod
   if (!["efectivo", "transferencia"].includes(paymentMethod)) {
@@ -347,30 +410,17 @@ export const createMotion = async (req, res) => {
     });
   }
 
-  // Validar id_shares (opcional, puede ser nulo)
-  if (id_shares && (isNaN(id_shares) || id_shares <= 0)) {
-    return res.status(400).json({
-      error: "id_shares debe ser un número positivo o nulo",
-    });
-  }
-
   try {
     // Crear el movimiento original
-    const query = `INSERT INTO motions (concept, date, amount, paymentMethod, incomeType, id_shares) 
-                   VALUES (?, ?, ?, ?, ?, ?)`;
+    const query = `INSERT INTO motions (concept, date, amount, paymentMethod, incomeType) 
+                   VALUES (?, ?, ?, ?, ?)`;
     const [result] = await connection.execute(query, [
       concept,
       date,
       amount,
       paymentMethod,
       incomeType,
-      id_shares || null,
     ]);
-
-    // Si el movimiento tiene id_shares y es un egreso, crear un ingreso automático
-    if (id_shares && incomeType === "egreso") {
-      await createAutomaticIncome(concept, date, amount, paymentMethod, id_shares);
-    }
 
     // Devolver respuesta
     res.status(201).json({
@@ -381,8 +431,7 @@ export const createMotion = async (req, res) => {
         date,
         amount,
         paymentMethod,
-        incomeType,
-        id_shares: id_shares || null,
+        incomeType
       },
     });
   } catch (error) {
@@ -394,7 +443,7 @@ export const createMotion = async (req, res) => {
 // Edit existing motion
 export const updateMotion = async (req, res) => {
   const id = req.params.id;
-  const { concept, date, amount, paymentMethod, incomeType, id_shares } = req.body;
+  const { concept, date, amount, paymentMethod, incomeType } = req.body;
 
   // Validaciones básicas
   if (!concept || !date || !amount || !paymentMethod || !incomeType) {
@@ -428,13 +477,6 @@ export const updateMotion = async (req, res) => {
     });
   }
 
-  // Validar id_shares (opcional, puede ser nulo)
-  if (id_shares && (isNaN(id_shares) || id_shares <= 0)) {
-    return res.status(400).json({
-      error: "id_shares debe ser un número positivo o nulo",
-    });
-  }
-
   try {
     // Actualizar el movimiento original
     const query = `UPDATE motions 
@@ -442,8 +484,7 @@ export const updateMotion = async (req, res) => {
                        date = ?, 
                        amount = ?, 
                        paymentMethod = ?, 
-                       incomeType = ?,
-                       id_shares = ?
+                       incomeType = ?
                    WHERE id = ?`;
     const [result] = await connection.execute(query, [
       concept,
@@ -451,17 +492,11 @@ export const updateMotion = async (req, res) => {
       amount,
       paymentMethod,
       incomeType,
-      id_shares || null,
       id,
     ]);
 
     if (result.affectedRows === 0) {
       return res.status(404).json({ error: "Movimiento no encontrado" });
-    }
-
-    // Si el movimiento tiene id_shares y es un egreso, crear un ingreso automático
-    if (id_shares && incomeType === "egreso") {
-      await createAutomaticIncome(concept, date, amount, paymentMethod, id_shares);
     }
 
     res.json({
@@ -470,8 +505,7 @@ export const updateMotion = async (req, res) => {
       date,
       amount,
       paymentMethod,
-      incomeType,
-      id_shares: id_shares || null,
+      incomeType
     });
   } catch (error) {
     console.error("Error actualizando el movimiento:", error);

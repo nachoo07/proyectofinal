@@ -147,7 +147,7 @@ const NotificationComponent = () => {
         <Button
           variant="outlined"
           startIcon={<ArrowBackIcon />}
-          onClick={() => window.history.back()}
+          onClick={() => { if (typeof window !== 'undefined' && window.history) window.history.back(); }}
         color='#007F5F'>
           Volver
         </Button>

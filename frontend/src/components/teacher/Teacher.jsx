@@ -151,8 +151,8 @@ const Teacher = ({ onBack }) => {
           alignItems: 'center',
           justifyContent: 'center',
           width: '100%',
-          mb: 4,
-          p: 2,
+          mb: { xs: 2, md: 4 },
+          p: { xs: 1, md: 2 },
           background: 'linear-gradient(90deg, #43e97b 0%, #38f9d7 100%)',
           borderRadius: '16px',
           boxShadow: '0 6px 24px rgba(67, 233, 123, 0.15)',
@@ -162,7 +162,7 @@ const Teacher = ({ onBack }) => {
           },
         }}
       >
-        <SchoolIcon sx={{ fontSize: 40, color: '#00335c', mr: 2 }} />
+        <SchoolIcon sx={{ fontSize: { xs: 32, md: 40 }, color: '#00335c', mr: { xs: 1, md: 2 } }} />
         <Typography
           variant="h3"
           sx={{
@@ -170,6 +170,8 @@ const Teacher = ({ onBack }) => {
             color: '#00335c',
             textShadow: '2px 2px 6px rgba(56, 249, 215, 0.15)',
             letterSpacing: '0.08rem',
+            fontSize: { xs: '1.5rem', sm: '2rem', md: '2.5rem' },
+            textAlign: 'center',
           }}
         >
           Gestión de Profesores
@@ -193,14 +195,32 @@ const Teacher = ({ onBack }) => {
           variant="contained"
           color="success"
           onClick={handleOpenCreateDialog}
-          sx={{ borderRadius: '32px', fontWeight: 700, fontSize: { xs: '1.1rem', md: '1.3rem' }, px: { xs: 3, md: 5 }, py: { xs: 1.5, md: 2 }, minWidth: { xs: '180px', md: '220px' }, flex: 1 }}
+          sx={{ 
+            borderRadius: '32px', 
+            fontWeight: 700, 
+            fontSize: { xs: '0.9rem', md: '1.1rem', lg: '1.3rem' }, 
+            px: { xs: 2, md: 3, lg: 5 }, 
+            py: { xs: 1, md: 1.5, lg: 2 }, 
+            minWidth: { xs: '100%', sm: '180px', md: '220px' }, 
+            flex: { sm: 1 } 
+          }}
         >
           Crear Nuevo Profesor
         </Button>
         <Button
           variant="outlined"
           onClick={onBack}
-          sx={{ borderRadius: '32px', fontWeight: 700, fontSize: { xs: '1.1rem', md: '1.3rem' }, px: { xs: 3, md: 5 }, py: { xs: 1.5, md: 2 }, minWidth: { xs: '180px', md: '220px' }, color: '#00335c', borderColor: '#00335c', '&:hover': { backgroundColor: 'rgba(142, 234, 177, 0.1)', borderColor: '#8eeab1' } }}
+          sx={{ 
+            borderRadius: '32px', 
+            fontWeight: 700, 
+            fontSize: { xs: '0.9rem', md: '1.1rem', lg: '1.3rem' }, 
+            px: { xs: 2, md: 3, lg: 5 }, 
+            py: { xs: 1, md: 1.5, lg: 2 }, 
+            minWidth: { xs: '100%', sm: '180px', md: '220px' }, 
+            color: '#00335c', 
+            borderColor: '#00335c', 
+            '&:hover': { backgroundColor: 'rgba(142, 234, 177, 0.1)', borderColor: '#8eeab1' } 
+          }}
         >
           Volver
         </Button>
@@ -218,15 +238,15 @@ const Teacher = ({ onBack }) => {
           mx: 'auto',
         }}
       >
-        <Table sx={{ minWidth: 650 }}>
+        <Table sx={{ minWidth: { xs: 320, sm: 650 } }}>
           <TableHead>
             <TableRow sx={{ background: 'linear-gradient(90deg, #43e97b 0%, #38f9d7 100%)' }}>
-              <TableCell sx={{ color: '#00335c', fontWeight: 700, fontSize: { xs: '1rem', md: '1.1rem' }, borderTopLeftRadius: '16px', textAlign: 'center' }}>Nombre</TableCell>
-              <TableCell sx={{ color: '#00335c', fontWeight: 700, fontSize: { xs: '1rem', md: '1.1rem' }, textAlign: 'center' }}>Apellido</TableCell>
-              <TableCell sx={{ color: '#00335c', fontWeight: 700, fontSize: { xs: '1rem', md: '1.1rem' }, textAlign: 'center' }}>Email</TableCell>
-              <TableCell sx={{ color: '#00335c', fontWeight: 700, fontSize: { xs: '1rem', md: '1.1rem' }, textAlign: 'center' }}>Teléfono</TableCell>
-              <TableCell sx={{ color: '#00335c', fontWeight: 700, fontSize: { xs: '1rem', md: '1.1rem' }, textAlign: 'center' }}>Fecha Creación</TableCell>
-              <TableCell sx={{ color: '#00335c', fontWeight: 700, fontSize: { xs: '1rem', md: '1.1rem' }, borderTopRightRadius: '16px', textAlign: 'center' }}>Acciones</TableCell>
+              <TableCell sx={{ color: '#00335c', fontWeight: 700, fontSize: { xs: '0.8rem', sm: '1rem', md: '1.1rem' }, borderTopLeftRadius: '16px', textAlign: 'center', p: { xs: 0.5, md: 2 } }}>Nombre</TableCell>
+              <TableCell sx={{ color: '#00335c', fontWeight: 700, fontSize: { xs: '0.8rem', sm: '1rem', md: '1.1rem' }, textAlign: 'center', p: { xs: 0.5, md: 2 }, display: { xs: 'none', sm: 'table-cell' } }}>Apellido</TableCell>
+              <TableCell sx={{ color: '#00335c', fontWeight: 700, fontSize: { xs: '0.8rem', sm: '1rem', md: '1.1rem' }, textAlign: 'center', p: { xs: 0.5, md: 2 } }}>Email</TableCell>
+              <TableCell sx={{ color: '#00335c', fontWeight: 700, fontSize: { xs: '0.8rem', sm: '1rem', md: '1.1rem' }, textAlign: 'center', p: { xs: 0.5, md: 2 }, display: { xs: 'none', md: 'table-cell' } }}>Teléfono</TableCell>
+              <TableCell sx={{ color: '#00335c', fontWeight: 700, fontSize: { xs: '0.8rem', sm: '1rem', md: '1.1rem' }, textAlign: 'center', p: { xs: 0.5, md: 2 }, display: { xs: 'none', lg: 'table-cell' } }}>Fecha Creación</TableCell>
+              <TableCell sx={{ color: '#00335c', fontWeight: 700, fontSize: { xs: '0.8rem', sm: '1rem', md: '1.1rem' }, borderTopRightRadius: '16px', textAlign: 'center', p: { xs: 0.5, md: 2 } }}>Acciones</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -258,34 +278,56 @@ const Teacher = ({ onBack }) => {
                     '&:hover': { background: '#b2dfdb' },
                   }}
                 >
-                  <TableCell sx={{ color: '#00335c', fontWeight: 500, textAlign: 'center' }}>{teacher.name}</TableCell>
-                  <TableCell sx={{ color: '#00335c', fontWeight: 500, textAlign: 'center' }}>{teacher.lastName}</TableCell>
-                  <TableCell sx={{ color: '#00335c', fontWeight: 500, textAlign: 'center' }}>{teacher.email}</TableCell>
-                  <TableCell sx={{ color: '#00335c', fontWeight: 500, textAlign: 'center' }}>{teacher.phone || '-'}</TableCell>
-                  <TableCell sx={{ color: '#00335c', fontWeight: 500, textAlign: 'center' }}>{new Date(teacher.createdAt).toLocaleDateString()}</TableCell>
-                  <TableCell sx={{ textAlign: 'center' }}>
-                    <Tooltip title="Editar profesor">
-                      <Button
-                        variant="contained"
-                        color="info"
-                        size="small"
-                        onClick={() => handleEditTeacher(teacher)}
-                        sx={{ mr: 1, borderRadius: '50%', minWidth: 40, height: 40, p: 0 }}
-                      >
-                        <EditIcon />
-                      </Button>
-                    </Tooltip>
-                    <Tooltip title="Eliminar profesor">
-                      <Button
-                        variant="contained"
-                        color="error"
-                        size="small"
-                        onClick={() => handleOpenDeleteDialog(teacher.id)}
-                        sx={{ mr: 1, borderRadius: '50%', minWidth: 40, height: 40, p: 0 }}
-                      >
-                        <DeleteIcon />
-                      </Button>
-                    </Tooltip>
+                  <TableCell sx={{ textAlign: 'center', p: { xs: 0.5, sm: 1, md: 2 }, fontSize: { xs: '0.75rem', sm: '0.9rem', md: '1rem' } }}>
+                    {teacher.name}
+                  </TableCell>
+                  <TableCell sx={{ textAlign: 'center', p: { xs: 0.5, sm: 1, md: 2 }, fontSize: { xs: '0.75rem', sm: '0.9rem', md: '1rem' }, display: { xs: 'none', sm: 'table-cell' } }}>
+                    {teacher.lastName}
+                  </TableCell>
+                  <TableCell sx={{ textAlign: 'center', p: { xs: 0.5, sm: 1, md: 2 }, fontSize: { xs: '0.75rem', sm: '0.9rem', md: '1rem' }, wordBreak: 'break-word' }}>
+                    {teacher.email}
+                  </TableCell>
+                  <TableCell sx={{ textAlign: 'center', p: { xs: 0.5, sm: 1, md: 2 }, fontSize: { xs: '0.75rem', sm: '0.9rem', md: '1rem' }, display: { xs: 'none', md: 'table-cell' } }}>
+                    {teacher.phone || '-'}
+                  </TableCell>
+                  <TableCell sx={{ textAlign: 'center', p: { xs: 0.5, sm: 1, md: 2 }, fontSize: { xs: '0.75rem', sm: '0.9rem', md: '1rem' }, display: { xs: 'none', lg: 'table-cell' } }}>
+                    {new Date(teacher.createdAt).toLocaleDateString()}
+                  </TableCell>
+                  <TableCell sx={{ textAlign: 'center', p: { xs: 0.5, sm: 1, md: 2 } }}>
+                    <Box sx={{ display: 'flex', flexDirection: 'row', gap: { xs: 1, sm: 2 }, justifyContent: 'center', alignItems: 'center' }}>
+                      <Tooltip title="Editar profesor">
+                        <Button
+                          variant="contained"
+                          color="info"
+                          size="small"
+                          onClick={() => handleEditTeacher(teacher)}
+                          sx={{ 
+                            borderRadius: '50%', 
+                            minWidth: { xs: 32, sm: 40 }, 
+                            height: { xs: 32, sm: 40 }, 
+                            p: 0 
+                          }}
+                        >
+                          <EditIcon fontSize="small" />
+                        </Button>
+                      </Tooltip>
+                      <Tooltip title="Eliminar profesor">
+                        <Button
+                          variant="contained"
+                          color="error"
+                          size="small"
+                          onClick={() => handleOpenDeleteDialog(teacher.id)}
+                          sx={{ 
+                            borderRadius: '50%', 
+                            minWidth: { xs: 32, sm: 40 }, 
+                            height: { xs: 32, sm: 40 }, 
+                            p: 0 
+                          }}
+                        >
+                          <DeleteIcon fontSize="small" />
+                        </Button>
+                      </Tooltip>
+                    </Box>
                   </TableCell>
                 </TableRow>
               ))
@@ -299,15 +341,35 @@ const Teacher = ({ onBack }) => {
       <Dialog
         open={openCreateDialog}
         onClose={handleCloseCreateDialog}
-        sx={{ '& .MuiDialog-paper': { borderRadius: '12px', boxShadow: '0 8px 16px rgba(0, 0, 0, 0.2)', backgroundColor: '#E6F9EC' } }}
+        fullWidth
+        maxWidth="sm"
+        sx={{ 
+          '& .MuiDialog-paper': { 
+            borderRadius: '16px', 
+            boxShadow: '0 12px 32px rgba(67, 233, 123, 0.15)',
+            background: 'linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%)',
+            m: { xs: 2, sm: 3 },
+            maxWidth: { xs: 'calc(100% - 32px)', sm: '600px' }
+          } 
+        }}
       >
         <DialogTitle
-          sx={{ background: 'linear-gradient(90deg, #8eeab1, #007e32)', color: '#00335c', fontWeight: 700, borderTopLeftRadius: '12px', borderTopRightRadius: '12px', p: 2 }}
+          sx={{ 
+            background: 'linear-gradient(90deg, #43e97b 0%, #38f9d7 100%)', 
+            color: '#00335c', 
+            fontWeight: 800, 
+            borderTopLeftRadius: '16px', 
+            borderTopRightRadius: '16px', 
+            p: { xs: 2, md: 3 },
+            display: 'flex',
+            alignItems: 'center',
+            fontSize: { xs: '1.1rem', md: '1.3rem' }
+          }}
         >
-          <SchoolIcon sx={{ mr: 1, fontSize: 28, color: '#00335c' }} />
+          <SchoolIcon sx={{ mr: { xs: 1, md: 2 }, fontSize: { xs: 24, md: 32 }, color: '#00335c' }} />
           Crear Nuevo Profesor
         </DialogTitle>
-        <DialogContent sx={{ p: 3, pt: 4 }}>
+        <DialogContent sx={{ p: { xs: 2, md: 3 }, pt: { xs: 3, md: 4 } }}>
           <TextField
             label="Nombre"
             name="name"
@@ -315,7 +377,18 @@ const Teacher = ({ onBack }) => {
             onChange={(e) => setNewTeacherData((prev) => ({ ...prev, name: e.target.value }))}
             fullWidth
             required
-            sx={{ mb: 2, '& .MuiOutlinedInput-root': { '& fieldset': { borderColor: '#38f9d7' }, '&:hover fieldset': { borderColor: '#43e97b' }, '&.Mui-focused fieldset': { borderColor: '#43e97b' } }, '& .MuiInputLabel-root': { color: '#00335c' }, '& .MuiInputLabel-root.Mui-focused': { color: '#43e97b' } }}
+            size="small"
+            sx={{ 
+              mb: { xs: 2, md: 3 }, 
+              '& .MuiOutlinedInput-root': { 
+                borderRadius: '12px',
+                '& fieldset': { borderColor: '#43e97b', borderWidth: '2px' }, 
+                '&:hover fieldset': { borderColor: '#38f9d7' }, 
+                '&.Mui-focused fieldset': { borderColor: '#38f9d7', borderWidth: '2px' } 
+              }, 
+              '& .MuiInputLabel-root': { color: '#00335c', fontWeight: 600 }, 
+              '& .MuiInputLabel-root.Mui-focused': { color: '#38f9d7', fontWeight: 700 }
+            }}
           />
           <TextField
             label="Apellido"
@@ -324,7 +397,18 @@ const Teacher = ({ onBack }) => {
             onChange={(e) => setNewTeacherData((prev) => ({ ...prev, lastName: e.target.value }))}
             fullWidth
             required
-            sx={{ mb: 2, '& .MuiOutlinedInput-root': { '& fieldset': { borderColor: '#38f9d7' }, '&:hover fieldset': { borderColor: '#43e97b' }, '&.Mui-focused fieldset': { borderColor: '#43e97b' } }, '& .MuiInputLabel-root': { color: '#00335c' }, '& .MuiInputLabel-root.Mui-focused': { color: '#43e97b' } }}
+            size="small"
+            sx={{ 
+              mb: { xs: 2, md: 3 }, 
+              '& .MuiOutlinedInput-root': { 
+                borderRadius: '12px',
+                '& fieldset': { borderColor: '#43e97b', borderWidth: '2px' }, 
+                '&:hover fieldset': { borderColor: '#38f9d7' }, 
+                '&.Mui-focused fieldset': { borderColor: '#38f9d7', borderWidth: '2px' } 
+              }, 
+              '& .MuiInputLabel-root': { color: '#00335c', fontWeight: 600 }, 
+              '& .MuiInputLabel-root.Mui-focused': { color: '#38f9d7', fontWeight: 700 }
+            }}
           />
           <TextField
             label="Email"
@@ -334,7 +418,18 @@ const Teacher = ({ onBack }) => {
             onChange={(e) => setNewTeacherData((prev) => ({ ...prev, email: e.target.value }))}
             fullWidth
             required
-            sx={{ mb: 2, '& .MuiOutlinedInput-root': { '& fieldset': { borderColor: '#38f9d7' }, '&:hover fieldset': { borderColor: '#43e97b' }, '&.Mui-focused fieldset': { borderColor: '#43e97b' } }, '& .MuiInputLabel-root': { color: '#00335c' }, '& .MuiInputLabel-root.Mui-focused': { color: '#43e97b' } }}
+            size="small"
+            sx={{ 
+              mb: { xs: 2, md: 3 }, 
+              '& .MuiOutlinedInput-root': { 
+                borderRadius: '12px',
+                '& fieldset': { borderColor: '#43e97b', borderWidth: '2px' }, 
+                '&:hover fieldset': { borderColor: '#38f9d7' }, 
+                '&.Mui-focused fieldset': { borderColor: '#38f9d7', borderWidth: '2px' } 
+              }, 
+              '& .MuiInputLabel-root': { color: '#00335c', fontWeight: 600 }, 
+              '& .MuiInputLabel-root.Mui-focused': { color: '#38f9d7', fontWeight: 700 }
+            }}
           />
           <TextField
             label="Teléfono"
@@ -342,15 +437,50 @@ const Teacher = ({ onBack }) => {
             value={newTeacherData.phone}
             onChange={(e) => setNewTeacherData((prev) => ({ ...prev, phone: e.target.value }))}
             fullWidth
-            sx={{ mb: 2, '& .MuiOutlinedInput-root': { '& fieldset': { borderColor: '#38f9d7' }, '&:hover fieldset': { borderColor: '#43e97b' }, '&.Mui-focused fieldset': { borderColor: '#43e97b' } }, '& .MuiInputLabel-root': { color: '#00335c' }, '& .MuiInputLabel-root.Mui-focused': { color: '#43e97b' } }}
+            size="small"
+            sx={{ 
+              mb: { xs: 1, md: 2 }, 
+              '& .MuiOutlinedInput-root': { 
+                borderRadius: '12px',
+                '& fieldset': { borderColor: '#43e97b', borderWidth: '2px' }, 
+                '&:hover fieldset': { borderColor: '#38f9d7' }, 
+                '&.Mui-focused fieldset': { borderColor: '#38f9d7', borderWidth: '2px' } 
+              }, 
+              '& .MuiInputLabel-root': { color: '#00335c', fontWeight: 600 }, 
+              '& .MuiInputLabel-root.Mui-focused': { color: '#38f9d7', fontWeight: 700 }
+            }}
           />
         </DialogContent>
-        <DialogActions sx={{ p: 2, justifyContent: 'space-between' }}>
+        <DialogActions sx={{ 
+          p: { xs: 2, md: 3 }, 
+          gap: { xs: 1, md: 2 },
+          flexDirection: { xs: 'column', sm: 'row' },
+          '& > button': { 
+            minWidth: { xs: '100%', sm: '120px' },
+            order: { xs: 1, sm: 0 }
+          },
+          '& > button:first-of-type': {
+            order: { xs: 2, sm: 0 }
+          }
+        }}>
           <Button
             onClick={handleCloseCreateDialog}
             variant="outlined"
             startIcon={<CancelIcon />}
-            sx={{ color: '#00335c', borderColor: '#00335c', cursor: 'pointer', '&:hover': { backgroundColor: 'rgba(142, 234, 177, 0.1)', borderColor: '#8eeab1' }, fontWeight: 700 }}
+            sx={{ 
+              color: '#00335c', 
+              borderColor: '#43e97b',
+              borderWidth: '2px',
+              borderRadius: '12px',
+              fontWeight: 700,
+              py: { xs: 1.5, md: 1 },
+              fontSize: { xs: '0.9rem', md: '1rem' },
+              '&:hover': { 
+                backgroundColor: 'rgba(67, 233, 123, 0.1)', 
+                borderColor: '#38f9d7',
+                borderWidth: '2px'
+              }
+            }}
           >
             Cancelar
           </Button>
@@ -358,7 +488,19 @@ const Teacher = ({ onBack }) => {
             onClick={handleSaveNewTeacher}
             variant="contained"
             startIcon={<SaveIcon />}
-            sx={{ backgroundColor: '#43e97b', color: '#ffffff', cursor: 'pointer', '&:hover': { backgroundColor: '#38f9d7' }, fontWeight: 700 }}
+            sx={{ 
+              background: 'linear-gradient(90deg, #43e97b 0%, #38f9d7 100%)', 
+              color: '#00335c', 
+              fontWeight: 800,
+              borderRadius: '12px',
+              py: { xs: 1.5, md: 1 },
+              fontSize: { xs: '0.9rem', md: '1rem' },
+              boxShadow: '0 4px 12px rgba(67, 233, 123, 0.3)',
+              '&:hover': { 
+                background: 'linear-gradient(90deg, #38f9d7 0%, #43e97b 100%)',
+                boxShadow: '0 6px 20px rgba(67, 233, 123, 0.4)'
+              }
+            }}
           >
             Guardar
           </Button>

@@ -183,8 +183,8 @@ const TableUser = () => {
           alignItems: 'center',
           justifyContent: 'center',
           width: '100%',
-          mb: 4,
-          p: 2,
+          mb: { xs: 2, md: 4 },
+          p: { xs: 1, md: 2 },
           background: 'linear-gradient(90deg, #43e97b 0%, #38f9d7 100%)',
           borderRadius: '16px',
           boxShadow: '0 6px 24px rgba(67, 233, 123, 0.15)',
@@ -194,7 +194,7 @@ const TableUser = () => {
           },
         }}
       >
-        <PersonIcon sx={{ fontSize: 48, color: '#00335c', mr: 2 }} />
+        <PersonIcon sx={{ fontSize: { xs: 32, md: 48 }, color: '#00335c', mr: { xs: 1, md: 2 } }} />
         <Typography
           variant="h3"
           sx={{
@@ -202,6 +202,8 @@ const TableUser = () => {
             color: '#00335c',
             textShadow: '2px 2px 6px rgba(56, 249, 215, 0.15)',
             letterSpacing: '0.08rem',
+            fontSize: { xs: '1.5rem', sm: '2rem', md: '2.5rem' },
+            textAlign: 'center',
           }}
         >
           Panel de Usuarios
@@ -225,15 +227,15 @@ const TableUser = () => {
           sx={{
             display: 'flex',
             flexDirection: { xs: 'column', sm: 'row' },
-            gap: 2,
+            gap: { xs: 1, md: 2 },
             flexGrow: 1,
             maxWidth: '900px',
             minWidth: '260px',
             background: '#fff',
             borderRadius: '12px',
             boxShadow: '0 2px 8px rgba(56, 249, 215, 0.08)',
-            p: 2,
-            alignItems: 'center',
+            p: { xs: 1.5, md: 2 },
+            alignItems: { xs: 'stretch', sm: 'center' },
             justifyContent: 'center',
           }}
         >
@@ -253,7 +255,7 @@ const TableUser = () => {
             }}
           />
         </Box>
-        <Box sx={{ display: 'flex', gap: 2 }}>
+        <Box sx={{ display: 'flex', gap: 2, width: { xs: '100%', sm: 'auto' } }}>
           <Button
             variant="contained"
             color="success"
@@ -261,10 +263,10 @@ const TableUser = () => {
             sx={{
               borderRadius: '32px',
               fontWeight: 700,
-              fontSize: { xs: '1.1rem', md: '1.3rem' },
-              px: { xs: 3, md: 5 },
-              py: { xs: 1.5, md: 2 },
-              minWidth: { xs: '180px', md: '220px' },
+              fontSize: { xs: '0.9rem', md: '1.1rem', lg: '1.3rem' },
+              px: { xs: 2, md: 3, lg: 5 },
+              py: { xs: 1, md: 1.5, lg: 2 },
+              minWidth: { xs: '100%', sm: '180px', md: '220px' },
             }}
           >
             Agregar Usuario
@@ -284,15 +286,15 @@ const TableUser = () => {
           mx: 'auto',
         }}
       >
-        <Table sx={{ minWidth: 650 }}>
+        <Table sx={{ minWidth: { xs: 320, sm: 650 } }}>
           <TableHead>
             <TableRow sx={{ background: 'linear-gradient(90deg, #43e97b 0%, #38f9d7 100%)' }}>
-              <TableCell sx={{ color: '#00335c', fontWeight: 700, fontSize: { xs: '1rem', md: '1.1rem' }, borderTopLeftRadius: '16px', textAlign: 'center' }}>#</TableCell>
-              <TableCell sx={{ color: '#00335c', fontWeight: 700, fontSize: { xs: '1rem', md: '1.1rem' }, textAlign: 'center' }}>Nombre</TableCell>
-              <TableCell sx={{ color: '#00335c', fontWeight: 700, fontSize: { xs: '1rem', md: '1.1rem' }, textAlign: 'center' }}>Correo</TableCell>
-              <TableCell sx={{ color: '#00335c', fontWeight: 700, fontSize: { xs: '1rem', md: '1.1rem' }, textAlign: 'center' }}>Rol</TableCell>
-              <TableCell sx={{ color: '#00335c', fontWeight: 700, fontSize: { xs: '1rem', md: '1.1rem' }, textAlign: 'center' }}>Estado</TableCell>
-              <TableCell sx={{ color: '#00335c', fontWeight: 700, fontSize: { xs: '1rem', md: '1.1rem' }, borderTopRightRadius: '16px', textAlign: 'center' }}>Acciones</TableCell>
+              <TableCell sx={{ color: '#00335c', fontWeight: 700, fontSize: { xs: '0.8rem', sm: '1rem', md: '1.1rem' }, borderTopLeftRadius: '16px', textAlign: 'center', p: { xs: 0.5, md: 2 } }}>#</TableCell>
+              <TableCell sx={{ color: '#00335c', fontWeight: 700, fontSize: { xs: '0.8rem', sm: '1rem', md: '1.1rem' }, textAlign: 'center', p: { xs: 0.5, md: 2 } }}>Nombre</TableCell>
+              <TableCell sx={{ color: '#00335c', fontWeight: 700, fontSize: { xs: '0.8rem', sm: '1rem', md: '1.1rem' }, textAlign: 'center', p: { xs: 0.5, md: 2 }, display: { xs: 'none', sm: 'table-cell' } }}>Correo</TableCell>
+              <TableCell sx={{ color: '#00335c', fontWeight: 700, fontSize: { xs: '0.8rem', sm: '1rem', md: '1.1rem' }, textAlign: 'center', p: { xs: 0.5, md: 2 }, display: { xs: 'none', md: 'table-cell' } }}>Rol</TableCell>
+              <TableCell sx={{ color: '#00335c', fontWeight: 700, fontSize: { xs: '0.8rem', sm: '1rem', md: '1.1rem' }, textAlign: 'center', p: { xs: 0.5, md: 2 } }}>Estado</TableCell>
+              <TableCell sx={{ color: '#00335c', fontWeight: 700, fontSize: { xs: '0.8rem', sm: '1rem', md: '1.1rem' }, borderTopRightRadius: '16px', textAlign: 'center', p: { xs: 0.5, md: 2 } }}>Acciones</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -312,22 +314,22 @@ const TableUser = () => {
                     '&:hover': { background: '#b2dfdb' },
                   }}
                 >
-                  <TableCell sx={{ color: '#00335c', fontWeight: 600, textAlign: 'center' }}>{index + 1}</TableCell>
-                  <TableCell sx={{ color: '#00335c', fontWeight: 500, textAlign: 'center' }}>{user.name}</TableCell>
-                  <TableCell sx={{ color: '#00335c', fontWeight: 500, textAlign: 'center' }}>{user.mail}</TableCell>
-                  <TableCell sx={{ color: '#00335c', fontWeight: 500, textAlign: 'center' }}>{user.role}</TableCell>
-                  <TableCell sx={{ color: user.state === 'activo' ? '#388e3c' : '#d32f2f', fontWeight: 700, textAlign: 'center' }}>{user.state}</TableCell>
-                  <TableCell sx={{ textAlign: 'center' }}>
-                    <Box sx={{ display: 'flex', gap: 1, justifyContent: 'center' }}>
+                  <TableCell sx={{ color: '#00335c', fontWeight: 600, textAlign: 'center', p: { xs: 0.5, md: 2 }, fontSize: { xs: '0.8rem', sm: '1rem' } }}>{index + 1}</TableCell>
+                  <TableCell sx={{ color: '#00335c', fontWeight: 500, textAlign: 'center', p: { xs: 0.5, md: 2 }, fontSize: { xs: '0.8rem', sm: '1rem' } }}>{user.name}</TableCell>
+                  <TableCell sx={{ color: '#00335c', fontWeight: 500, textAlign: 'center', p: { xs: 0.5, md: 2 }, fontSize: { xs: '0.8rem', sm: '1rem' }, display: { xs: 'none', sm: 'table-cell' } }}>{user.mail}</TableCell>
+                  <TableCell sx={{ color: '#00335c', fontWeight: 500, textAlign: 'center', p: { xs: 0.5, md: 2 }, fontSize: { xs: '0.8rem', sm: '1rem' }, display: { xs: 'none', md: 'table-cell' } }}>{user.role}</TableCell>
+                  <TableCell sx={{ color: user.state === 'activo' ? '#388e3c' : '#d32f2f', fontWeight: 700, textAlign: 'center', p: { xs: 0.5, md: 2 }, fontSize: { xs: '0.8rem', sm: '1rem' } }}>{user.state}</TableCell>
+                  <TableCell sx={{ textAlign: 'center', p: { xs: 0.5, md: 2 } }}>
+                    <Box sx={{ display: 'flex', gap: { xs: 0.5, sm: 1 }, justifyContent: 'center', flexWrap: { xs: 'wrap', sm: 'nowrap' } }}>
                       <Tooltip title="Editar usuario">
                         <Button
                           variant="contained"
                           color="info"
                           size="small"
                           onClick={() => openEditDialog(user)}
-                          sx={{ borderRadius: '50%', minWidth: 40, height: 40, p: 0 }}
+                          sx={{ borderRadius: '50%', minWidth: { xs: 28, sm: 40 }, height: { xs: 28, sm: 40 }, p: 0 }}
                         >
-                          <EditIcon />
+                          <EditIcon sx={{ fontSize: { xs: '0.8rem', sm: '1rem' } }} />
                         </Button>
                       </Tooltip>
                       <Tooltip title="Eliminar usuario">
@@ -336,9 +338,9 @@ const TableUser = () => {
                           color="error"
                           size="small"
                           onClick={() => handleOpenDeleteDialog(user.id)}
-                          sx={{ borderRadius: '50%', minWidth: 40, height: 40, p: 0 }}
+                          sx={{ borderRadius: '50%', minWidth: { xs: 28, sm: 40 }, height: { xs: 28, sm: 40 }, p: 0 }}
                         >
-                          <DeleteIcon />
+                          <DeleteIcon sx={{ fontSize: { xs: '0.8rem', sm: '1rem' } }} />
                         </Button>
                       </Tooltip>
                       <Tooltip title={user.state === 'activo' ? 'Desactivar' : 'Activar'}>
@@ -346,8 +348,8 @@ const TableUser = () => {
                           variant="contained"
                           sx={{
                             borderRadius: '50%',
-                            minWidth: 40,
-                            height: 40,
+                            minWidth: { xs: 28, sm: 40 },
+                            height: { xs: 28, sm: 40 },
                             p: 0,
                             backgroundColor: user.state === 'activo' ? '#ffc107' : '#388e3c',
                             '&:hover': { backgroundColor: user.state === 'activo' ? '#e0a800' : '#2e7d32' },
@@ -355,7 +357,7 @@ const TableUser = () => {
                           size="small"
                           onClick={() => handleStateChange(user.id, user.state)}
                         >
-                          {user.state === 'activo' ? <ToggleOffIcon /> : <ToggleOnIcon />}
+                          {user.state === 'activo' ? <ToggleOffIcon sx={{ fontSize: { xs: '0.8rem', sm: '1rem' } }} /> : <ToggleOnIcon sx={{ fontSize: { xs: '0.8rem', sm: '1rem' } }} />}
                         </Button>
                       </Tooltip>
                     </Box>
@@ -382,8 +384,9 @@ const TableUser = () => {
             border: '2px solid rgba(165, 214, 167, 0.3)',
             minHeight: '500px',
             maxWidth: '700px',
-            margin: '20px',
-          
+            margin: { xs: 1, sm: 3 },
+            width: { xs: 'calc(100% - 16px)', sm: 'auto' },
+            maxHeight: { xs: '95vh', sm: 'auto' },
           },
         }}
       >
@@ -395,22 +398,23 @@ const TableUser = () => {
             display: 'flex',
             alignItems: 'center',
             fontWeight: 700,
-            fontSize: '1.8rem',
+            fontSize: { xs: '1.3rem', sm: '1.5rem', md: '1.8rem' },
             borderTopLeftRadius: '24px',
             borderTopRightRadius: '24px',
-            padding: '1rem 2rem',
+            padding: { xs: '1rem 1.5rem', md: '1rem 2rem' },
             textAlign: 'center',
             justifyContent: 'center',
-            
+            flexDirection: { xs: 'column', sm: 'row' },
+            gap: { xs: 1, sm: 0 }
           }}
         >
-          <PersonIcon sx={{ mr: 2, fontSize: 36, color: '#1b5e20' }} />
+          <PersonIcon sx={{ mr: { xs: 0, sm: 2 }, fontSize: { xs: 28, sm: 36 }, color: '#1b5e20' }} />
           {dialogMode === 'create' ? 'Crear Nuevo Usuario' : 'Editar Usuario'}
         </DialogTitle>
         <DialogContent 
           className="user-management-dialog-content"
           sx={{ 
-            padding: '2rem 3rem', 
+            padding: { xs: '1.5rem 1rem', sm: '2rem 2rem', md: '2rem 3rem' }, 
             backgroundColor: 'rgba(248, 255, 254, 0.8)',
           }}
         >
@@ -554,12 +558,13 @@ const TableUser = () => {
         <DialogActions 
           className="user-management-dialog-actions"
           sx={{ 
-            padding: '2rem 3rem 3rem', 
+            padding: { xs: '1.5rem 1rem 2rem', sm: '2rem 2rem 2.5rem', md: '2rem 3rem 3rem' }, 
             justifyContent: 'center',
-            gap: 2,
+            gap: { xs: 1, sm: 2 },
             backgroundColor: 'rgba(248, 255, 254, 0.8)',
             borderBottomLeftRadius: '24px',
             borderBottomRightRadius: '24px',
+            flexDirection: { xs: 'column', sm: 'row' },
           }}
         >
           <Button
@@ -572,10 +577,11 @@ const TableUser = () => {
               borderColor: '#81c784',
               borderRadius: '16px',
               fontWeight: 600,
-              fontSize: '1.1rem',
-              padding: '8px 16px',
-              minWidth: '140px',
+              fontSize: { xs: '0.95rem', sm: '1rem', md: '1.1rem' },
+              padding: { xs: '6px 12px', sm: '8px 16px' },
+              minWidth: { xs: '100%', sm: '140px' },
               borderWidth: '2px',
+              order: { xs: 2, sm: 1 },
               '&:hover': {
                 backgroundColor: 'rgba(129, 199, 132, 0.1)',
                 borderColor: '#1b5e20',
@@ -597,10 +603,11 @@ const TableUser = () => {
               color: '#1b5e20',
               borderRadius: '16px',
               fontWeight: 600,
-              fontSize: '1.1rem',
-              padding: '8px 16px',
-              minWidth: '140px',
+              fontSize: { xs: '0.95rem', sm: '1rem', md: '1.1rem' },
+              padding: { xs: '6px 12px', sm: '8px 16px' },
+              minWidth: { xs: '100%', sm: '140px' },
               border: 'none',
+              order: { xs: 1, sm: 2 },
               '&:hover': {
                 background: 'linear-gradient(135deg, #81c784 0%, #66bb6a 100%)',
                 transform: 'translateY(-2px)',
@@ -624,8 +631,10 @@ const TableUser = () => {
             backgroundColor: 'rgba(255, 255, 255, 0.95)',
             backdropFilter: 'blur(20px)',
             border: '2px solid rgba(244, 67, 54, 0.2)',
-            minWidth: '500px',
-            margin: '20px',
+            minWidth: { xs: 'calc(100% - 32px)', sm: '500px' },
+            margin: { xs: 1, sm: 3 },
+            width: { xs: 'calc(100% - 16px)', sm: 'auto' },
+            maxHeight: { xs: '95vh', sm: 'auto' },
           },
         }}
       >
@@ -637,21 +646,23 @@ const TableUser = () => {
             display: 'flex',
             alignItems: 'center',
             fontWeight: 700,
-            fontSize: '1.6rem',
+            fontSize: { xs: '1.2rem', sm: '1.4rem', md: '1.6rem' },
             borderTopLeftRadius: '24px',
             borderTopRightRadius: '24px',
-            padding: '2rem 3rem',
+            padding: { xs: '1.5rem 1rem', sm: '2rem 2rem', md: '2rem 3rem' },
             textAlign: 'center',
             justifyContent: 'center',
+            flexDirection: { xs: 'column', sm: 'row' },
+            gap: { xs: 1, sm: 0 }
           }}
         >
-          <DeleteIcon sx={{ mr: 2, fontSize: 32, color: '#d32f2f' }} />
+          <DeleteIcon sx={{ mr: { xs: 0, sm: 2 }, fontSize: { xs: 24, sm: 32 }, color: '#d32f2f' }} />
           Confirmar Eliminación
         </DialogTitle>
         <DialogContent 
           className="user-delete-dialog-content"
           sx={{ 
-            padding: '3rem', 
+            padding: { xs: '2rem 1rem', sm: '2.5rem 2rem', md: '3rem' }, 
             backgroundColor: 'rgba(255, 249, 249, 0.8)',
             textAlign: 'center'
           }}
@@ -660,7 +671,7 @@ const TableUser = () => {
             className="user-delete-message"
             sx={{ 
               color: '#d32f2f', 
-              fontSize: '1.2rem',
+              fontSize: { xs: '1rem', sm: '1.1rem', md: '1.2rem' },
               fontWeight: 500,
               lineHeight: 1.6,
               maxWidth: '400px',
@@ -675,12 +686,13 @@ const TableUser = () => {
         <DialogActions 
           className="user-delete-dialog-actions"
           sx={{ 
-            padding: '2rem 3rem 3rem', 
+            padding: { xs: '1.5rem 1rem 2rem', sm: '2rem 2rem 2.5rem', md: '2rem 3rem 3rem' }, 
             justifyContent: 'center',
-            gap: 2,
+            gap: { xs: 1, sm: 2 },
             backgroundColor: 'rgba(255, 249, 249, 0.8)',
             borderBottomLeftRadius: '24px',
             borderBottomRightRadius: '24px',
+            flexDirection: { xs: 'column', sm: 'row' },
           }}
         >
           <Button
@@ -693,10 +705,11 @@ const TableUser = () => {
               borderColor: '#bbb',
               borderRadius: '16px',
               fontWeight: 600,
-              fontSize: '1.1rem',
-              padding: '8px 16px',
-              minWidth: '140px',
+              fontSize: { xs: '0.95rem', sm: '1rem', md: '1.1rem' },
+              padding: { xs: '6px 12px', sm: '8px 16px' },
+              minWidth: { xs: '100%', sm: '140px' },
               borderWidth: '2px',
+              order: { xs: 2, sm: 1 },
               '&:hover': {
                 backgroundColor: 'rgba(0, 0, 0, 0.04)',
                 borderColor: '#999',
@@ -718,10 +731,11 @@ const TableUser = () => {
               color: '#ffffff',
               borderRadius: '16px',
               fontWeight: 600,
-              fontSize: '1.1rem',
-              padding: '8px 16px',
-              minWidth: '140px',
+              fontSize: { xs: '0.95rem', sm: '1rem', md: '1.1rem' },
+              padding: { xs: '6px 12px', sm: '8px 16px' },
+              minWidth: { xs: '100%', sm: '140px' },
               border: 'none',
+              order: { xs: 1, sm: 2 },
               '&:hover': {
                 background: 'linear-gradient(135deg, #d32f2f 0%, #b71c1c 100%)',
                 transform: 'translateY(-2px)',

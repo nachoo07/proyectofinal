@@ -173,8 +173,8 @@ const Share = () => {
           alignItems: 'center',
           justifyContent: 'center',
           width: '100%',
-          mb: 4,
-          p: 2,
+          mb: { xs: 2, md: 4 },
+          p: { xs: 1.5, md: 2 },
           background: 'linear-gradient(90deg, #43e97b 0%, #38f9d7 100%)',
           borderRadius: '16px',
           boxShadow: '0 6px 24px rgba(67, 233, 123, 0.15)',
@@ -191,6 +191,8 @@ const Share = () => {
             color: '#00335c',
             textShadow: '2px 2px 6px rgba(56, 249, 215, 0.15)',
             letterSpacing: '0.08rem',
+            fontSize: { xs: '1.5rem', sm: '2rem', md: '2.5rem' },
+            textAlign: 'center'
           }}
         >
           Panel de Cuotas
@@ -212,27 +214,27 @@ const Share = () => {
         <Box
           sx={{
             display: 'flex',
-            flexDirection: { xs: 'column', md: 'row' },
-            gap: 2,
+            flexDirection: 'column',
+            gap: { xs: 2, md: 3 },
             flexGrow: 1,
             width: '100%',
             minWidth: '260px',
             background: '#fff',
             borderRadius: '12px',
             boxShadow: '0 2px 8px rgba(56, 249, 215, 0.08)',
-            p: 2,
-            alignItems: { xs: 'stretch', md: 'center' },
+            p: { xs: 2, md: 2 },
+            alignItems: 'stretch',
             justifyContent: 'space-between',
           }}
         >
+          {/* Buscador */}
           <TextField
             label="Buscar por nombre, apellido o DNI"
             value={searchQuery}
             onChange={handleSearchChange}
+            size={window.innerWidth < 768 ? "small" : "medium"}
+            fullWidth
             sx={{
-              flex: 2,
-              minWidth: '250px',
-              maxWidth: { xs: '100%', md: '350px' },
               '& .MuiOutlinedInput-root': {
                 '& fieldset': { borderColor: '#38f9d7' },
                 '&:hover fieldset': { borderColor: '#43e97b' },
@@ -242,33 +244,47 @@ const Share = () => {
               '& .MuiInputLabel-root.Mui-focused': { color: '#43e97b' },
             }}
           />
-          <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mx: { xs: 0, md: 2 }, flex: 3, justifyContent: { xs: 'flex-start', md: 'center' } }}>
+          
+          {/* Filtros */}
+          <Box sx={{ 
+            display: 'grid', 
+            gridTemplateColumns: { xs: 'repeat(2, 1fr)', sm: 'repeat(3, 1fr)', md: 'repeat(5, 1fr)' },
+            gap: { xs: 1, md: 2 }
+          }}>
             <FormControlLabel
-              control={<Checkbox checked={filters.all} onChange={handleFilterChange} name="all" />}
-              label="Todos"
+              control={<Checkbox checked={filters.all} onChange={handleFilterChange} name="all" size="small" />}
+              label={<Typography sx={{ fontSize: { xs: '0.8rem', md: '0.9rem' } }}>Todos</Typography>}
             />
             <FormControlLabel
-              control={<Checkbox checked={filters.pendiente} onChange={handleFilterChange} name="pendiente" />}
-              label="Pendiente"
+              control={<Checkbox checked={filters.pendiente} onChange={handleFilterChange} name="pendiente" size="small" />}
+              label={<Typography sx={{ fontSize: { xs: '0.8rem', md: '0.9rem' } }}>Pendiente</Typography>}
             />
             <FormControlLabel
-              control={<Checkbox checked={filters.vencido} onChange={handleFilterChange} name="vencido" />}
-              label="Vencido"
+              control={<Checkbox checked={filters.vencido} onChange={handleFilterChange} name="vencido" size="small" />}
+              label={<Typography sx={{ fontSize: { xs: '0.8rem', md: '0.9rem' } }}>Vencido</Typography>}
             />
             <FormControlLabel
-              control={<Checkbox checked={filters.pagado} onChange={handleFilterChange} name="pagado" />}
-              label="Pagado"
+              control={<Checkbox checked={filters.pagado} onChange={handleFilterChange} name="pagado" size="small" />}
+              label={<Typography sx={{ fontSize: { xs: '0.8rem', md: '0.9rem' } }}>Pagado</Typography>}
             />
             <FormControlLabel
-              control={<Checkbox checked={filters.sinCuotas} onChange={handleFilterChange} name="sinCuotas" />}
-              label="Sin Cuotas"
+              control={<Checkbox checked={filters.sinCuotas} onChange={handleFilterChange} name="sinCuotas" size="small" />}
+              label={<Typography sx={{ fontSize: { xs: '0.8rem', md: '0.9rem' } }}>Sin Cuotas</Typography>}
             />
           </Box>
+          
+          {/* Botón */}
           <Button
             variant="contained"
             color="success"
             onClick={handleOpenMassShareDialog}
-            sx={{ borderRadius: '32px', fontWeight: 700, fontSize: { xs: '1.1rem', md: '1.3rem' },   flex: 1 }}
+            sx={{ 
+              borderRadius: '32px', 
+              fontWeight: 700, 
+              fontSize: { xs: '0.9rem', md: '1.3rem' },
+              py: { xs: 1, md: 1.5 },
+              px: { xs: 2, md: 3 }
+            }}
           >
             Crear Cuota Masiva
           </Button>
@@ -286,21 +302,68 @@ const Share = () => {
           mx: 'auto',
         }}
       >
-        <Table sx={{ minWidth: 650 }}>
+        <Table sx={{ minWidth: { xs: 300, md: 650 } }}>
           <TableHead>
             <TableRow sx={{ background: 'linear-gradient(90deg, #43e97b 0%, #38f9d7 100%)' }}>
-              <TableCell sx={{ color: '#00335c', fontWeight: 700, fontSize: { xs: '1rem', md: '1.1rem' }, borderTopLeftRadius: '16px', textAlign: 'center' }}>#</TableCell>
-              <TableCell sx={{ color: '#00335c', fontWeight: 700, fontSize: { xs: '1rem', md: '1.1rem' }, textAlign: 'center' }}>Nombre</TableCell>
-              <TableCell sx={{ color: '#00335c', fontWeight: 700, fontSize: { xs: '1rem', md: '1.1rem' }, textAlign: 'center' }}>Apellido</TableCell>
-              <TableCell sx={{ color: '#00335c', fontWeight: 700, fontSize: { xs: '1rem', md: '1.1rem' }, textAlign: 'center' }}>DNI</TableCell>
-              <TableCell sx={{ color: '#00335c', fontWeight: 700, fontSize: { xs: '1rem', md: '1.1rem' }, textAlign: 'center' }}>Estado del Alumno</TableCell>
-              <TableCell sx={{ color: '#00335c', fontWeight: 700, fontSize: { xs: '1rem', md: '1.1rem' }, borderTopRightRadius: '16px', textAlign: 'center' }}>Acciones</TableCell>
+              <TableCell sx={{ 
+                color: '#00335c', 
+                fontWeight: 700, 
+                fontSize: { xs: '0.75rem', md: '1.1rem' }, 
+                borderTopLeftRadius: '16px', 
+                textAlign: 'center',
+                p: { xs: 0.5, md: 2 },
+                display: { xs: 'none', sm: 'table-cell' }
+              }}>#</TableCell>
+              <TableCell sx={{ 
+                color: '#00335c', 
+                fontWeight: 700, 
+                fontSize: { xs: '0.75rem', md: '1.1rem' }, 
+                textAlign: 'center',
+                p: { xs: 0.5, md: 2 }
+              }}>Nombre</TableCell>
+              <TableCell sx={{ 
+                color: '#00335c', 
+                fontWeight: 700, 
+                fontSize: { xs: '0.75rem', md: '1.1rem' }, 
+                textAlign: 'center',
+                p: { xs: 0.5, md: 2 },
+                display: { xs: 'none', sm: 'table-cell' }
+              }}>Apellido</TableCell>
+              <TableCell sx={{ 
+                color: '#00335c', 
+                fontWeight: 700, 
+                fontSize: { xs: '0.75rem', md: '1.1rem' }, 
+                textAlign: 'center',
+                p: { xs: 0.5, md: 2 },
+                display: { xs: 'none', md: 'table-cell' }
+              }}>DNI</TableCell>
+              <TableCell sx={{ 
+                color: '#00335c', 
+                fontWeight: 700, 
+                fontSize: { xs: '0.75rem', md: '1.1rem' }, 
+                textAlign: 'center',
+                p: { xs: 0.5, md: 2 }
+              }}>Estado</TableCell>
+              <TableCell sx={{ 
+                color: '#00335c', 
+                fontWeight: 700, 
+                fontSize: { xs: '0.75rem', md: '1.1rem' }, 
+                borderTopRightRadius: '16px', 
+                textAlign: 'center',
+                p: { xs: 0.5, md: 2 }
+              }}>Acciones</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {filteredStudents.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={6} sx={{ textAlign: 'center', color: '#00335c', fontWeight: 600, fontSize: { xs: '1rem', md: '1.1rem' }, py: 4 }}>
+                <TableCell colSpan={6} sx={{ 
+                  textAlign: 'center', 
+                  color: '#00335c', 
+                  fontWeight: 600, 
+                  fontSize: { xs: '0.9rem', md: '1.1rem' }, 
+                  py: { xs: 2, md: 4 }
+                }}>
                   No se encontraron alumnos
                 </TableCell>
               </TableRow>
@@ -314,18 +377,73 @@ const Share = () => {
                     '&:hover': { background: '#b2dfdb' },
                   }}
                 >
-                  <TableCell sx={{ color: '#00335c', fontWeight: 600, textAlign: 'center' }}>{index + 1}</TableCell>
-                  <TableCell sx={{ color: '#00335c', fontWeight: 500, textAlign: 'center' }}>{student.name}</TableCell>
-                  <TableCell sx={{ color: '#00335c', fontWeight: 500, textAlign: 'center' }}>{student.lastName}</TableCell>
-                  <TableCell sx={{ color: '#00335c', fontWeight: 500, textAlign: 'center' }}>{student.dni}</TableCell>
-                  <TableCell sx={{ color: '#00335c', fontWeight: 500, textAlign: 'center' }}>{getLatestShareStatus(student.id)}</TableCell>
-                  <TableCell sx={{ textAlign: 'center' }}>
+                  <TableCell sx={{ 
+                    color: '#00335c', 
+                    fontWeight: 600, 
+                    textAlign: 'center',
+                    fontSize: { xs: '0.75rem', md: '1rem' },
+                    p: { xs: 0.5, md: 2 },
+                    display: { xs: 'none', sm: 'table-cell' }
+                  }}>{index + 1}</TableCell>
+                  <TableCell sx={{ 
+                    color: '#00335c', 
+                    fontWeight: 500, 
+                    textAlign: 'center',
+                    fontSize: { xs: '0.75rem', md: '1rem' },
+                    p: { xs: 0.5, md: 2 }
+                  }}>
+                    <Box sx={{ display: { xs: 'block', sm: 'none' } }}>
+                      <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                        {student.name} {student.lastName}
+                      </Typography>
+                      <Typography variant="caption" sx={{ color: '#666', display: { md: 'none' } }}>
+                        DNI: {student.dni}
+                      </Typography>
+                    </Box>
+                    <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
+                      {student.name}
+                    </Box>
+                  </TableCell>
+                  <TableCell sx={{ 
+                    color: '#00335c', 
+                    fontWeight: 500, 
+                    textAlign: 'center',
+                    fontSize: { xs: '0.75rem', md: '1rem' },
+                    p: { xs: 0.5, md: 2 },
+                    display: { xs: 'none', sm: 'table-cell' }
+                  }}>{student.lastName}</TableCell>
+                  <TableCell sx={{ 
+                    color: '#00335c', 
+                    fontWeight: 500, 
+                    textAlign: 'center',
+                    fontSize: { xs: '0.75rem', md: '1rem' },
+                    p: { xs: 0.5, md: 2 },
+                    display: { xs: 'none', md: 'table-cell' }
+                  }}>{student.dni}</TableCell>
+                  <TableCell sx={{ 
+                    color: '#00335c', 
+                    fontWeight: 500, 
+                    textAlign: 'center',
+                    fontSize: { xs: '0.75rem', md: '1rem' },
+                    p: { xs: 0.5, md: 2 }
+                  }}>{getLatestShareStatus(student.id)}</TableCell>
+                  <TableCell sx={{ 
+                    textAlign: 'center',
+                    p: { xs: 0.25, md: 2 }
+                  }}>
                     <Button
                       variant="contained"
                       color="info"
                       onClick={() => handleViewShares(student.id)}
                       disabled={loading}
-                      sx={{ borderRadius: '50%', minWidth: 40, height: 40, p: 0, fontWeight: 700 }}
+                      sx={{ 
+                        borderRadius: '50%', 
+                        minWidth: { xs: 32, md: 40 }, 
+                        height: { xs: 32, md: 40 }, 
+                        p: 0, 
+                        fontWeight: 700,
+                        fontSize: { xs: '0.8rem', md: '1rem' }
+                      }}
                     >
                       💲
                     </Button>
@@ -336,11 +454,33 @@ const Share = () => {
           </TableBody>
         </Table>
       </TableContainer>
-      <Dialog open={openMassShareDialog} onClose={handleCloseMassShareDialog} sx={{ '& .MuiDialog-paper': { borderRadius: '12px', boxShadow: '0 8px 16px rgba(0, 0, 0, 0.2)', backgroundColor: '#E6F9EC' } }}>
-        <DialogTitle sx={{ background: 'linear-gradient(90deg, #8eeab1, #007e32)', color: '#00335c', fontWeight: 700, borderTopLeftRadius: '12px', borderTopRightRadius: '12px', p: 2 }}>
+      <Dialog 
+        open={openMassShareDialog} 
+        onClose={handleCloseMassShareDialog} 
+        fullWidth
+        maxWidth="sm"
+        sx={{ 
+          '& .MuiDialog-paper': { 
+            borderRadius: '12px', 
+            boxShadow: '0 8px 16px rgba(0, 0, 0, 0.2)', 
+            backgroundColor: '#E6F9EC',
+            m: { xs: 1, sm: 2 },
+            maxWidth: { xs: '95vw', sm: '600px' }
+          } 
+        }}
+      >
+        <DialogTitle sx={{ 
+          background: 'linear-gradient(90deg, #8eeab1, #007e32)', 
+          color: '#00335c', 
+          fontWeight: 700, 
+          borderTopLeftRadius: '12px', 
+          borderTopRightRadius: '12px', 
+          p: { xs: 1.5, md: 2 },
+          fontSize: { xs: '1.1rem', md: '1.3rem' }
+        }}>
           Crear Cuota Masiva
         </DialogTitle>
-        <DialogContent sx={{ p: 3, pt: 4 }}>
+        <DialogContent sx={{ p: { xs: 2, md: 3 }, pt: { xs: 2, md: 4 } }}>
           <FormControl fullWidth sx={{ mt: 2, mb: 2 }}>
             <InputLabel>Año</InputLabel>
             <Select
@@ -348,6 +488,7 @@ const Share = () => {
               value={massShareData.year}
               onChange={handleMassShareInputChange}
               label="Año"
+              size={window.innerWidth < 768 ? "small" : "medium"}
               sx={{ '& .MuiOutlinedInput-root': { '& fieldset': { borderColor: '#38f9d7' }, '&:hover fieldset': { borderColor: '#43e97b' }, '&.Mui-focused fieldset': { borderColor: '#43e97b' } }, '& .MuiInputLabel-root': { color: '#00335c' }, '& .MuiInputLabel-root.Mui-focused': { color: '#43e97b' } }}
             >
               {[2023, 2024, 2025, 2026, 2027].map((year) => (
@@ -363,6 +504,7 @@ const Share = () => {
             value={massShareData.quotaName}
             onChange={handleMassShareInputChange}
             fullWidth
+            size={window.innerWidth < 768 ? "small" : "medium"}
             sx={{ mb: 2, '& .MuiOutlinedInput-root': { '& fieldset': { borderColor: '#38f9d7' }, '&:hover fieldset': { borderColor: '#43e97b' }, '&.Mui-focused fieldset': { borderColor: '#43e97b' } }, '& .MuiInputLabel-root': { color: '#00335c' }, '& .MuiInputLabel-root.Mui-focused': { color: '#43e97b' } }}
             required
             placeholder="Ej: Cuota Masiva - Semestre 1 - 2025"
@@ -374,6 +516,7 @@ const Share = () => {
             value={massShareData.amount}
             onChange={handleMassShareInputChange}
             fullWidth
+            size={window.innerWidth < 768 ? "small" : "medium"}
             sx={{ mb: 2, '& .MuiOutlinedInput-root': { '& fieldset': { borderColor: '#38f9d7' }, '&:hover fieldset': { borderColor: '#43e97b' }, '&.Mui-focused fieldset': { borderColor: '#43e97b' } }, '& .MuiInputLabel-root': { color: '#00335c' }, '& .MuiInputLabel-root.Mui-focused': { color: '#43e97b' } }}
             required
           />
@@ -384,16 +527,47 @@ const Share = () => {
             value={massShareData.date}
             onChange={handleMassShareInputChange}
             fullWidth
+            size={window.innerWidth < 768 ? "small" : "medium"}
             sx={{ mb: 2, '& .MuiOutlinedInput-root': { '& fieldset': { borderColor: '#38f9d7' }, '&:hover fieldset': { borderColor: '#43e97b' }, '&.Mui-focused fieldset': { borderColor: '#43e97b' } }, '& .MuiInputLabel-root': { color: '#00335c' }, '& .MuiInputLabel-root.Mui-focused': { color: '#43e97b' } }}
             required
             InputLabelProps={{ shrink: true }}
           />
         </DialogContent>
-        <DialogActions sx={{ p: 2, justifyContent: 'space-between' }}>
-          <Button onClick={handleCloseMassShareDialog} variant="outlined" startIcon={<CancelIcon />} sx={{ color: '#00335c', borderColor: '#00335c', cursor: 'pointer', '&:hover': { backgroundColor: 'rgba(142, 234, 177, 0.1)', borderColor: '#8eeab1' }, fontWeight: 700 }}>
+        <DialogActions sx={{ 
+          p: { xs: 1.5, md: 2 }, 
+          justifyContent: 'space-between',
+          flexDirection: { xs: 'column', sm: 'row' },
+          gap: { xs: 2, sm: 0 }
+        }}>
+          <Button 
+            onClick={handleCloseMassShareDialog} 
+            variant="outlined" 
+            startIcon={<CancelIcon />} 
+            sx={{ 
+              color: '#00335c', 
+              borderColor: '#00335c', 
+              cursor: 'pointer', 
+              '&:hover': { backgroundColor: 'rgba(142, 234, 177, 0.1)', borderColor: '#8eeab1' }, 
+              fontWeight: 700,
+              width: { xs: '100%', sm: 'auto' },
+              fontSize: { xs: '0.9rem', md: '1rem' }
+            }}
+          >
             Cancelar
           </Button>
-          <Button onClick={handleMassShareSubmit} variant="contained" sx={{ backgroundColor: '#43e97b', color: '#ffffff', cursor: 'pointer', '&:hover': { backgroundColor: '#38f9d7' }, fontWeight: 700 }}>
+          <Button 
+            onClick={handleMassShareSubmit} 
+            variant="contained" 
+            sx={{ 
+              backgroundColor: '#43e97b', 
+              color: '#ffffff', 
+              cursor: 'pointer', 
+              '&:hover': { backgroundColor: '#38f9d7' }, 
+              fontWeight: 700,
+              width: { xs: '100%', sm: 'auto' },
+              fontSize: { xs: '0.9rem', md: '1rem' }
+            }}
+          >
             Guardar
           </Button>
         </DialogActions>

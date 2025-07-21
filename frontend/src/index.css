@@ -1,3 +1,20 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  /* Valores predeterminados para modo claro */
+  --bs-body-bg: #a5d6a7;
+  --bs-body-color: #212529; 
+}
+
+[data-bs-theme="dark"] {
+  --bs-body-bg: #121212; 
+  --bs-body-color: #0a0a0a;  
+}
+
+body {
+  transition: background-color 0.3s ease, color 0.3s ease;
+  background-color: var(--bs-body-bg);
+  color: var(--bs-body-color);
+}

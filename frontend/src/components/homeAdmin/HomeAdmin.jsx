@@ -15,15 +15,15 @@ const HomeAdmin = () => {
   const textColor = '#1b5e20';
 
   const sections = [
-    { title: 'Estudiantes', route: '/students', icon: <FaUserGraduate size={32} color={textColor} /> },
-    { title: 'Cuotas', route: '/shares', icon: <FaMoneyBillWave size={32} color={textColor} /> },
-    { title: 'Usuarios', route: '/user', icon: <FaUsers size={32} color={textColor} /> },
-    { title: 'Profesores', route: '/teachers', icon: <FaChalkboardTeacher size={32} color={textColor} /> },
-    { title: 'Configuración', route: '/settings', icon: <FaCogs size={32} color={textColor} /> },
-    { title: 'Reportes', route: '/reports', icon: <FaChartBar size={32} color={textColor} /> },
-    { title: 'Notificaciones', route: '/notifications', icon: <FaBell size={32} color={textColor} /> },
-    { title: 'Movimientos', route: '/motions', icon: <FaExchangeAlt size={32} color={textColor} /> },
-    { title: 'Asistencias', route: '/attendance', icon: <FaUserCheck size={32} color={textColor} /> },
+    { title: 'Estudiantes', route: '/students', icon: <FaUserGraduate size={40} color={textColor} /> },
+        { title: 'Cuotas', route: '/shares', icon: <FaMoneyBillWave size={40} color={textColor} /> },
+    { title: 'Usuarios', route: '/user', icon: <FaUsers size={40} color={textColor} /> },
+    { title: 'Profesores', route: '/teachers', icon: <FaChalkboardTeacher size={40} color={textColor} /> },
+    { title: 'Configuración', route: '/settings', icon: <FaCogs size={40} color={textColor} /> },
+    { title: 'Reportes', route: '/reports', icon: <FaChartBar size={40} color={textColor} /> },
+    { title: 'Notificaciones', route: '/notifications', icon: <FaBell size={40} color={textColor} /> },
+    { title: 'Movimientos', route: '/motions', icon: <FaExchangeAlt size={40} color={textColor} /> },
+    { title: 'Asistencia', route: '/attendance', icon: <FaExchangeAlt size={40} color={textColor} /> },
   ];
 
   const containerVariants = {
