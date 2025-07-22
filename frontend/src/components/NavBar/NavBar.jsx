@@ -87,7 +87,7 @@ const NavBar = () => {
       submenu: [
         { text: 'Cuotas', url: '/shares', icon: <CuotasIcon sx={{ fontSize: iconSize }} /> },
         { text: 'Movimientos', url: '/motions', icon: <MovimientosIcon sx={{ fontSize: iconSize }} /> },
-        { text: 'Informes', icon: <InformesIcon sx={{ fontSize: iconSize }} />, url: '/reports' },
+        { text: 'Reportes', icon: <InformesIcon sx={{ fontSize: iconSize }} />, url: '/reports' },
       ],
     },
     { text: 'Notificaciones', icon: <NotificacionesIcon sx={{ fontSize: iconSize }} />, url: '/notifications' },

@@ -173,6 +173,9 @@ const Attendance = () => {
               >
                 Hoy
               </button>
+              <button className="attendance-back-btn" onClick={() => navigate(-1)}>
+            Volver
+          </button>
             </div>
             {filteredStudents.length > 0 ? (
               <table className="attendance-table">
@@ -239,9 +242,7 @@ const Attendance = () => {
           </div>
         )}
       </div>
-      <button className="attendance-back-btn" onClick={() => navigate(-1)}>
-            Volver
-          </button>
+    
     </div>
   );
 };
