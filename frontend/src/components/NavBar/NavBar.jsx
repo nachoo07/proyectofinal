@@ -75,7 +75,7 @@ const NavBar = () => {
       text: 'Principal',
       icon: <PrincipalIcon sx={{ fontSize: iconSize }} />,
       submenu: [
-        { text: 'Alumnos', url: '/students', icon: <PeopleIcon sx={{ fontSize: iconSize }} /> },
+        { text: 'Estudiantes', url: '/students', icon: <PeopleIcon sx={{ fontSize: iconSize }} /> },
         { text: 'Asistencia', url: '/attendance', icon: <AsistenciaIcon sx={{ fontSize: iconSize }} /> },
         { text: 'Profesores', icon: <ProfesoresIcon sx={{ fontSize: iconSize }} />, url: '/teachers' },
       ],
