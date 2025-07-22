@@ -22,29 +22,22 @@ import {
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useMotions } from '../../context/motion/MotionContext';
-import FiltersBar from './filtersBar';
-import './motionList.css';
+
 const MotionList = ({ onEdit, onDelete }) => {
-  const { motions, loading, error, fetchMotions, count, filters, 
-    setFilters   } = useMotions();
+  const { motions, loading, error, fetchMotions, count } = useMotions();
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
-  const [totalPages, setTotalPages] = useState(1);
-  const [totalItems, setTotalItems] = useState(0);
 
   useEffect(() => {
-    const fetchData = async () => {
-      await fetchMotions({ page: currentPage, pageSize });
-      if (motions) {
-        setTotalPages(Math.ceil(count / pageSize));
-        setTotalItems(count);
-      }
-    };
     fetchData();
   }, [currentPage, pageSize]);
 
   const handlePageChange = (event, newPage) => {
     setCurrentPage(newPage);
+  };
+
+  const fetchData = async () => {
+    await fetchMotions({ page: currentPage, pageSize });
   };
 
   const handlePageSizeChange = (event) => {
@@ -215,7 +208,7 @@ const MotionList = ({ onEdit, onDelete }) => {
               </FormControl>
 
               <Pagination
-                count={totalPages}
+                count={Math.ceil(count / pageSize)}
                 page={currentPage}
                 onChange={handlePageChange}
                 color="primary"

@@ -38,7 +38,7 @@ export const MotionProvider = ({ children }) => {
         { withCredentials: true }
       );
       setMotions(response.data.motions);
-      setCount(response.data.count);
+      setCount(response.data.totalItems);
       setError(null);
     } catch (err) {
       setError(err.response?.data?.error || 'Error al cargar movimientos');
@@ -69,7 +69,7 @@ export const MotionProvider = ({ children }) => {
       );
       
       setMotions(response.data.motions);
-      setCount(response.data.count);
+      setCount(response.data.totalItems);
       setError(null);
     } catch (err) {
       setError(err.response?.data?.error || 'Error al cargar movimientos');
