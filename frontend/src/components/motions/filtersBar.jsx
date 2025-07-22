@@ -92,4 +92,4 @@ const FiltersBar = ({ filters, setFilters }) => {
     </Box>
   );
 };
-export default FiltersBar;
+export default FiltersBar; 

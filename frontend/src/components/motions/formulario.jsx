@@ -19,7 +19,7 @@ import PropTypes from "prop-types";
 const PAYMENT_METHODS = [
   { value: "efectivo", label: "Efectivo" },
   { value: "transferencia", label: "Transferencia" },
-];
+]; 
 const TRANSACTION_TYPES = [
   { value: "ingreso", label: "Ingreso" },
   { value: "egreso", label: "Egreso" },
@@ -168,6 +168,15 @@ const Formulario = ({ formData, setFormData, handleSubmit, isEditing, handleCanc
               <Button type="submit" variant="contained" color="success">
                 {isEditing ? "Actualizar" : "Agregar"}
               </Button>
+              <Button
+  variant="outlined"
+  color="inherit"
+  onClick={handleCancel}
+  sx={{ ml: 2 }}
+>
+  Cancelar
+</Button>
+
             </Box>
           </Stack>
         </Box>

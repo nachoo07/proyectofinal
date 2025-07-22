@@ -24,7 +24,7 @@ const MotionComponent = () => {
     error,
     createMotion,
     updateMotion,
-    deleteMotion,
+    deleteMotion, 
     fetchMotions
   } = useMotions();
 
@@ -39,7 +39,7 @@ const MotionComponent = () => {
 
   const [isEditing, setIsEditing] = useState(false);
   const [localError, setLocalError] = useState('');
-  const [tabValue, setTabValue] = useState(0);
+  const [tabValue, setTabValue] = useState(1);
   const [openModal, setOpenModal] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [motionToDelete, setMotionToDelete] = useState(null);
@@ -145,65 +145,60 @@ const MotionComponent = () => {
 
   return (
     <>
-      <Box sx={{ mb: 2 }}>
-        <Button
-          variant="outlined"
-          startIcon={<ArrowBackIcon />}
-          onClick={() => window.history.back()}
-          sx={{
-            borderColor: '#007F5F',
-            color: '#007F5F',
-            // HOVER ELIMINADO - MANTENEMOS EL MISMO ESTILO
-            '&:hover': {
-              backgroundColor: 'transparent', // Fondo transparente en hover
-              color: '#007F5F',               // Texto verde en hover
-              borderColor: '#007F5F',          // Borde verde en hover
-            },
-          }}
-        >
-          Volver
-        </Button>
-      </Box>
+      
 
       <Box sx={{ p: 4, maxWidth: 1000, mx: 'auto' }}>
-        <Typography variant="h2" gutterBottom color="#007F5F">
-          Gestión de Movimientos
-        </Typography>
-
-        <Tabs
-          value={tabValue}
-          onChange={handleTabChange}
+         <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          width: '100%',
+          mb: 4,
+          p: 2,
+          background: 'linear-gradient(90deg, #43e97b 0%, #38f9d7 100%)',
+          borderRadius: '16px',
+          boxShadow: '0 6px 24px rgba(67, 233, 123, 0.15)',
+          transition: 'transform 0.3s',
+          '&:hover': { transform: 'scale(1.01)' },
+        }}
+      >
+        <Typography
+          variant="h3"
           sx={{
-            mb: 4,
-            '& .MuiTab-root': {
-              color: '#007F5F',
-              fontWeight: 'bold',
-              textTransform: 'none',
-              borderRadius: 2,
-              mx: 1,
-              // HOVER ELIMINADO PARA PESTAÑAS NO SELECCIONADAS
-              '&:hover': {
-                backgroundColor: 'transparent', // Fondo transparente en hover
-                color: '#007F5F',               // Texto verde en hover
-              },
-            },
-            '& .Mui-selected': {
-              backgroundColor: '#007F5F',
-              color: '#fff',
-              // HOVER ELIMINADO PARA PESTAÑAS SELECCIONADAS
-              '&:hover': {
-                backgroundColor: '#007F5F', // Mantiene fondo verde en hover
-                color: '#fff',              // Mantiene texto blanco en hover
-              },
-            },
-            '& .MuiTabs-indicator': {
-              backgroundColor: 'transparent',
-            },
+            fontWeight: 800,
+            color: '#00335c',
+            textShadow: '2px 2px 6px rgba(56, 249, 215, 0.15)',
+            letterSpacing: '0.08rem',
           }}
         >
-          <Tab label="Crear" />
-          <Tab label="Todos los Movimientos" />
-        </Tabs>
+          Gestión de Movimientos
+        </Typography>
+      </Box>
+
+       <Tabs
+  value={tabValue}
+  onChange={handleTabChange}
+  sx={{
+    mb: 2,
+    '& .MuiTab-root': {
+      color: '#007F5F',
+      fontWeight: 'bold',
+      textTransform: 'none',
+      borderRadius: 2,
+      mx: 1,
+    },
+    '& .Mui-selected': {
+      backgroundColor: '#007F5F',
+      color: '#fff',
+    },
+    '& .MuiTabs-indicator': {
+      backgroundColor: 'transparent',
+    },
+  }}
+>
+</Tabs>
+
 
         {tabValue === 0 && (
           <>
@@ -224,11 +219,65 @@ const MotionComponent = () => {
         )}
 
         {tabValue === 1 && (
-          <MotionList
-            onEdit={handleEditMotion}
-            onDelete={handleDeleteMotion}
-          />
-        )}
+  <>
+    {/* Botón para crear un nuevo movimiento */}
+    <Box display="flex" justifyContent="flex-end" gap={2} mb={2}>
+  {/* Botón Volver */}
+  <Button
+    variant="outlined"
+    startIcon={<ArrowBackIcon />}
+    onClick={() => window.history.back()}
+    sx={{
+      borderColor: '#007F5F',
+      color: '#007F5F',
+      fontWeight: 'bold',
+      '&:hover': {
+        backgroundColor: 'transparent',
+        color: '#007F5F',
+        borderColor: '#007F5F',
+      },
+    }}
+  >
+    Volver
+  </Button>
+
+  {/* Botón Nuevo Movimiento */}
+  <Button
+    variant="contained"
+    onClick={() => {
+      setFormData({
+        id: null,
+        concept: '',
+        amount: '',
+        date: null,
+        paymentMethod: '',
+        incomeType: 'ingreso',
+      });
+      setIsEditing(false);
+      setOpenModal(true);
+    }}
+    sx={{
+      backgroundColor: '#007F5F',
+      color: 'white',
+      fontWeight: 'bold',
+      '&:hover': {
+        backgroundColor: '#005F47',
+      },
+    }}
+  >
+    Nuevo Movimiento
+  </Button>
+</Box>
+
+
+    {/* Lista de movimientos */}
+    <MotionList
+      onEdit={handleEditMotion}
+      onDelete={handleDeleteMotion}
+    />
+  </>
+)}
+
       </Box>
 
       {/* Modal para editar */}

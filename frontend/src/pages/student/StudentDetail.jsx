@@ -318,22 +318,24 @@ const StudentDetail = () => {
                 />
 
                 <TextField
-                  label="Fecha de nacimiento"
-                  type="date"
-                  name="birthDate"
-                  value={student.birthDate ? student.birthDate.substring(0, 10) : ""}
-                  onChange={handleChange}
-                  fullWidth
-                  disabled={isView}
-                  size="medium"
-                  sx={{
-                    "& .MuiInputBase-input.Mui-disabled": {
-                      color: "#535252ff",
-                      fontWeight: "bold",
-                      WebkitTextFillColor: "#535252ff",
-                    },
-                  }}
-                />
+  label="Fecha de nacimiento"
+  type="date"
+  name="birthDate"
+  value={student.birthDate ? student.birthDate.substring(0, 10) : ""}
+  onChange={handleChange}
+  fullWidth
+  disabled={isView}
+  size="medium"
+  InputLabelProps={{ shrink: true }} // 👈 ESTO ES LO IMPORTANTE
+  sx={{
+    "& .MuiInputBase-input.Mui-disabled": {
+      color: "#535252ff",
+      fontWeight: "bold",
+      WebkitTextFillColor: "#535252ff",
+    },
+  }}
+/>
+
 
                 <TextField
                   label="Email"
