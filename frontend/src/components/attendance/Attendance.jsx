@@ -1,42 +1,41 @@
 import React, { useState, useEffect, useContext } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import { format, isValid } from 'date-fns';
+import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import { LoginContext } from '../../context/login/LoginContext';
 import { StudentContext } from '../../context/student/StudentContext';
 import './attendance.css';
+import { useNavigate } from 'react-router-dom';
 
 const Attendance = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
-  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [selectedCategory, setSelectedCategory] = useState('');
   const [filteredStudents, setFilteredStudents] = useState([]);
   const [attendance, setAttendance] = useState({});
   const [isAttendanceSaved, setIsAttendanceSaved] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [originalAttendance, setOriginalAttendance] = useState({}); // Nuevo estado para guardar la copia
+  const [originalAttendance, setOriginalAttendance] = useState({});
   const { auth } = useContext(LoginContext);
   const { students } = useContext(StudentContext);
+  const navigate = useNavigate();
 
-
-  // Categorías fijas desde 2014 hasta 2020 con opción para NULL
   const categories = ['Sin categoría', ...Array.from({ length: 2020 - 2010 + 1 }, (_, i) => String(2010 + i))];
 
-  // Obtener estudiantes y datos de asistencia cuando cambian la categoría o la fecha
   useEffect(() => {
     if (selectedCategory && selectedDate && (auth === 'admin' || auth === 'user')) {
       fetchAttendance();
     }
   }, [selectedCategory, selectedDate, auth]);
 
-  // Filtrar estudiantes por categoría seleccionada
   useEffect(() => {
     if (selectedCategory) {
       const studentsArray = Array.isArray(students) ? students : [];
-      const filtered = studentsArray.filter(student => 
-        student.category === selectedCategory || (student.category === null && selectedCategory === 'Sin categoría')
+      const filtered = studentsArray.filter(
+        (student) =>
+          student.category === selectedCategory || (student.category === null && selectedCategory === 'Sin categoría'),
       );
       setFilteredStudents(filtered);
     } else {
@@ -44,7 +43,6 @@ const Attendance = () => {
     }
   }, [selectedCategory, students]);
 
-  // Obtener datos de asistencia
   const fetchAttendance = async () => {
     try {
       const formattedDate = format(selectedDate, 'yyyy-MM-dd');
@@ -52,36 +50,34 @@ const Attendance = () => {
         params: { date: formattedDate, category: selectedCategory },
         withCredentials: true,
       });
-      const { students, attendance: attendanceData } = response.data;
+      const { attendance: attendanceData } = response.data;
       const newAttendance = {};
       const attendanceArray = Array.isArray(attendanceData) ? attendanceData : [];
-      attendanceArray.forEach(item => {
+      attendanceArray.forEach((item) => {
         if (item.present !== null) {
           newAttendance[item.idStudent] = item.present ? 'present' : 'absent';
         }
       });
       setAttendance(newAttendance);
-      setOriginalAttendance(newAttendance); // Guardar copia inicial
+      setOriginalAttendance(newAttendance);
       setIsAttendanceSaved(Object.keys(newAttendance).length > 0);
       setIsEditing(false);
     } catch (error) {
       console.error('Error al obtener asistencia:', error);
       setAttendance({});
-      setOriginalAttendance({}); // Limpiar copia en caso de error
+      setOriginalAttendance({});
       setIsAttendanceSaved(false);
       setIsEditing(false);
     }
   };
 
-  // Manejar cambios en el estado de asistencia
   const handleAttendanceChange = (studentId, status) => {
-    setAttendance(prev => ({
+    setAttendance((prev) => ({
       ...prev,
       [studentId]: status === prev[studentId] ? null : status,
     }));
   };
 
-  // Manejar el envío del formulario
   const handleAttendanceSubmit = async () => {
     if (!filteredStudents.length) {
       Swal.fire('Error', 'No hay estudiantes seleccionados para registrar la asistencia.', 'error');
@@ -95,12 +91,12 @@ const Attendance = () => {
       Swal.fire('Error', 'Por favor, selecciona una categoría.', 'error');
       return;
     }
-    const validStudents = filteredStudents.filter(student => student.id && student.name && student.lastName);
+    const validStudents = filteredStudents.filter((student) => student.id && student.name && student.lastName);
     if (!validStudents.length) {
       Swal.fire('Error', 'No hay estudiantes con datos completos para registrar la asistencia.', 'error');
       return;
     }
-    const incompleteStudents = validStudents.filter(student => !attendance[student.id]);
+    const incompleteStudents = validStudents.filter((student) => !attendance[student.id]);
     if (incompleteStudents.length > 0) {
       Swal.fire('Error', 'Es necesario seleccionar el estado (presente o ausente) para todos los estudiantes.', 'error');
       return;
@@ -109,7 +105,7 @@ const Attendance = () => {
     const attendanceData = {
       date: format(selectedDate, 'yyyy-MM-dd'),
       category: selectedCategory,
-      attendance: validStudents.map(student => ({
+      attendance: validStudents.map((student) => ({
         idStudent: student.id,
         present: attendance[student.id] === 'present',
       })),
@@ -125,7 +121,7 @@ const Attendance = () => {
       }
       setIsAttendanceSaved(true);
       setIsEditing(false);
-      setOriginalAttendance(attendance); // Actualizar copia después de guardar
+      setOriginalAttendance(attendance);
       fetchAttendance();
     } catch (error) {
       console.error('Error al guardar asistencia:', error);
@@ -133,34 +129,31 @@ const Attendance = () => {
     }
   };
 
-  // Manejar acción de edición
   const handleEditAttendance = () => {
-    setOriginalAttendance({ ...attendance }); // Guardar copia de attendance antes de editar
+    setOriginalAttendance({ ...attendance });
     setIsEditing(true);
   };
 
-  // Manejar acción de cancelación
   const handleCancelEdit = () => {
-    setAttendance({ ...originalAttendance }); // Restaurar attendance a la copia original
+    setAttendance({ ...originalAttendance });
     setIsEditing(false);
   };
 
   return (
     <div className="app-container">
+      <h1>Registro de Asistencia</h1>
       <div className="content-container">
-        <h1>Registro de Asistencia</h1>
         <div className="category-selection">
-          {categories.map(category => (
+          {categories.map((category) => (
             <button
               key={category}
               className={`category-button ${selectedCategory === category ? 'selected' : ''}`}
-              onClick={() => {
-                setSelectedCategory(category);
-              }}
+              onClick={() => setSelectedCategory(category)}
             >
               {category}
             </button>
           ))}
+         
         </div>
         {selectedCategory && (
           <div className="attendance-section">
@@ -191,7 +184,7 @@ const Attendance = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredStudents.map(student => (
+                  {filteredStudents.map((student) => (
                     <tr key={student.id}>
                       <td>{student.name} {student.lastName}</td>
                       <td>
@@ -246,6 +239,9 @@ const Attendance = () => {
           </div>
         )}
       </div>
+      <button className="attendance-back-btn" onClick={() => navigate(-1)}>
+            Volver
+          </button>
     </div>
   );
 };
