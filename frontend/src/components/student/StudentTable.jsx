@@ -174,8 +174,7 @@ const StudentTable = () => {
             letterSpacing: '0.08rem',
           }}
         >
-          Gestión de Alumnos
-        </Typography>
+          Gestión de Estudiantes        </Typography>
       </Box>
 
       <Box
@@ -342,13 +341,25 @@ const StudentTable = () => {
           fontSize: { xs: '0.75rem', md: '1rem' },
           p: { xs: 0.5, md: 2 }
         }}>{student.dni}</TableCell>
-        <TableCell sx={{ 
-          color: student.state === 'Activo' ? '#388e3c' : '#d32f2f', 
-          fontWeight: 700, 
-          textAlign: 'center',
-          fontSize: { xs: '0.75rem', md: '1rem' },
-          p: { xs: 0.5, md: 2 }
-        }}>{student.state}</TableCell>
+        <TableCell sx={{ textAlign: 'center', p: { xs: 0.5, md: 2 } }}>
+  <Box
+    sx={{
+      display: 'inline-block',
+      px: 1.5,
+      py: 0.5,
+      borderRadius: '12px',
+      backgroundColor:
+        student.state?.trim().toLowerCase() === 'activo' ? '#4caf50' : '#f44336',
+      color: '#fff',
+      fontWeight: 700,
+      fontSize: { xs: '0.7rem', md: '0.9rem' },
+      textTransform: 'uppercase',
+    }}
+  >
+    {capitalizeFirstLetter(student.state)}
+  </Box>
+</TableCell>
+
         <TableCell sx={{ 
           textAlign: 'center',
           p: { xs: 0.25, md: 2 }

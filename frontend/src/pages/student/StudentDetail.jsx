@@ -11,10 +11,7 @@ import {
   MenuItem,
   InputLabel,
   FormControl,
-  TextareaAutosize,
   Avatar,
-  Stack,
-  Divider
 } from "@mui/material";
 
 const StudentDetail = () => {
@@ -75,6 +72,16 @@ const StudentDetail = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Validaciones nuevas:
+    if (!student.address || student.address.trim() === "") {
+      toast.error("La dirección es obligatoria");
+      return;
+    }
+    if (!student.birthDate || student.birthDate.trim() === "") {
+      toast.error("La fecha de nacimiento es obligatoria");
+      return;
+    }
+
     const formData = new FormData();
     for (let key in student) {
       formData.append(key, student[key]);
@@ -117,81 +124,92 @@ const StudentDetail = () => {
   };
 
   return (
-    <Box 
+    <Box
       sx={{
-        minHeight: '100vh',
-        background: 'linear-gradient(135deg, #e8f5e9 0%, #b2dfdb 100%)',
-        p: { xs: 1, sm: 2, md: 4 }
+        minHeight: "100vh",
+        background: "linear-gradient(135deg, #e8f5e9 0%, #b2dfdb 100%)",
+        p: { xs: 1, sm: 2, md: 4 },
       }}
     >
-      <Box 
-        maxWidth="1200px" 
-        mx="auto" 
+      <Box
+        maxWidth="1200px"
+        mx="auto"
         sx={{
-          bgcolor: 'white',
-          borderRadius: { xs: '12px', md: '20px' },
-          boxShadow: '0 12px 40px rgba(67, 233, 123, 0.15)',
-          overflow: 'hidden'
+          bgcolor: "white",
+          borderRadius: { xs: "12px", md: "20px" },
+          boxShadow: "0 12px 40px rgba(67, 233, 123, 0.15)",
+          overflow: "hidden",
         }}
       >
         {/* Header con título y avatar */}
-        <Box 
+        <Box
           sx={{
-            background: 'linear-gradient(90deg, #43e97b 0%, #38f9d7 100%)',
+            background: "linear-gradient(90deg, #43e97b 0%, #38f9d7 100%)",
             p: { xs: 2, sm: 3, md: 4 },
-            textAlign: 'center'
+            textAlign: "center",
           }}
         >
-          <Typography 
-            variant="h3" 
-            sx={{ 
-              fontWeight: 800, 
-              color: '#00335c', 
+          <Typography
+            variant="h3"
+            sx={{
+              fontWeight: 800,
+              color: "#00335c",
               mb: { xs: 2, sm: 3, md: 4 },
-              fontSize: { xs: '1.5rem', sm: '1.8rem', md: '2.5rem' }
+              fontSize: { xs: "1.5rem", sm: "1.8rem", md: "2.5rem" },
             }}
           >
-            {isView ? 'Detalle del Estudiante' : isEdit ? 'Editar Estudiante' : 'Nuevo Estudiante'}
+            {isView
+              ? "Detalle del Estudiante"
+              : isEdit
+              ? "Editar Estudiante"
+              : "Nuevo Estudiante"}
           </Typography>
-          
+
           {isView && (
-            <Box 
+            <Box
               sx={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                flexDirection: { xs: 'column', sm: 'column', md: 'row' },
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                flexDirection: { xs: "column", sm: "column", md: "row" },
                 gap: { xs: 2, sm: 3, md: 4 },
-                maxWidth: '800px',
-                mx: 'auto'
+                maxWidth: "800px",
+                mx: "auto",
               }}
             >
               {/* Foto de perfil */}
-              <Box sx={{ flex: 1, display: 'flex', justifyContent: { xs: 'center', md: 'flex-start' } }}>
+              <Box
+                sx={{
+                  flex: 1,
+                  display: "flex",
+                  justifyContent: { xs: "center", md: "flex-start" },
+                }}
+              >
                 <Avatar
                   src={
-                    student.profileImage && !student.profileImage.includes("pinimg.com")
+                    student.profileImage &&
+                    !student.profileImage.includes("pinimg.com")
                       ? `http://localhost:4000${student.profileImage}`
                       : "https://i.pinimg.com/736x/24/f2/25/24f22516ec47facdc2dc114f8c3de7db.jpg"
                   }
                   alt="Foto de perfil"
-                  sx={{ 
-                    width: { xs: 100, sm: 120, md: 150 }, 
-                    height: { xs: 100, sm: 120, md: 150 }, 
-                    border: '4px solid white',
-                    boxShadow: '0 8px 24px rgba(0,0,0,0.1)'
+                  sx={{
+                    width: { xs: 100, sm: 120, md: 150 },
+                    height: { xs: 100, sm: 120, md: 150 },
+                    border: "4px solid white",
+                    boxShadow: "0 8px 24px rgba(0,0,0,0.1)",
                   }}
                 />
               </Box>
 
               {/* Nombre y apellido */}
-              <Box sx={{ flex: 1, textAlign: 'center' }}>
-                <Typography 
-                  variant="h4" 
-                  sx={{ 
-                    color: '#00335c', 
+              <Box sx={{ flex: 1, textAlign: "center" }}>
+                <Typography
+                  variant="h4"
+                  sx={{
+                    color: "#00335c",
                     fontWeight: 600,
-                    fontSize: { xs: '1.25rem', sm: '1.5rem', md: '2rem' }
+                    fontSize: { xs: "1.25rem", sm: "1.5rem", md: "2rem" },
                   }}
                 >
                   {student.name} {student.lastName}
@@ -199,21 +217,27 @@ const StudentDetail = () => {
               </Box>
 
               {/* Botón volver */}
-              <Box sx={{ flex: 1, display: 'flex', justifyContent: { xs: 'center', md: 'flex-end' } }}>
-                <Button 
-                  variant="contained" 
-                  onClick={() => navigate(-1)} 
-                  sx={{ 
-                    bgcolor: 'white',
-                    color: '#00335c',
+              <Box
+                sx={{
+                  flex: 1,
+                  display: "flex",
+                  justifyContent: { xs: "center", md: "flex-end" },
+                }}
+              >
+                <Button
+                  variant="contained"
+                  onClick={() => navigate(-1)}
+                  sx={{
+                    bgcolor: "white",
+                    color: "#00335c",
                     fontWeight: 600,
                     px: { xs: 3, sm: 4 },
                     py: { xs: 1, sm: 1.5 },
-                    fontSize: { xs: '0.9rem', sm: '1rem' },
-                    borderRadius: '25px',
-                    '&:hover': {
-                      bgcolor: '#f5f5f5'
-                    }
+                    fontSize: { xs: "0.9rem", sm: "1rem" },
+                    borderRadius: "25px",
+                    "&:hover": {
+                      bgcolor: "#f5f5f5",
+                    },
                   }}
                 >
                   Volver atrás
@@ -228,27 +252,27 @@ const StudentDetail = () => {
           <form onSubmit={handleSubmit}>
             {/* Información personal */}
             <Box mb={4}>
-              <Typography 
-                variant="h5" 
-                sx={{ 
-                  color: '#00335c', 
-                  fontWeight: 700, 
+              <Typography
+                variant="h5"
+                sx={{
+                  color: "#00335c",
+                  fontWeight: 700,
                   mb: 3,
-                  borderBottom: '2px solid #43e97b',
+                  borderBottom: "2px solid #43e97b",
                   pb: 1,
-                  fontSize: { xs: '1.25rem', sm: '1.5rem', md: '1.75rem' }
+                  fontSize: { xs: "1.25rem", sm: "1.5rem", md: "1.75rem" },
                 }}
               >
                 Información Personal
               </Typography>
-              
-              <Box 
-                display="grid" 
-                gridTemplateColumns={{ 
-                  xs: '1fr', 
-                  sm: 'repeat(2, 1fr)', 
-                  md: 'repeat(2, 1fr)', 
-                  lg: 'repeat(3, 1fr)' 
+
+              <Box
+                display="grid"
+                gridTemplateColumns={{
+                  xs: "1fr",
+                  sm: "repeat(2, 1fr)",
+                  md: "repeat(2, 1fr)",
+                  lg: "repeat(3, 1fr)",
                 }}
                 gap={{ xs: 2, sm: 2.5, md: 3 }}
               >
@@ -284,6 +308,13 @@ const StudentDetail = () => {
                   required
                   disabled={isView}
                   size="medium"
+                  sx={{
+                    "& .MuiInputBase-input.Mui-disabled": {
+                      color: "#535252ff",
+                      fontWeight: "bold",
+                      WebkitTextFillColor: "#535252ff",
+                    },
+                  }}
                 />
 
                 <TextField
@@ -293,9 +324,15 @@ const StudentDetail = () => {
                   value={student.birthDate ? student.birthDate.substring(0, 10) : ""}
                   onChange={handleChange}
                   fullWidth
-                  InputLabelProps={{ shrink: true }}
                   disabled={isView}
                   size="medium"
+                  sx={{
+                    "& .MuiInputBase-input.Mui-disabled": {
+                      color: "#535252ff",
+                      fontWeight: "bold",
+                      WebkitTextFillColor: "#535252ff",
+                    },
+                  }}
                 />
 
                 <TextField
@@ -307,6 +344,13 @@ const StudentDetail = () => {
                   fullWidth
                   disabled={isView}
                   size="medium"
+                  sx={{
+                    "& .MuiInputBase-input.Mui-disabled": {
+                      color: "#535252ff",
+                      fontWeight: "bold",
+                      WebkitTextFillColor: "#535252ff",
+                    },
+                  }}
                 />
 
                 <TextField
@@ -317,6 +361,13 @@ const StudentDetail = () => {
                   fullWidth
                   disabled={isView}
                   size="medium"
+                  sx={{
+                    "& .MuiInputBase-input.Mui-disabled": {
+                      color: "#535252ff",
+                      fontWeight: "bold",
+                      WebkitTextFillColor: "#535252ff",
+                    },
+                  }}
                 />
 
                 <FormControl fullWidth disabled={isView} size="medium">
@@ -342,28 +393,35 @@ const StudentDetail = () => {
                   fullWidth
                   disabled={isView}
                   size="medium"
+                  sx={{
+                    "& .MuiInputBase-input.Mui-disabled": {
+                      color: "#535252ff",
+                      fontWeight: "bold",
+                      WebkitTextFillColor: "#535252ff",
+                    },
+                  }}
                 />
               </Box>
             </Box>
 
             {/* Información de contacto familiar */}
             <Box mb={4}>
-              <Typography 
-                variant="h5" 
-                sx={{ 
-                  color: '#00335c', 
-                  fontWeight: 700, 
+              <Typography
+                variant="h5"
+                sx={{
+                  color: "#00335c",
+                  fontWeight: 700,
                   mb: 3,
-                  borderBottom: '2px solid #43e97b',
-                  pb: 1
+                  borderBottom: "2px solid #43e97b",
+                  pb: 1,
                 }}
               >
                 Información Familiar
               </Typography>
-              
-              <Box 
-                display="grid" 
-                gridTemplateColumns={{ xs: '1fr', md: 'repeat(2, 1fr)' }}
+
+              <Box
+                display="grid"
+                gridTemplateColumns={{ xs: "1fr", md: "repeat(2, 1fr)" }}
                 gap={{ xs: 2, md: 3 }}
               >
                 <TextField
@@ -374,6 +432,13 @@ const StudentDetail = () => {
                   fullWidth
                   disabled={isView}
                   size="medium"
+                  sx={{
+                    "& .MuiInputBase-input.Mui-disabled": {
+                      color: "#535252ff",
+                      fontWeight: "bold",
+                      WebkitTextFillColor: "#535252ff",
+                    },
+                  }}
                 />
                 <TextField
                   label="Teléfono madre"
@@ -383,6 +448,13 @@ const StudentDetail = () => {
                   fullWidth
                   disabled={isView}
                   size="medium"
+                  sx={{
+                    "& .MuiInputBase-input.Mui-disabled": {
+                      color: "#535252ff",
+                      fontWeight: "bold",
+                      WebkitTextFillColor: "#535252ff",
+                    },
+                  }}
                 />
                 <TextField
                   label="Nombre del padre"
@@ -392,6 +464,13 @@ const StudentDetail = () => {
                   fullWidth
                   disabled={isView}
                   size="medium"
+                  sx={{
+                    "& .MuiInputBase-input.Mui-disabled": {
+                      color: "#535252ff",
+                      fontWeight: "bold",
+                      WebkitTextFillColor: "#535252ff",
+                    },
+                  }}
                 />
                 <TextField
                   label="Teléfono padre"
@@ -401,25 +480,32 @@ const StudentDetail = () => {
                   fullWidth
                   disabled={isView}
                   size="medium"
+                  sx={{
+                    "& .MuiInputBase-input.Mui-disabled": {
+                      color: "#535252ff",
+                      fontWeight: "bold",
+                      WebkitTextFillColor: "#535252ff",
+                    },
+                  }}
                 />
               </Box>
             </Box>
 
             {/* Información adicional */}
             <Box mb={4}>
-              <Typography 
-                variant="h5" 
-                sx={{ 
-                  color: '#00335c', 
-                  fontWeight: 700, 
+              <Typography
+                variant="h5"
+                sx={{
+                  color: "#00335c",
+                  fontWeight: 700,
                   mb: 3,
-                  borderBottom: '2px solid #43e97b',
-                  pb: 1
+                  borderBottom: "2px solid #43e97b",
+                  pb: 1,
                 }}
               >
                 Información Adicional
               </Typography>
-              
+
               <TextField
                 label="Comentario"
                 name="comment"
@@ -430,61 +516,68 @@ const StudentDetail = () => {
                 fullWidth
                 disabled={isView}
                 size="medium"
+                sx={{
+                  "& .MuiInputBase-input.Mui-disabled": {
+                    color: "#535252ff",
+                    fontWeight: "bold",
+                    WebkitTextFillColor: "#535252ff",
+                  },
+                }}
               />
             </Box>
 
             {/* Foto de perfil */}
             {!isView && (
-              <Box 
+              <Box
                 mb={4}
                 sx={{
-                  textAlign: 'center',
+                  textAlign: "center",
                   p: 3,
-                  border: '2px dashed #43e97b',
-                  borderRadius: '12px',
-                  bgcolor: '#f8fffe'
+                  border: "2px dashed #43e97b",
+                  borderRadius: "12px",
+                  bgcolor: "#f8fffe",
                 }}
               >
-                <Typography 
-                  variant="h5" 
-                  sx={{ 
-                    color: '#00335c', 
-                    fontWeight: 700, 
-                    mb: 3
+                <Typography
+                  variant="h5"
+                  sx={{
+                    color: "#00335c",
+                    fontWeight: 700,
+                    mb: 3,
                   }}
                 >
                   Foto de Perfil
                 </Typography>
-                
+
                 {imagePreview && (
                   <Avatar
                     src={imagePreview}
                     alt="Preview"
-                    sx={{ 
-                      width: { xs: 120, md: 150 }, 
-                      height: { xs: 120, md: 150 }, 
-                      mx: "auto", 
+                    sx={{
+                      width: { xs: 120, md: 150 },
+                      height: { xs: 120, md: 150 },
+                      mx: "auto",
                       mb: 3,
-                      border: '3px solid #43e97b'
+                      border: "3px solid #43e97b",
                     }}
                   />
                 )}
-                <Button 
-                  variant="contained" 
+                <Button
+                  variant="contained"
                   component="label"
                   sx={{
-                    bgcolor: '#43e97b',
-                    color: '#00335c',
+                    bgcolor: "#43e97b",
+                    color: "#00335c",
                     fontWeight: 600,
                     px: 4,
                     py: 1.5,
-                    borderRadius: '25px',
-                    '&:hover': {
-                      bgcolor: '#38f9d7'
-                    }
+                    borderRadius: "25px",
+                    "&:hover": {
+                      bgcolor: "#38f9d7",
+                    },
                   }}
                 >
-                  {imagePreview ? 'Cambiar Foto' : 'Subir Foto'}
+                  {imagePreview ? "Cambiar Foto" : "Subir Foto"}
                   <input type="file" hidden accept="image/*" onChange={handleImageChange} />
                 </Button>
               </Box>
@@ -492,53 +585,53 @@ const StudentDetail = () => {
 
             {/* Botones de acción */}
             {!isView && (
-              <Box 
-                sx={{ 
-                  display: 'flex', 
-                  justifyContent: 'center',
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "center",
                   gap: { xs: 2, md: 3 },
-                  flexDirection: { xs: 'column', sm: 'row' },
+                  flexDirection: { xs: "column", sm: "row" },
                   mt: 4,
                   p: 3,
-                  bgcolor: '#f8fffe',
-                  borderRadius: '12px'
+                  bgcolor: "#f8fffe",
+                  borderRadius: "12px",
                 }}
               >
-                <Button 
-                  type="submit" 
-                  variant="contained" 
+                <Button
+                  type="submit"
+                  variant="contained"
                   sx={{
-                    bgcolor: '#43e97b',
-                    color: '#00335c',
+                    bgcolor: "#43e97b",
+                    color: "#00335c",
                     fontWeight: 700,
                     px: { xs: 4, md: 6 },
                     py: { xs: 1.5, md: 2 },
-                    fontSize: { xs: '1rem', md: '1.1rem' },
-                    borderRadius: '25px',
-                    minWidth: { xs: '100%', sm: '180px' },
-                    '&:hover': {
-                      bgcolor: '#38f9d7'
-                    }
+                    fontSize: { xs: "1rem", md: "1.1rem" },
+                    borderRadius: "25px",
+                    minWidth: { xs: "100%", sm: "180px" },
+                    "&:hover": {
+                      bgcolor: "#38f9d7",
+                    },
                   }}
                 >
                   {isEdit ? "Actualizar" : "Crear"}
                 </Button>
-                <Button 
-                  variant="outlined" 
+                <Button
+                  variant="outlined"
                   onClick={() => navigate(-1)}
                   sx={{
-                    color: '#00335c',
-                    borderColor: '#43e97b',
+                    color: "#00335c",
+                    borderColor: "#43e97b",
                     fontWeight: 700,
                     px: { xs: 4, md: 6 },
                     py: { xs: 1.5, md: 2 },
-                    fontSize: { xs: '1rem', md: '1.1rem' },
-                    borderRadius: '25px',
-                    minWidth: { xs: '100%', sm: '180px' },
-                    '&:hover': {
-                      bgcolor: 'rgba(67, 233, 123, 0.1)',
-                      borderColor: '#38f9d7'
-                    }
+                    fontSize: { xs: "1rem", md: "1.1rem" },
+                    borderRadius: "25px",
+                    minWidth: { xs: "100%", sm: "180px" },
+                    "&:hover": {
+                      bgcolor: "rgba(67, 233, 123, 0.1)",
+                      borderColor: "#38f9d7",
+                    },
                   }}
                 >
                   Volver
