@@ -169,20 +169,17 @@ const Share = () => {
           width: '100%',
           mb: 4,
           p: 2,
-          background: 'linear-gradient(90deg, #43e97b 0%, #38f9d7 100%)',
+          background: ' #e8f5e9 ',
           borderRadius: '16px',
           boxShadow: '0 6px 24px rgba(67, 233, 123, 0.15)',
-          transition: 'transform 0.3s',
-          '&:hover': {
-            transform: 'scale(1.01)',
-          },
+          
         }}
       >
         <Typography
           variant="h3"
           sx={{
             fontWeight: 800,
-            color: '#00335c',
+            color: 'rgba(32, 129, 38, 1) !important',
             textShadow: '2px 2px 6px rgba(56, 249, 215, 0.15)',
             letterSpacing: '0.08rem',
             fontSize: { xs: '1.5rem', sm: '2rem', md: '3rem' },
@@ -311,10 +308,10 @@ const Share = () => {
       >
         <Table sx={{ minWidth: { xs: 320, md: 650 } }}>
           <TableHead>
-            <TableRow sx={{ background: 'linear-gradient(90deg, #43e97b 0%, #38f9d7 100%)' }}>
+            <TableRow sx={{ background: 'rgba(32, 129, 38, 1) !important' }}>
               <TableCell
                 sx={{
-                  color: '#00335c',
+                  color: '#ffffffff',
                   fontWeight: 700,
                   fontSize: { xs: '0.75rem', md: '1.1rem' },
                   borderTopLeftRadius: '16px',
@@ -326,7 +323,7 @@ const Share = () => {
               </TableCell>
               <TableCell
                 sx={{
-                  color: '#00335c',
+                  color: '#ffffffff',
                   fontWeight: 700,
                   fontSize: { xs: '0.75rem', md: '1.1rem' },
                   textAlign: 'center',
@@ -337,7 +334,7 @@ const Share = () => {
               </TableCell>
               <TableCell
                 sx={{
-                  color: '#00335c',
+                  color: '#ffffffff',
                   fontWeight: 700,
                   fontSize: { xs: '0.75rem', md: '1.1rem' },
                   textAlign: 'center',
@@ -348,7 +345,7 @@ const Share = () => {
               </TableCell>
               <TableCell
                 sx={{
-                  color: '#00335c',
+                  color: '#ffffffff',
                   fontWeight: 700,
                   fontSize: { xs: '0.75rem', md: '1.1rem' },
                   textAlign: 'center',
@@ -359,7 +356,7 @@ const Share = () => {
               </TableCell>
               <TableCell
                 sx={{
-                  color: '#00335c',
+                  color: '#ffffffff',
                   fontWeight: 700,
                   fontSize: { xs: '0.75rem', md: '1.1rem' },
                   borderTopRightRadius: '16px',
@@ -399,7 +396,7 @@ const Share = () => {
                 >
                   <TableCell
                     sx={{
-                      color: '#00335c',
+                      color: '#1b5e20',
                       fontWeight: 500,
                       textAlign: 'center',
                       fontSize: { xs: '0.75rem', md: '1rem' },
@@ -410,7 +407,7 @@ const Share = () => {
                   </TableCell>
                   <TableCell
                     sx={{
-                      color: '#00335c',
+                      color: '#1b5e20',
                       fontWeight: 500,
                       textAlign: 'center',
                       fontSize: { xs: '0.75rem', md: '1rem' },
@@ -421,7 +418,7 @@ const Share = () => {
                   </TableCell>
                   <TableCell
                     sx={{
-                      color: '#00335c',
+                      color: '#1b5e20',
                       fontWeight: 500,
                       textAlign: 'center',
                       fontSize: { xs: '0.75rem', md: '1rem' },
@@ -540,8 +537,8 @@ const Share = () => {
       >
         <DialogTitle
           sx={{
-            background: 'linear-gradient(90deg, #075324ff, #007e32)',
-            color: '#00335c',
+            background: 'rgba(32, 129, 38, 1) !important',
+            color: '#ffffffff',
             fontWeight: 700,
             borderTopLeftRadius: '12px',
             borderTopRightRadius: '12px',
@@ -656,8 +653,8 @@ const Share = () => {
             variant="outlined"
             startIcon={<CancelIcon />}
             sx={{
-              color: '#00335c',
-              borderColor: '#00335c',
+              color: '#ff0b0bff',
+              borderColor: '#ff0000ff',
               cursor: 'pointer',
               '&:hover': {
                 backgroundColor: 'rgba(142, 234, 177, 0.1)',
@@ -674,8 +671,8 @@ const Share = () => {
             onClick={handleMassShareSubmit}
             variant="contained"
             sx={{
-              backgroundColor: '#43e97b',
-              color: '#ffffff',
+              backgroundColor: 'rgba(32, 129, 38, 1) !important',
+              color: '#ffffffff',
               cursor: 'pointer',
               '&:hover': { backgroundColor: '#38f9d7' },
               fontWeight: 700,

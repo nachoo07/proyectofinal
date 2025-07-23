@@ -156,7 +156,7 @@ const MotionComponent = () => {
           width: '100%',
           mb: 4,
           p: 2,
-          background: 'linear-gradient(90deg, #43e97b 0%, #38f9d7 100%)',
+          background: '#e8f5e9',
           borderRadius: '16px',
           boxShadow: '0 6px 24px rgba(67, 233, 123, 0.15)',
           transition: 'transform 0.3s',
@@ -164,10 +164,10 @@ const MotionComponent = () => {
         }}
       >
         <Typography
-          variant="h3"
+          variant="h2"
           sx={{
             fontWeight: 800,
-            color: '#00335c',
+            color: 'rgba(32, 129, 38, 1) !important',
             textShadow: '2px 2px 6px rgba(56, 249, 215, 0.15)',
             letterSpacing: '0.08rem',
           }}
@@ -175,7 +175,7 @@ const MotionComponent = () => {
           Gestión de Movimientos
         </Typography>
       </Box>
-
+ 
        <Tabs
   value={tabValue}
   onChange={handleTabChange}
@@ -257,7 +257,7 @@ const MotionComponent = () => {
       setOpenModal(true);
     }}
     sx={{
-      backgroundColor: '#007F5F',
+      backgroundColor: 'rgba(32, 129, 38, 1) !important',
       color: 'white',
       fontWeight: 'bold',
       '&:hover': {
@@ -292,8 +292,8 @@ const MotionComponent = () => {
             borderRadius: 2,
             boxShadow: 24,
             p: 4,
-            maxWidth: 600,
-            width: "100%",
+            maxWidth: 550,
+            width: "150%",
           }}
         >
           <Formulario

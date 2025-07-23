@@ -1,4 +1,5 @@
 import { useState, useContext, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Box,
   Typography,
@@ -29,7 +30,13 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import ToggleOnIcon from '@mui/icons-material/ToggleOn';
 import ToggleOffIcon from '@mui/icons-material/ToggleOff';
 import CancelIcon from '@mui/icons-material/Cancel';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import './tableUser.css';
+
+const capitalizeFirstLetter = (string) => {
+  if (!string) return '';
+  return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
+};
 
 const TableUser = () => {
   const { users, loading, fetchUsers, deleteUser, updateUserState, createUser, updateUser } = useContext(UserContext);
@@ -46,6 +53,7 @@ const TableUser = () => {
   const [selectedUserId, setSelectedUserId] = useState(null);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [userToDelete, setUserToDelete] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchUsers();
@@ -156,7 +164,7 @@ const TableUser = () => {
           textAlign: 'center',
         }}
       >
-        <Typography variant="h6" color="#00335c">
+        <Typography variant="h6" color="#1b5e20">
           Cargando usuarios...
         </Typography>
       </Box>
@@ -185,7 +193,7 @@ const TableUser = () => {
           width: '100%',
           mb: { xs: 2, md: 4 },
           p: { xs: 1, md: 2 },
-          background: 'linear-gradient(90deg, #43e97b 0%, #38f9d7 100%)',
+          background: '#e8f5e9',
           borderRadius: '16px',
           boxShadow: '0 6px 24px rgba(67, 233, 123, 0.15)',
           transition: 'transform 0.3s',
@@ -194,12 +202,12 @@ const TableUser = () => {
           },
         }}
       >
-        <PersonIcon sx={{ fontSize: { xs: 32, md: 48 }, color: '#00335c', mr: { xs: 1, md: 2 } }} />
+        <PersonIcon sx={{ fontSize: { xs: 32, md: 48 }, color: 'rgba(32, 129, 38, 1) !important', mr: { xs: 1, md: 2 } }} />
         <Typography
           variant="h3"
           sx={{
             fontWeight: 800,
-            color: '#00335c',
+            color: 'rgba(32, 129, 38, 1) !important',
             textShadow: '2px 2px 6px rgba(56, 249, 215, 0.15)',
             letterSpacing: '0.08rem',
             fontSize: { xs: '1.5rem', sm: '2rem', md: '2.5rem' },
@@ -255,18 +263,36 @@ const TableUser = () => {
             }}
           />
         </Box>
-        <Box sx={{ display: 'flex', gap: 2, width: { xs: '100%', sm: 'auto' } }}>
+        <Box sx={{ display: 'flex', gap: { xs: 1, md: 2 }, flexDirection: 'row', width: { xs: '100%', sm: 'auto' } }}>
+          <Button
+            variant="outlined"
+            color="success"
+            onClick={() => navigate(-1)}
+            startIcon={<ArrowBackIcon />}
+            sx={{
+              borderRadius: '32px',
+              fontWeight: 600,
+              fontSize: { xs: '0.8rem', md: '1rem' },
+              px: { xs: 1.5, md: 3 },
+              py: { xs: 0.5, md: 1 },
+              minWidth: { xs: '120px', md: '160px' },
+              flex: { xs: 1, md: 'none' },
+            }}
+          >
+            Volver
+          </Button>
           <Button
             variant="contained"
             color="success"
             onClick={openCreateDialog}
             sx={{
               borderRadius: '32px',
-              fontWeight: 700,
-              fontSize: { xs: '0.9rem', md: '1.1rem', lg: '1.3rem' },
-              px: { xs: 2, md: 3, lg: 5 },
-              py: { xs: 1, md: 1.5, lg: 2 },
-              minWidth: { xs: '100%', sm: '180px', md: '220px' },
+              fontWeight: 600,
+              fontSize: { xs: '0.8rem', md: '1rem' },
+              px: { xs: 1.5, md: 3 },
+              py: { xs: 0.5, md: 1 },
+              minWidth: { xs: '120px', md: '160px' },
+              flex: { xs: 1, md: 'none' },
             }}
           >
             Agregar Usuario
@@ -288,13 +314,13 @@ const TableUser = () => {
       >
         <Table sx={{ minWidth: { xs: 320, sm: 650 } }}>
           <TableHead>
-            <TableRow sx={{ background: 'linear-gradient(90deg, #43e97b 0%, #38f9d7 100%)' }}>
-              <TableCell sx={{ color: '#00335c', fontWeight: 700, fontSize: { xs: '0.8rem', sm: '1rem', md: '1.1rem' }, borderTopLeftRadius: '16px', textAlign: 'center', p: { xs: 0.5, md: 2 } }}>#</TableCell>
-              <TableCell sx={{ color: '#00335c', fontWeight: 700, fontSize: { xs: '0.8rem', sm: '1rem', md: '1.1rem' }, textAlign: 'center', p: { xs: 0.5, md: 2 } }}>Nombre</TableCell>
-              <TableCell sx={{ color: '#00335c', fontWeight: 700, fontSize: { xs: '0.8rem', sm: '1rem', md: '1.1rem' }, textAlign: 'center', p: { xs: 0.5, md: 2 }, display: { xs: 'none', sm: 'table-cell' } }}>Correo</TableCell>
-              <TableCell sx={{ color: '#00335c', fontWeight: 700, fontSize: { xs: '0.8rem', sm: '1rem', md: '1.1rem' }, textAlign: 'center', p: { xs: 0.5, md: 2 }, display: { xs: 'none', md: 'table-cell' } }}>Rol</TableCell>
-              <TableCell sx={{ color: '#00335c', fontWeight: 700, fontSize: { xs: '0.8rem', sm: '1rem', md: '1.1rem' }, textAlign: 'center', p: { xs: 0.5, md: 2 } }}>Estado</TableCell>
-              <TableCell sx={{ color: '#00335c', fontWeight: 700, fontSize: { xs: '0.8rem', sm: '1rem', md: '1.1rem' }, borderTopRightRadius: '16px', textAlign: 'center', p: { xs: 0.5, md: 2 } }}>Acciones</TableCell>
+            <TableRow sx={{ background: 'rgba(32, 129, 38, 1) !important' }}>
+              <TableCell sx={{ color: '#ffffffff', fontWeight: 700, fontSize: { xs: '0.8rem', sm: '1rem', md: '1.1rem' }, borderTopLeftRadius: '16px', textAlign: 'center', p: { xs: 0.5, md: 2 } }}>#</TableCell>
+              <TableCell sx={{ color: '#ffffffff', fontWeight: 700, fontSize: { xs: '0.8rem', sm: '1rem', md: '1.1rem' }, textAlign: 'center', p: { xs: 0.5, md: 2 } }}>Nombre</TableCell>
+              <TableCell sx={{ color: '#ffffffff', fontWeight: 700, fontSize: { xs: '0.8rem', sm: '1rem', md: '1.1rem' }, textAlign: 'center', p: { xs: 0.5, md: 2 }, display: { xs: 'none', sm: 'table-cell' } }}>Correo</TableCell>
+              <TableCell sx={{ color: '#ffffffff', fontWeight: 700, fontSize: { xs: '0.8rem', sm: '1rem', md: '1.1rem' }, textAlign: 'center', p: { xs: 0.5, md: 2 }, display: { xs: 'none', md: 'table-cell' } }}>Rol</TableCell>
+              <TableCell sx={{ color: '#ffffffff', fontWeight: 700, fontSize: { xs: '0.8rem', sm: '1rem', md: '1.1rem' }, textAlign: 'center', p: { xs: 0.5, md: 2 } }}>Estado</TableCell>
+              <TableCell sx={{ color: '#ffffffff', fontWeight: 700, fontSize: { xs: '0.8rem', sm: '1rem', md: '1.1rem' }, borderTopRightRadius: '16px', textAlign: 'center', p: { xs: 0.5, md: 2 } }}>Acciones</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -314,11 +340,27 @@ const TableUser = () => {
                     '&:hover': { background: '#b2dfdb' },
                   }}
                 >
-                  <TableCell sx={{ color: '#00335c', fontWeight: 600, textAlign: 'center', p: { xs: 0.5, md: 2 }, fontSize: { xs: '0.8rem', sm: '1rem' } }}>{index + 1}</TableCell>
-                  <TableCell sx={{ color: '#00335c', fontWeight: 500, textAlign: 'center', p: { xs: 0.5, md: 2 }, fontSize: { xs: '0.8rem', sm: '1rem' } }}>{user.name}</TableCell>
-                  <TableCell sx={{ color: '#00335c', fontWeight: 500, textAlign: 'center', p: { xs: 0.5, md: 2 }, fontSize: { xs: '0.8rem', sm: '1rem' }, display: { xs: 'none', sm: 'table-cell' } }}>{user.mail}</TableCell>
-                  <TableCell sx={{ color: '#00335c', fontWeight: 500, textAlign: 'center', p: { xs: 0.5, md: 2 }, fontSize: { xs: '0.8rem', sm: '1rem' }, display: { xs: 'none', md: 'table-cell' } }}>{user.role}</TableCell>
-                  <TableCell sx={{ color: user.state === 'activo' ? '#388e3c' : '#d32f2f', fontWeight: 700, textAlign: 'center', p: { xs: 0.5, md: 2 }, fontSize: { xs: '0.8rem', sm: '1rem' } }}>{user.state}</TableCell>
+                  <TableCell sx={{ color: '#1b5e20', fontWeight: 600, textAlign: 'center', p: { xs: 0.5, md: 2 }, fontSize: { xs: '0.8rem', sm: '1rem' } }}>{index + 1}</TableCell>
+                  <TableCell sx={{ color: '#1b5e20', fontWeight: 500, textAlign: 'center', p: { xs: 0.5, md: 2 }, fontSize: { xs: '0.8rem', sm: '1rem' } }}>{user.name}</TableCell>
+                  <TableCell sx={{ color: '#1b5e20', fontWeight: 500, textAlign: 'center', p: { xs: 0.5, md: 2 }, fontSize: { xs: '0.8rem', sm: '1rem' }, display: { xs: 'none', sm: 'table-cell' } }}>{user.mail}</TableCell>
+                  <TableCell sx={{ color: '#1b5e20', fontWeight: 500, textAlign: 'center', p: { xs: 0.5, md: 2 }, fontSize: { xs: '0.8rem', sm: '1rem' }, display: { xs: 'none', md: 'table-cell' } }}>{user.role}</TableCell>
+                  <TableCell sx={{ textAlign: 'center', p: { xs: 0.5, md: 2 } }}>
+                    <Box
+                      sx={{
+                        display: 'inline-block',
+                        px: 1.5,
+                        py: 0.5,
+                        borderRadius: '12px',
+                        backgroundColor: user.state?.trim().toLowerCase() === 'activo' ? '#4caf50' : '#f44336',
+                        color: '#fff',
+                        fontWeight: 700,
+                        fontSize: { xs: '0.7rem', md: '0.9rem' },
+                        textTransform: 'uppercase',
+                      }}
+                    >
+                      {capitalizeFirstLetter(user.state)}
+                    </Box>
+                  </TableCell>
                   <TableCell sx={{ textAlign: 'center', p: { xs: 0.5, md: 2 } }}>
                     <Box sx={{ display: 'flex', gap: { xs: 0.5, sm: 1 }, justifyContent: 'center', flexWrap: { xs: 'wrap', sm: 'nowrap' } }}>
                       <Tooltip title="Editar usuario">
@@ -393,8 +435,8 @@ const TableUser = () => {
         <DialogTitle
           className="user-management-dialog-title"
           sx={{
-            background: 'linear-gradient(135deg, #a5d6a7 0%, #81c784 100%)',
-            color: '#1b5e20',
+            background: 'rgba(32, 129, 38, 1) !important',
+            color: '#ffffffff',
             display: 'flex',
             alignItems: 'center',
             fontWeight: 700,
@@ -408,7 +450,7 @@ const TableUser = () => {
             gap: { xs: 1, sm: 0 }
           }}
         >
-          <PersonIcon sx={{ mr: { xs: 0, sm: 2 }, fontSize: { xs: 28, sm: 36 }, color: '#1b5e20' }} />
+          <PersonIcon sx={{ mr: { xs: 0, sm: 2 }, fontSize: { xs: 28, sm: 36 }, color: '#fcfcfcff' }} />
           {dialogMode === 'create' ? 'Crear Nuevo Usuario' : 'Editar Usuario'}
         </DialogTitle>
         <DialogContent 
@@ -599,8 +641,8 @@ const TableUser = () => {
             startIcon={dialogMode === 'create' ? <PersonIcon /> : <EditIcon />}
             className="user-management-btn-save"
             sx={{
-              background: 'linear-gradient(135deg, #a5d6a7 0%, #81c784 100%)',
-              color: '#1b5e20',
+              background: 'rgba(32, 129, 38, 1) !important',
+              color: '#ffffffff',
               borderRadius: '16px',
               fontWeight: 600,
               fontSize: { xs: '0.95rem', sm: '1rem', md: '1.1rem' },
