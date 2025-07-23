@@ -4,7 +4,7 @@ import MotionComponent from '../../components/motions/motionComponent.jsx';
 const PageMotions = () => {
   return (
     <Container maxWidth="lg">
-      <Box sx={{ my: 4 }}>
+      <Box>
         <Typography variant="h4" component="h1" gutterBottom>
         </Typography>
         <MotionComponent />

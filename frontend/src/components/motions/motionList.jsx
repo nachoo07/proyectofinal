@@ -46,8 +46,6 @@ const MotionList = ({ onEdit, onDelete }) => {
   return (
     <Box
       sx={{
-       
-        minHeight: '100vh',
         p: { xs: 1, md: 2, lg: 2 },
         display: 'flex',
         flexDirection: 'column',
@@ -83,7 +81,6 @@ const MotionList = ({ onEdit, onDelete }) => {
           <TableContainer
             component={Paper}
             sx={{
-              mb: 4,
               borderRadius: '16px',
               boxShadow: '0 6px 24px rgba(67, 233, 123, 0.10)',
               overflow: 'auto',
@@ -308,7 +305,6 @@ const MotionList = ({ onEdit, onDelete }) => {
               display: 'flex',
               justifyContent: 'center',
               gap: { xs: 0.5, md: 1 },
-              mb: 4,
               flexWrap: 'wrap',
               width: '100%',
               maxWidth: 1200,

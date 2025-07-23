@@ -145,8 +145,6 @@ const MotionComponent = () => {
 
   return (
     <>
-      
-
       <Box sx={{ p: 4, maxWidth: 1000, mx: 'auto' }}>
          <Box
         sx={{
