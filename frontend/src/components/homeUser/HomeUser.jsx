@@ -11,8 +11,8 @@ const HomeUser = () => {
   const textColor = '#1b5e20';
 
   const sections = [
-    { title: 'Asistencias', route: '/attendance', icon: <FaUserCheck size={30} color={textColor} /> },
-    { title: 'Notificaciones', route: '/notifications', icon: <FaBell size={30} color={textColor} /> },
+    { title: 'Asistencias', route: '/attendance', icon: <FaUserCheck size={40} color={textColor} /> },
+    { title: 'Notificaciones', route: '/notifications', icon: <FaBell size={40} color={textColor} /> },
   ];
 
   const containerVariants = {
@@ -61,11 +61,36 @@ const HomeUser = () => {
                 <Card
                   onClick={() => navigate(section.route)}
                   className="user-dashboard-card"
+                  style={{
+                    minWidth: '300px',
+                    height: '200px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    borderRadius: '16px',
+                    boxShadow: '0 6px 24px rgba(67, 233, 123, 0.15)',
+                    backgroundColor: '#fff',
+                    cursor: 'pointer',
+                  }}
                 >
-                  <div className="user-dashboard-icon">
+                  <div
+                    className="user-dashboard-icon"
+                    style={{
+                      marginBottom: '16px',
+                    }}
+                  >
                     {section.icon}
                   </div>
-                  <Card.Title className="user-dashboard-card-title">
+                  <Card.Title
+                    className="user-dashboard-card-title"
+                    style={{
+                      fontSize: '1.5rem',
+                      fontWeight: 600,
+                      color: textColor,
+                      textAlign: 'center',
+                    }}
+                  >
                     {section.title}
                   </Card.Title>
                 </Card>

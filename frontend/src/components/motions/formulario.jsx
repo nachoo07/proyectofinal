@@ -86,7 +86,7 @@ const Formulario = ({ formData, setFormData, handleSubmit, isEditing, handleCanc
     <Card elevation={4} sx={{ maxWidth: 600, mx: "auto", mt: 4, borderRadius: 3 }}>
       <CardHeader
         title={isEditing ? "Editar Movimiento" : "Nuevo Movimiento"}
-        sx={{ backgroundColor: "#007F5F", color: "white", textAlign: "center" }}
+        sx={{ backgroundColor: "rgba(32, 129, 38, 1) !important", color: "white", textAlign: "center" }}
       />
       <CardContent>
         <Box component="form" onSubmit={submit} aria-label={isEditing ? "Formulario de edición" : "Formulario de nuevo movimiento"}>

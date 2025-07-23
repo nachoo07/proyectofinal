@@ -96,12 +96,12 @@ const MotionList = ({ onEdit, onDelete }) => {
               <TableHead>
                 <TableRow
                   sx={{
-                    background: 'linear-gradient(90deg, #43e97b 0%, #38f9d7 100%)',
+                    background: 'rgba(32, 129, 38, 1) !important',
                   }}
                 >
                   <TableCell
                     sx={{
-                      color: '#00335c',
+                      color: '#ffffffff',
                       fontWeight: 700,
                       fontSize: { xs: '0.75rem', md: '1.1rem' },
                       borderTopLeftRadius: '16px',
@@ -113,7 +113,7 @@ const MotionList = ({ onEdit, onDelete }) => {
                   </TableCell>
                   <TableCell
                     sx={{
-                      color: '#00335c',
+                      color: '#ffffffff',
                       fontWeight: 700,
                       fontSize: { xs: '0.75rem', md: '1.1rem' },
                       textAlign: 'center',
@@ -124,7 +124,7 @@ const MotionList = ({ onEdit, onDelete }) => {
                   </TableCell>
                   <TableCell
                     sx={{
-                      color: '#00335c',
+                      color: '#ffffffff',
                       fontWeight: 700,
                       fontSize: { xs: '0.75rem', md: '1.1rem' },
                       textAlign: 'center',
@@ -135,7 +135,7 @@ const MotionList = ({ onEdit, onDelete }) => {
                   </TableCell>
                   <TableCell
                     sx={{
-                      color: '#00335c',
+                      color: '#ffffffff',
                       fontWeight: 700,
                       fontSize: { xs: '0.75rem', md: '1.1rem' },
                       textAlign: 'center',
@@ -146,7 +146,7 @@ const MotionList = ({ onEdit, onDelete }) => {
                   </TableCell>
                   <TableCell
                     sx={{
-                      color: '#00335c',
+                      color: '#ffffffff',
                       fontWeight: 700,
                       fontSize: { xs: '0.75rem', md: '1.1rem' },
                       textAlign: 'center',
@@ -157,7 +157,7 @@ const MotionList = ({ onEdit, onDelete }) => {
                   </TableCell>
                   <TableCell
                     sx={{
-                      color: '#00335c',
+                      color: '#ffffffff',
                       fontWeight: 700,
                       fontSize: { xs: '0.75rem', md: '1.1rem' },
                       borderTopRightRadius: '16px',
