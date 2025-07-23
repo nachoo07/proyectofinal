@@ -377,7 +377,7 @@ const StudentTable = () => {
                   </TableCell>
                   <TableCell
                     sx={{
-                      color: '#1b5e20',
+                      color: '#ffffffff',
                       fontWeight: 500,
                       textAlign: 'center',
                       fontSize: { xs: '0.75rem', md: '1rem' },

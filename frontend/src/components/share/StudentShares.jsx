@@ -25,6 +25,8 @@ import { toast } from 'react-toastify';
 import CancelIcon from '@mui/icons-material/Cancel'; // Importado para el botón Cancelar
 import { calculateDueDate } from '../../utils/dateUtils';
 
+
+
 const getShareStatusAndAmount = (share, today) => {
   if (!share.date) return { state: 'Sin Cuota', amount: 0 };
   const dueDate = new Date(calculateDueDate(share.date));
@@ -282,7 +284,7 @@ const StudentShares = ({ studentId, onBack }) => {
           width: '100%',
           mb: { xs: 2, md: 4 },
           p: { xs: 1, md: 2 },
-          background: 'linear-gradient(90deg, #43e97b 0%, #38f9d7 100%)',
+          background: '#f1f1f1ff',
           borderRadius: '16px',
           boxShadow: '0 6px 24px rgba(67, 233, 123, 0.15)',
           transition: 'transform 0.3s',
@@ -295,7 +297,7 @@ const StudentShares = ({ studentId, onBack }) => {
           variant="h3"
           sx={{
             fontWeight: 800,
-            color: '#00335c',
+            color: 'rgba(32, 129, 38, 1)',
             textShadow: '2px 2px 6px rgba(56, 249, 215, 0.15)',
             letterSpacing: '0.08rem',
             fontSize: { xs: '1.5rem', sm: '2rem', md: '2.5rem' },
@@ -375,8 +377,8 @@ const StudentShares = ({ studentId, onBack }) => {
               px: { xs: 2, md: 3, lg: 5 }, 
               py: { xs: 1, md: 1.5, lg: 2 }, 
               minWidth: { xs: '100%', sm: '180px', md: '220px' }, 
-              color: '#00335c', 
-              borderColor: '#00335c', 
+              color: '#1b5e20', 
+              borderColor: '#1b5e20', 
               '&:hover': { backgroundColor: 'rgba(142, 234, 177, 0.1)', borderColor: '#8eeab1' } 
             }}
           >
@@ -398,13 +400,13 @@ const StudentShares = ({ studentId, onBack }) => {
       >
         <Table sx={{ minWidth: { xs: 320, sm: 650 } }}>
           <TableHead>
-            <TableRow sx={{ background: 'linear-gradient(90deg, #43e97b 0%, #38f9d7 100%)' }}>
-              <TableCell sx={{ color: '#00335c', fontWeight: 700, fontSize: { xs: '0.8rem', sm: '1rem', md: '1.1rem' }, borderTopLeftRadius: '16px', textAlign: 'center', p: { xs: 0.5, md: 2 } }}>Cuota</TableCell>
-              <TableCell sx={{ color: '#00335c', fontWeight: 700, fontSize: { xs: '0.8rem', sm: '1rem', md: '1.1rem' }, textAlign: 'center', p: { xs: 0.5, md: 2 } }}>Monto</TableCell>
-              <TableCell sx={{ color: '#00335c', fontWeight: 700, fontSize: { xs: '0.8rem', sm: '1rem', md: '1.1rem' }, textAlign: 'center', p: { xs: 0.5, md: 2 }, display: { xs: 'none', sm: 'table-cell' } }}>Fecha de Pago</TableCell>
-              <TableCell sx={{ color: '#00335c', fontWeight: 700, fontSize: { xs: '0.8rem', sm: '1rem', md: '1.1rem' }, textAlign: 'center', p: { xs: 0.5, md: 2 }, display: { xs: 'none', md: 'table-cell' } }}>Método de Pago</TableCell>
-              <TableCell sx={{ color: '#00335c', fontWeight: 700, fontSize: { xs: '0.8rem', sm: '1rem', md: '1.1rem' }, textAlign: 'center', p: { xs: 0.5, md: 2 } }}>Estado</TableCell>
-              <TableCell sx={{ color: '#00335c', fontWeight: 700, fontSize: { xs: '0.8rem', sm: '1rem', md: '1.1rem' }, borderTopRightRadius: '16px', textAlign: 'center', p: { xs: 0.5, md: 2 } }}>Acciones</TableCell>
+            <TableRow sx={{ background: 'rgba(32, 129, 38, 1) !important' }}>
+              <TableCell sx={{ color: '#ffffffff', fontWeight: 700, fontSize: { xs: '0.8rem', sm: '1rem', md: '1.1rem' }, borderTopLeftRadius: '16px', textAlign: 'center', p: { xs: 0.5, md: 2 } }}>Cuota</TableCell>
+              <TableCell sx={{ color: '#ffffffff', fontWeight: 700, fontSize: { xs: '0.8rem', sm: '1rem', md: '1.1rem' }, textAlign: 'center', p: { xs: 0.5, md: 2 } }}>Monto</TableCell>
+              <TableCell sx={{ color: '#ffffffff', fontWeight: 700, fontSize: { xs: '0.8rem', sm: '1rem', md: '1.1rem' }, textAlign: 'center', p: { xs: 0.5, md: 2 }, display: { xs: 'none', sm: 'table-cell' } }}>Fecha de Pago</TableCell>
+              <TableCell sx={{ color: '#ffffffff', fontWeight: 700, fontSize: { xs: '0.8rem', sm: '1rem', md: '1.1rem' }, textAlign: 'center', p: { xs: 0.5, md: 2 }, display: { xs: 'none', md: 'table-cell' } }}>Método de Pago</TableCell>
+              <TableCell sx={{ color: '#ffffffff', fontWeight: 700, fontSize: { xs: '0.8rem', sm: '1rem', md: '1.1rem' }, textAlign: 'center', p: { xs: 0.5, md: 2 } }}>Estado</TableCell>
+              <TableCell sx={{ color: '#ffffffff', fontWeight: 700, fontSize: { xs: '0.8rem', sm: '1rem', md: '1.1rem' }, borderTopRightRadius: '16px', textAlign: 'center', p: { xs: 0.5, md: 2 } }}>Acciones</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -424,11 +426,11 @@ const StudentShares = ({ studentId, onBack }) => {
                     '&:hover': { background: '#b2dfdb' },
                   }}
                 >
-                  <TableCell sx={{ color: '#00335c', fontWeight: 500, textAlign: 'center', p: { xs: 0.5, md: 2 }, fontSize: { xs: '0.8rem', sm: '1rem' } }}>{share.quota_name || '-'}</TableCell>
-                  <TableCell sx={{ color: '#00335c', fontWeight: 500, textAlign: 'center', p: { xs: 0.5, md: 2 }, fontSize: { xs: '0.8rem', sm: '1rem' } }}>${(Number(share.amount) || 0).toFixed(2)}</TableCell>
-                  <TableCell sx={{ color: '#00335c', fontWeight: 500, textAlign: 'center', p: { xs: 0.5, md: 2 }, fontSize: { xs: '0.8rem', sm: '1rem' }, display: { xs: 'none', sm: 'table-cell' } }}>{share.paymentdate_actual || '-'}</TableCell>
-                  <TableCell sx={{ color: '#00335c', fontWeight: 500, textAlign: 'center', p: { xs: 0.5, md: 2 }, fontSize: { xs: '0.8rem', sm: '1rem' }, display: { xs: 'none', md: 'table-cell' } }}>{share.paymentmethod || '-'}</TableCell>
-                  <TableCell sx={{ color: '#00335c', fontWeight: 500, textAlign: 'center', p: { xs: 0.5, md: 2 }, fontSize: { xs: '0.8rem', sm: '1rem' } }}>{share.state}</TableCell>
+                  <TableCell sx={{ color: '#1b5e20', fontWeight: 500, textAlign: 'center', p: { xs: 0.5, md: 2 }, fontSize: { xs: '0.8rem', sm: '1rem' } }}>{share.quota_name || '-'}</TableCell>
+                  <TableCell sx={{ color: '#1b5e20', fontWeight: 500, textAlign: 'center', p: { xs: 0.5, md: 2 }, fontSize: { xs: '0.8rem', sm: '1rem' } }}>${(Number(share.amount) || 0).toFixed(2)}</TableCell>
+                  <TableCell sx={{ color: '#1b5e20', fontWeight: 500, textAlign: 'center', p: { xs: 0.5, md: 2 }, fontSize: { xs: '0.8rem', sm: '1rem' }, display: { xs: 'none', sm: 'table-cell' } }}>{share.paymentdate_actual || '-'}</TableCell>
+                  <TableCell sx={{ color: '#1b5e20', fontWeight: 500, textAlign: 'center', p: { xs: 0.5, md: 2 }, fontSize: { xs: '0.8rem', sm: '1rem' }, display: { xs: 'none', md: 'table-cell' } }}>{share.paymentmethod || '-'}</TableCell>
+                  <TableCell sx={{ color: '#1b5e20', fontWeight: 500, textAlign: 'center', p: { xs: 0.5, md: 2 }, fontSize: { xs: '0.8rem', sm: '1rem' } }}>{share.state}</TableCell>
                   <TableCell sx={{ textAlign: 'center', p: { xs: 0.5, md: 2 } }}>
                     <Box sx={{ display: 'flex', flexDirection: 'row', gap: { xs: 0.5, sm: 1 }, alignItems: 'center', justifyContent: 'center' }}>
                       <Button
