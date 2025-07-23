@@ -1,173 +1,242 @@
+/* Contenedor principal */
 .app-container {
   min-height: 100vh;
-  background: linear-gradient(135deg, #e0f7fa 0%, #f1f8e9 100%);
-  display: block; /* Cambia flex por block */
-  padding: 40px 0;
-  width: 100vw; /* Ocupa todo el ancho de la ventana */
-}
-
-.content-container {
-  background: #fff;
-  border-radius: 18px;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.08);
-  padding: 32px 40px;
-  width: 100%; /* Ocupa todo el ancho disponible */
-  max-width: none; /* Elimina el límite de ancho */
-  min-width: 0;    /* Elimina el mínimo */
-  margin: 0 auto;  /* Centra el contenido si hay espacio extra */
+  background: linear-gradient(135deg, #e8f5e9 0%, #b2dfdb 100%);
+  display: block;
+  padding: 24px 0;
+  width: 100vw;
   box-sizing: border-box;
 }
-h1 {
+.app-container h1 {
   text-align: center;
-  color: #007F5F;
+  color: #1b5e20;
   font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: 0.08rem;
   margin-bottom: 32px;
-  font-weight: 700;
+}
+/* Contenedor de contenido */
+.content-container {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 6px 24px rgba(67, 233, 123, 0.10);
+  padding: 24px 32px;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  box-sizing: border-box;
 }
 
+/* Título */
+h1 {
+  text-align: center;
+  color: #1b5e20;
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: 0.08rem;
+  margin-bottom: 32px;
+  
+}
+
+/* Selección de categoría y botón Volver */
 .category-selection {
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: row;
   gap: 12px;
   justify-content: center;
-  margin-bottom: 28px;
+  align-items: center;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
 }
 
 .category-button {
-  background: #e0f2f1;
-  color: #007F5F;
-  border: none;
-  border-radius: 8px;
-  padding: 8px 18px;
-  font-size: 1rem;
+  background: #05a8be;
+  color:rgb(243, 242, 247);
+  border: 1px solid #38f9d7;
+  border-radius: 12px;
+  padding: 8px 16px;
+  font-size: 0.875rem;
+  font-weight: 700;
   cursor: pointer;
-  transition: background 0.2s, color 0.2s;
-  font-weight: 500;
+  transition: background-color 0.2s, border-color 0.2s, color 0.2s;
+  min-width: 100px;
 }
 
-.category-button.selected,
 .category-button:hover {
-  background: #007F5F;
-  color: #fff;
+  border-color: #4bcfa5;
+  background: rgba(5, 100, 190, 0.8);
 }
 
+.category-button.selected {
+  background: #4caf50;
+  color: #ffffff;
+  border-color: #4caf50;
+}
+
+.attendance-back-btn {
+  margin-top: 16px;
+  text-align: center;
+  background: #107817;
+  color: #f3f5f3;
+  border: 1px solid #1b5e20;
+  border-radius: 32px;
+  padding: 8px 24px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s, border-color 0.2s;
+  min-width: 80px;
+  display: inline-block;
+  margin: 16px auto;
+  display: flex;
+  justify-content: center;
+}
+
+.attendance-back-btn:hover {
+  background: #004f1b;
+  border-color: #43e97b;
+}
+
+/* Sección de asistencia */
 .attendance-section {
   margin-top: 16px;
 }
 
+/* Encabezado de asistencia (DatePicker y botón Hoy) */
 .attendance-header {
   display: flex;
   align-items: center;
   gap: 16px;
-  margin-bottom: 18px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
 .attendance-date-input {
-  border-radius: 6px;
-  border: 1px solid #b2dfdb;
-  padding: 6px 12px;
-  font-size: 1rem;
+  border-radius: 12px;
+  border: 1px solid #38f9d7;
+  padding: 8px 16px;
+  font-size: 0.875rem;
+  color: #1b5e20;
+  background: #fff;
+  font-weight: 600;
   outline: none;
-  transition: border 0.2s;
+  transition: border-color 0.2s;
+  min-width: 160px;
 }
 
 .attendance-date-input:focus {
-  border-color: #007F5F;
+  border-color: #43e97b;
 }
 
 .attendance-today-btn {
-  background: #007F5F;
+  background: #4caf50;
   color: #fff;
   border: none;
-  border-radius: 6px;
-  padding: 6px 16px;
-  font-size: 1rem;
+  border-radius: 32px;
+  padding: 8px 24px;
+  font-size: 0.875rem;
+  font-weight: 600;
   cursor: pointer;
-  font-weight: 500;
-  transition: background 0.2s;
+  transition: background-color 0.2s;
 }
 
 .attendance-today-btn:hover {
-  background: #005f46;
+  background: #388e3c;
 }
 
+/* Tabla de asistencia */
 .attendance-table {
   width: 100%;
   border-collapse: collapse;
-  margin-bottom: 18px;
-  background: #f9fbe7;
-  border-radius: 10px;
+  margin-bottom: 24px;
+  background: #e8f5e9;
+  border-radius: 16px;
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  box-shadow: 0 6px 24px rgba(67, 233, 123, 0.10);
 }
 
 .attendance-table th,
 .attendance-table td {
-  padding: 12px 10px;
+  padding: 8px 12px;
   text-align: center;
-  font-size: 1rem;
+  font-size: 0.875rem;
+  color: #1b5e20;
 }
 
 .attendance-table th {
-  background: #007F5F;
-  color: #fff;
-  font-weight: 600;
+  background: #e8f5e9;
+  font-weight: 700;
+  font-size: 1rem;
 }
 
 .attendance-table tr:nth-child(even) {
-  background: #e0f2f1;
+  background: #f8fafc;
 }
 
 .attendance-table tr:nth-child(odd) {
-  background: #f9fbe7;
+  background: #e0f7fa;
 }
 
+.attendance-table tr:hover {
+  background: #b2dfdb;
+}
+
+/* Checkboxes */
 .activated-checkbox {
-  accent-color: #007F5F;
-  width: 20px;
-  height: 20px;
+  accent-color: #4caf50;
+  width: 18px;
+  height: 18px;
   cursor: pointer;
 }
 
 .disabled-checkbox {
   accent-color: #bdbdbd;
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
   cursor: not-allowed;
 }
 
+/* Botones de acciones */
 .attendance-buttons {
   display: flex;
   gap: 12px;
   justify-content: flex-end;
   margin-top: 16px;
+  flex-wrap: wrap;
 }
 
 .attendance-save-btn,
 .attendance-edit-btn,
 .attendance-update-btn,
 .attendance-cancel-btn {
-  background: #007F5F;
-  color: #fff;
   border: none;
-  border-radius: 6px;
-  padding: 8px 18px;
-  font-size: 1rem;
+  border-radius: 32px;
+  padding: 8px 24px;
+  font-size: 0.875rem;
+  font-weight: 600;
   cursor: pointer;
-  font-weight: 500;
-  transition: background 0.2s;
+  transition: background-color 0.2s;
+}
+
+.attendance-save-btn {
+  background: #4caf50;
+  color: #fff;
 }
 
 .attendance-edit-btn {
   background: #0288d1;
+  color: #fff;
 }
 
 .attendance-update-btn {
   background: #388e3c;
+  color: #fff;
 }
 
 .attendance-cancel-btn {
   background: #d32f2f;
+  color: #fff;
 }
 
 .attendance-save-btn:hover,
@@ -177,9 +246,65 @@ h1 {
   filter: brightness(0.92);
 }
 
+/* Mensaje de no estudiantes */
 .no-students-message {
   text-align: center;
-  color: #757575;
-  font-size: 1.1rem;
+  color: #1b5e20;
+  font-size: 1rem;
+  font-weight: 600;
   margin: 24px 0;
+}
+
+/* Media queries para responsividad */
+@media (max-width: 600px) {
+  .app-container {
+    padding: 16px 0;
+  }
+
+  .content-container {
+    padding: 16px;
+  }
+
+  h1 {
+    font-size: 1.5rem;
+  }
+
+  .category-button,
+  .attendance-date-input,
+  .attendance-today-btn,
+  .attendance-back-btn {
+    font-size: 0.75rem;
+    padding: 6px 12px;
+    min-width: 80px;
+  }
+
+  .attendance-table th,
+  .attendance-table td {
+    font-size: 0.75rem;
+    padding: 6px 8px;
+  }
+
+  .attendance-save-btn,
+  .attendance-edit-btn,
+  .attendance-update-btn,
+  .attendance-cancel-btn {
+    font-size: 0.75rem;
+    padding: 6px 16px;
+  }
+
+  .no-students-message {
+    font-size: 0.875rem;
+  }
+}
+
+@media (max-width: 960px) {
+  .category-selection {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .attendance-header {
+    flex-direction: column;
+    align-items: center;
+  }
 }

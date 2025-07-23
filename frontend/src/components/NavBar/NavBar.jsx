@@ -22,7 +22,7 @@ const NavBar = () => {
   const [currentSubmenu, setCurrentSubmenu] = useState(null);
   const isMobileMenuOpen = Boolean(mobileMenuAnchorEl);
   const isSubmenuOpen = Boolean(submenuAnchorEl);
-  const { logout, userData } = useContext(LoginContext);
+  const { logout, userData, auth } = useContext(LoginContext);
   const navigate = useNavigate();
   const location = useLocation();
   const theme = useTheme();
@@ -69,13 +69,24 @@ const NavBar = () => {
   const iconSize = isMobile ? 30 : 36;
   const mobileIconSize = 32;
 
-  const navItems = [
+  // Determinar si el usuario es admin - verificando múltiples posibles formas de almacenar el rol
+  const isAdmin = userData?.role === 'admin' || 
+                  userData?.type === 'admin' || 
+                  userData?.userType === 'admin' ||
+                  userData?.isAdmin === true ||
+                  auth === 'admin' ||
+                  localStorage.getItem('userRole') === 'admin' ||
+                  localStorage.getItem('userType') === 'admin' ||
+                  localStorage.getItem('auth') === 'admin';
+
+  // Items de navegación completos para admin
+  const adminNavItems = [
     { text: 'Todos', icon: <HomeIcon sx={{ fontSize: iconSize }} />, url: '/' },
     {
       text: 'Principal',
       icon: <PrincipalIcon sx={{ fontSize: iconSize }} />,
       submenu: [
-        { text: 'Alumnos', url: '/students', icon: <PeopleIcon sx={{ fontSize: iconSize }} /> },
+        { text: 'Estudiantes', url: '/students', icon: <PeopleIcon sx={{ fontSize: iconSize }} /> },
         { text: 'Asistencia', url: '/attendance', icon: <AsistenciaIcon sx={{ fontSize: iconSize }} /> },
         { text: 'Profesores', icon: <ProfesoresIcon sx={{ fontSize: iconSize }} />, url: '/teachers' },
       ],
@@ -87,12 +98,22 @@ const NavBar = () => {
       submenu: [
         { text: 'Cuotas', url: '/shares', icon: <CuotasIcon sx={{ fontSize: iconSize }} /> },
         { text: 'Movimientos', url: '/motions', icon: <MovimientosIcon sx={{ fontSize: iconSize }} /> },
-        { text: 'Informes', icon: <InformesIcon sx={{ fontSize: iconSize }} />, url: '/reports' },
+        { text: 'Reportes', icon: <InformesIcon sx={{ fontSize: iconSize }} />, url: '/reports' },
       ],
     },
     { text: 'Notificaciones', icon: <NotificacionesIcon sx={{ fontSize: iconSize }} />, url: '/notifications' },
     { text: 'Configuración', icon: <ConfiguracionIcon sx={{ fontSize: iconSize }} />, url: '/settings' },
   ];
+
+  // Items de navegación limitados para usuarios normales
+  const userNavItems = [
+    { text: 'Todos', icon: <HomeIcon sx={{ fontSize: iconSize }} />, url: '/' },
+    { text: 'Asistencia', icon: <AsistenciaIcon sx={{ fontSize: iconSize }} />, url: '/attendance' },
+    { text: 'Notificaciones', icon: <NotificacionesIcon sx={{ fontSize: iconSize }} />, url: '/notifications' },
+  ];
+
+  // Seleccionar los items según el rol del usuario
+  const navItems = isAdmin ? adminNavItems : userNavItems;
 
   return (
     <AppBar position="static" elevation={2} sx={{

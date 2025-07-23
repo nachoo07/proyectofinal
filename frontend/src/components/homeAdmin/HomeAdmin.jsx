@@ -11,19 +11,18 @@ import './homeAdmin.css';
 const HomeAdmin = () => {
   const navigate = useNavigate();
 
-  // Paleta de colores consistente
   const textColor = '#1b5e20';
 
   const sections = [
-    { title: 'Estudiantes', route: '/students', icon: <FaUserGraduate size={40} color={textColor} /> },
-        { title: 'Cuotas', route: '/shares', icon: <FaMoneyBillWave size={40} color={textColor} /> },
-    { title: 'Usuarios', route: '/user', icon: <FaUsers size={40} color={textColor} /> },
-    { title: 'Profesores', route: '/teachers', icon: <FaChalkboardTeacher size={40} color={textColor} /> },
-    { title: 'Configuración', route: '/settings', icon: <FaCogs size={40} color={textColor} /> },
-    { title: 'Reportes', route: '/reports', icon: <FaChartBar size={40} color={textColor} /> },
-    { title: 'Notificaciones', route: '/notifications', icon: <FaBell size={40} color={textColor} /> },
-    { title: 'Movimientos', route: '/motions', icon: <FaExchangeAlt size={40} color={textColor} /> },
-    { title: 'Asistencia', route: '/attendance', icon: <FaExchangeAlt size={40} color={textColor} /> },
+    { title: 'Estudiantes', route: '/students', icon: <FaUserGraduate size={30} color={textColor} /> },
+    { title: 'Cuotas', route: '/shares', icon: <FaMoneyBillWave size={30} color={textColor} /> },
+    { title: 'Usuarios', route: '/user', icon: <FaUsers size={30} color={textColor} /> },
+    { title: 'Profesores', route: '/teachers', icon: <FaChalkboardTeacher size={30} color={textColor} /> },
+    { title: 'Configuración', route: '/settings', icon: <FaCogs size={30} color={textColor} /> },
+    { title: 'Reportes', route: '/reports', icon: <FaChartBar size={30} color={textColor} /> },
+    { title: 'Notificaciones', route: '/notifications', icon: <FaBell size={30} color={textColor} /> },
+    { title: 'Movimientos', route: '/motions', icon: <FaExchangeAlt size={30} color={textColor} /> },
+    { title: 'Asistencia', route: '/attendance', icon: <FaUserCheck size={30} color={textColor} /> },
   ];
 
   const containerVariants = {
@@ -57,8 +56,6 @@ const HomeAdmin = () => {
         animate="visible"
       >
         <h1 className="admin-dashboard-title">Panel de Administración</h1>
-
-        
         <div className="admin-dashboard-grid">
           {sections.map((section, idx) => (
             <div key={idx} className="admin-dashboard-item">

@@ -25,7 +25,7 @@ import {
 } from '@mui/material';
 import { SharesContext } from '../../context/share/ShareContext';
 import { toast } from 'react-toastify';
-import CancelIcon from '@mui/icons-material/Cancel'; // Importación añadida
+import CancelIcon from '@mui/icons-material/Cancel';
 import { calculateDueDate } from '../../utils/dateUtils';
 
 const Share = () => {
@@ -47,11 +47,14 @@ const Share = () => {
   });
   const [filters, setFilters] = useState({
     all: true,
-    pendiente: true,
-    vencido: true,
-    pagado: true,
-    sinCuotas: true,
+    pendiente: false,
+    vencido: false,
+    pagado: false,
+    sinCuotas: false,
   });
+  const [currentPage, setCurrentPage] = useState(1);
+  const studentsPerPage = 5;
+
   const navigate = useNavigate();
 
   const getLatestShareStatus = (studentId) => {
@@ -83,12 +86,22 @@ const Share = () => {
       .toLowerCase()
       .includes(searchQuery.toLowerCase());
     const matchesFilter =
-      (filters.all || filters.pendiente && status === 'Pendiente') ||
-      (filters.all || filters.vencido && status === 'Vencido') ||
-      (filters.all || filters.pagado && status === 'Pagado') ||
-      (filters.all || filters.sinCuotas && status === 'Sin Cuota');
+      filters.all ||
+      (filters.pendiente && status === 'Pendiente') ||
+      (filters.vencido && status === 'Vencido') ||
+      (filters.pagado && status === 'Pagado') ||
+      (filters.sinCuotas && status === 'Sin Cuota');
     return matchesSearch && matchesFilter;
   });
+
+  const totalPages = Math.ceil(filteredStudents.length / studentsPerPage);
+  const indexOfLastStudent = currentPage * studentsPerPage;
+  const indexOfFirstStudent = indexOfLastStudent - studentsPerPage;
+  const currentStudents = filteredStudents.slice(indexOfFirstStudent, indexOfLastStudent);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, filters]);
 
   useEffect(() => {
     fetchStudentsWithShares();
@@ -139,18 +152,31 @@ const Share = () => {
     if (name === 'all') {
       setFilters({
         all: checked,
-        pendiente: checked,
-        vencido: checked,
-        pagado: checked,
-        sinCuotas: checked,
+        pendiente: false,
+        vencido: false,
+        pagado: false,
+        sinCuotas: false,
       });
     } else {
       setFilters((prev) => {
         const newFilters = { ...prev, [name]: checked };
-        newFilters.all = Object.values(newFilters).slice(1).every((value) => value);
+        newFilters.all = false; // Desmarcar "Todos" si se selecciona un filtro específico
+        newFilters.all = newFilters.pendiente && newFilters.vencido && newFilters.pagado && newFilters.sinCuotas;
         return newFilters;
       });
     }
+  };
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) setCurrentPage(currentPage + 1);
+  };
+
+  const handlePrevPage = () => {
+    if (currentPage > 1) setCurrentPage(currentPage - 1);
+  };
+
+  const handlePageClick = (pageNum) => {
+    setCurrentPage(pageNum);
   };
 
   return (
@@ -165,7 +191,7 @@ const Share = () => {
         justifyContent: 'flex-start',
         boxSizing: 'border-box',
       }}
-      className="share-container"
+      className="main-container"
     >
       <Box
         sx={{
@@ -173,8 +199,8 @@ const Share = () => {
           alignItems: 'center',
           justifyContent: 'center',
           width: '100%',
-          mb: { xs: 2, md: 4 },
-          p: { xs: 1.5, md: 2 },
+          mb: 4,
+          p: 2,
           background: 'linear-gradient(90deg, #43e97b 0%, #38f9d7 100%)',
           borderRadius: '16px',
           boxShadow: '0 6px 24px rgba(67, 233, 123, 0.15)',
@@ -191,8 +217,8 @@ const Share = () => {
             color: '#00335c',
             textShadow: '2px 2px 6px rgba(56, 249, 215, 0.15)',
             letterSpacing: '0.08rem',
-            fontSize: { xs: '1.5rem', sm: '2rem', md: '2.5rem' },
-            textAlign: 'center'
+            fontSize: { xs: '1.5rem', sm: '2rem', md: '3rem' },
+            textAlign: 'center',
           }}
         >
           Panel de Cuotas
@@ -214,27 +240,29 @@ const Share = () => {
         <Box
           sx={{
             display: 'flex',
-            flexDirection: 'column',
-            gap: { xs: 2, md: 3 },
+            flexDirection: 'row',
+            gap: { xs: 1, md: 2 },
             flexGrow: 1,
-            width: '100%',
+            maxWidth: '900px',
             minWidth: '260px',
             background: '#fff',
             borderRadius: '12px',
             boxShadow: '0 2px 8px rgba(56, 249, 215, 0.08)',
-            p: { xs: 2, md: 2 },
-            alignItems: 'stretch',
+            p: { xs: 1, md: 2 },
+            alignItems: 'center',
             justifyContent: 'space-between',
+            flexWrap: 'wrap',
           }}
         >
-          {/* Buscador */}
           <TextField
             label="Buscar por nombre, apellido o DNI"
             value={searchQuery}
             onChange={handleSearchChange}
-            size={window.innerWidth < 768 ? "small" : "medium"}
             fullWidth
+            size={window.innerWidth < 768 ? 'small' : 'medium'}
             sx={{
+              flex: 1,
+              minWidth: { xs: '180px', md: '250px' },
               '& .MuiOutlinedInput-root': {
                 '& fieldset': { borderColor: '#38f9d7' },
                 '&:hover fieldset': { borderColor: '#43e97b' },
@@ -244,50 +272,75 @@ const Share = () => {
               '& .MuiInputLabel-root.Mui-focused': { color: '#43e97b' },
             }}
           />
-          
-          {/* Filtros */}
-          <Box sx={{ 
-            display: 'grid', 
-            gridTemplateColumns: { xs: 'repeat(2, 1fr)', sm: 'repeat(3, 1fr)', md: 'repeat(5, 1fr)' },
-            gap: { xs: 1, md: 2 }
-          }}>
-            <FormControlLabel
-              control={<Checkbox checked={filters.all} onChange={handleFilterChange} name="all" size="small" />}
-              label={<Typography sx={{ fontSize: { xs: '0.8rem', md: '0.9rem' } }}>Todos</Typography>}
-            />
-            <FormControlLabel
-              control={<Checkbox checked={filters.pendiente} onChange={handleFilterChange} name="pendiente" size="small" />}
-              label={<Typography sx={{ fontSize: { xs: '0.8rem', md: '0.9rem' } }}>Pendiente</Typography>}
-            />
-            <FormControlLabel
-              control={<Checkbox checked={filters.vencido} onChange={handleFilterChange} name="vencido" size="small" />}
-              label={<Typography sx={{ fontSize: { xs: '0.8rem', md: '0.9rem' } }}>Vencido</Typography>}
-            />
-            <FormControlLabel
-              control={<Checkbox checked={filters.pagado} onChange={handleFilterChange} name="pagado" size="small" />}
-              label={<Typography sx={{ fontSize: { xs: '0.8rem', md: '0.9rem' } }}>Pagado</Typography>}
-            />
-            <FormControlLabel
-              control={<Checkbox checked={filters.sinCuotas} onChange={handleFilterChange} name="sinCuotas" size="small" />}
-              label={<Typography sx={{ fontSize: { xs: '0.8rem', md: '0.9rem' } }}>Sin Cuotas</Typography>}
-            />
+          <Box sx={{ display: 'flex', gap: { xs: 1, md: 2 }, flexDirection: 'row', flexWrap: 'wrap' }}>
+            <Button
+              variant="contained"
+              color="success"
+              onClick={handleOpenMassShareDialog}
+              sx={{
+                borderRadius: '32px',
+                fontWeight: 700,
+                fontSize: { xs: '0.9rem', md: '1.3rem' },
+                px: { xs: 2, md: 5 },
+                py: { xs: 1, md: 2 },
+                minWidth: { xs: '140px', md: '220px' },
+              }}
+            >
+              Crear Cuota Masiva
+            </Button>
+            <Button
+              variant="outlined"
+              color="success"
+              onClick={() => navigate(-1)}
+              sx={{
+                borderRadius: '32px',
+                fontWeight: 700,
+                fontSize: { xs: '0.9rem', md: '1.3rem' },
+                px: { xs: 2, md: 5 },
+                py: { xs: 1, md: 2 },
+                minWidth: { xs: '140px', md: '220px' },
+              }}
+            >
+              Volver
+            </Button>
           </Box>
-          
-          {/* Botón */}
-          <Button
-            variant="contained"
-            color="success"
-            onClick={handleOpenMassShareDialog}
-            sx={{ 
-              borderRadius: '32px', 
-              fontWeight: 700, 
-              fontSize: { xs: '0.9rem', md: '1.3rem' },
-              py: { xs: 1, md: 1.5 },
-              px: { xs: 2, md: 3 }
-            }}
-          >
-            Crear Cuota Masiva
-          </Button>
+        </Box>
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'row',
+            gap: { xs: 0.5, md: 1 },
+            alignItems: 'center',
+            flexWrap: 'wrap',
+            background: 'transparent',
+            borderRadius: '12px',
+            boxShadow: '0 2px 8px rgba(56, 249, 215, 0.08)',
+            p: { xs: 1, md: 2 },
+            width: '100%',
+            maxWidth: '1200px',
+            justifyContent: 'center',
+          }}
+        >
+          <FormControlLabel
+            control={<Checkbox checked={filters.all} onChange={handleFilterChange} name="all" size="small" />}
+            label={<Typography sx={{ fontSize: { xs: '0.75rem', md: '1rem' } }}>Todos</Typography>}
+          />
+          <FormControlLabel
+            control={<Checkbox checked={filters.pendiente} onChange={handleFilterChange} name="pendiente" size="small" />}
+            label={<Typography sx={{ fontSize: { xs: '0.75rem', md: '1rem' } }}>Pendiente</Typography>}
+          />
+          <FormControlLabel
+            control={<Checkbox checked={filters.vencido} onChange={handleFilterChange} name="vencido" size="small" />}
+            label={<Typography sx={{ fontSize: { xs: '0.75rem', md: '1rem' } }}>Vencido</Typography>}
+          />
+          <FormControlLabel
+            control={<Checkbox checked={filters.pagado} onChange={handleFilterChange} name="pagado" size="small" />}
+            label={<Typography sx={{ fontSize: { xs: '0.75rem', md: '1rem' } }}>Pagado</Typography>}
+          />
+          <FormControlLabel
+            control={<Checkbox checked={filters.sinCuotas} onChange={handleFilterChange} name="sinCuotas" size="small" />}
+            label={<Typography sx={{ fontSize: { xs: '0.75rem', md: '1rem' } }}>Sin Cuotas</Typography>}
+          />
         </Box>
       </Box>
       <TableContainer
@@ -302,73 +355,86 @@ const Share = () => {
           mx: 'auto',
         }}
       >
-        <Table sx={{ minWidth: { xs: 300, md: 650 } }}>
+        <Table sx={{ minWidth: { xs: 320, md: 650 } }}>
           <TableHead>
             <TableRow sx={{ background: 'linear-gradient(90deg, #43e97b 0%, #38f9d7 100%)' }}>
-              <TableCell sx={{ 
-                color: '#00335c', 
-                fontWeight: 700, 
-                fontSize: { xs: '0.75rem', md: '1.1rem' }, 
-                borderTopLeftRadius: '16px', 
-                textAlign: 'center',
-                p: { xs: 0.5, md: 2 },
-                display: { xs: 'none', sm: 'table-cell' }
-              }}>#</TableCell>
-              <TableCell sx={{ 
-                color: '#00335c', 
-                fontWeight: 700, 
-                fontSize: { xs: '0.75rem', md: '1.1rem' }, 
-                textAlign: 'center',
-                p: { xs: 0.5, md: 2 }
-              }}>Nombre</TableCell>
-              <TableCell sx={{ 
-                color: '#00335c', 
-                fontWeight: 700, 
-                fontSize: { xs: '0.75rem', md: '1.1rem' }, 
-                textAlign: 'center',
-                p: { xs: 0.5, md: 2 },
-                display: { xs: 'none', sm: 'table-cell' }
-              }}>Apellido</TableCell>
-              <TableCell sx={{ 
-                color: '#00335c', 
-                fontWeight: 700, 
-                fontSize: { xs: '0.75rem', md: '1.1rem' }, 
-                textAlign: 'center',
-                p: { xs: 0.5, md: 2 },
-                display: { xs: 'none', md: 'table-cell' }
-              }}>DNI</TableCell>
-              <TableCell sx={{ 
-                color: '#00335c', 
-                fontWeight: 700, 
-                fontSize: { xs: '0.75rem', md: '1.1rem' }, 
-                textAlign: 'center',
-                p: { xs: 0.5, md: 2 }
-              }}>Estado</TableCell>
-              <TableCell sx={{ 
-                color: '#00335c', 
-                fontWeight: 700, 
-                fontSize: { xs: '0.75rem', md: '1.1rem' }, 
-                borderTopRightRadius: '16px', 
-                textAlign: 'center',
-                p: { xs: 0.5, md: 2 }
-              }}>Acciones</TableCell>
+              <TableCell
+                sx={{
+                  color: '#00335c',
+                  fontWeight: 700,
+                  fontSize: { xs: '0.75rem', md: '1.1rem' },
+                  borderTopLeftRadius: '16px',
+                  textAlign: 'center',
+                  p: { xs: 0.5, md: 2 },
+                }}
+              >
+                Nombre
+              </TableCell>
+              <TableCell
+                sx={{
+                  color: '#00335c',
+                  fontWeight: 700,
+                  fontSize: { xs: '0.75rem', md: '1.1rem' },
+                  textAlign: 'center',
+                  p: { xs: 0.5, md: 2 },
+                }}
+              >
+                Apellido
+              </TableCell>
+              <TableCell
+                sx={{
+                  color: '#00335c',
+                  fontWeight: 700,
+                  fontSize: { xs: '0.75rem', md: '1.1rem' },
+                  textAlign: 'center',
+                  p: { xs: 0.5, md: 2 },
+                }}
+              >
+                DNI
+              </TableCell>
+              <TableCell
+                sx={{
+                  color: '#00335c',
+                  fontWeight: 700,
+                  fontSize: { xs: '0.75rem', md: '1.1rem' },
+                  textAlign: 'center',
+                  p: { xs: 0.5, md: 2 },
+                }}
+              >
+                Estado
+              </TableCell>
+              <TableCell
+                sx={{
+                  color: '#00335c',
+                  fontWeight: 700,
+                  fontSize: { xs: '0.75rem', md: '1.1rem' },
+                  borderTopRightRadius: '16px',
+                  textAlign: 'center',
+                  p: { xs: 0.5, md: 2 },
+                }}
+              >
+                Acciones
+              </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {filteredStudents.length === 0 ? (
+            {currentStudents.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={6} sx={{ 
-                  textAlign: 'center', 
-                  color: '#00335c', 
-                  fontWeight: 600, 
-                  fontSize: { xs: '0.9rem', md: '1.1rem' }, 
-                  py: { xs: 2, md: 4 }
-                }}>
+                <TableCell
+                  colSpan={5}
+                  sx={{
+                    textAlign: 'center',
+                    color: '#00335c',
+                    fontWeight: 600,
+                    fontSize: { xs: '0.875rem', md: '1.1rem' },
+                    p: { xs: 1.5, md: 4 },
+                  }}
+                >
                   No se encontraron alumnos
                 </TableCell>
               </TableRow>
             ) : (
-              filteredStudents.map((student, index) => (
+              currentStudents.map((student, index) => (
                 <TableRow
                   key={student.id}
                   sx={{
@@ -377,75 +443,77 @@ const Share = () => {
                     '&:hover': { background: '#b2dfdb' },
                   }}
                 >
-                  <TableCell sx={{ 
-                    color: '#00335c', 
-                    fontWeight: 600, 
-                    textAlign: 'center',
-                    fontSize: { xs: '0.75rem', md: '1rem' },
-                    p: { xs: 0.5, md: 2 },
-                    display: { xs: 'none', sm: 'table-cell' }
-                  }}>{index + 1}</TableCell>
-                  <TableCell sx={{ 
-                    color: '#00335c', 
-                    fontWeight: 500, 
-                    textAlign: 'center',
-                    fontSize: { xs: '0.75rem', md: '1rem' },
-                    p: { xs: 0.5, md: 2 }
-                  }}>
-                    <Box sx={{ display: { xs: 'block', sm: 'none' } }}>
-                      <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                        {student.name} {student.lastName}
-                      </Typography>
-                      <Typography variant="caption" sx={{ color: '#666', display: { md: 'none' } }}>
-                        DNI: {student.dni}
-                      </Typography>
-                    </Box>
-                    <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
-                      {student.name}
-                    </Box>
+                  <TableCell
+                    sx={{
+                      color: '#00335c',
+                      fontWeight: 500,
+                      textAlign: 'center',
+                      fontSize: { xs: '0.75rem', md: '1rem' },
+                      p: { xs: 0.5, md: 2 },
+                    }}
+                  >
+                    {student.name}
                   </TableCell>
-                  <TableCell sx={{ 
-                    color: '#00335c', 
-                    fontWeight: 500, 
-                    textAlign: 'center',
-                    fontSize: { xs: '0.75rem', md: '1rem' },
-                    p: { xs: 0.5, md: 2 },
-                    display: { xs: 'none', sm: 'table-cell' }
-                  }}>{student.lastName}</TableCell>
-                  <TableCell sx={{ 
-                    color: '#00335c', 
-                    fontWeight: 500, 
-                    textAlign: 'center',
-                    fontSize: { xs: '0.75rem', md: '1rem' },
-                    p: { xs: 0.5, md: 2 },
-                    display: { xs: 'none', md: 'table-cell' }
-                  }}>{student.dni}</TableCell>
-                  <TableCell sx={{ 
-                    color: '#00335c', 
-                    fontWeight: 500, 
-                    textAlign: 'center',
-                    fontSize: { xs: '0.75rem', md: '1rem' },
-                    p: { xs: 0.5, md: 2 }
-                  }}>{getLatestShareStatus(student.id)}</TableCell>
-                  <TableCell sx={{ 
-                    textAlign: 'center',
-                    p: { xs: 0.25, md: 2 }
-                  }}>
+                  <TableCell
+                    sx={{
+                      color: '#00335c',
+                      fontWeight: 500,
+                      textAlign: 'center',
+                      fontSize: { xs: '0.75rem', md: '1rem' },
+                      p: { xs: 0.5, md: 2 },
+                    }}
+                  >
+                    {student.lastName}
+                  </TableCell>
+                  <TableCell
+                    sx={{
+                      color: '#00335c',
+                      fontWeight: 500,
+                      textAlign: 'center',
+                      fontSize: { xs: '0.75rem', md: '1rem' },
+                      p: { xs: 0.5, md: 2 },
+                    }}
+                  >
+                    {student.dni}
+                  </TableCell>
+                  <TableCell
+                    sx={{
+                      color:
+                        getLatestShareStatus(student.id) === 'Pendiente'
+                          ? '#388e3c'
+                          : getLatestShareStatus(student.id) === 'Vencido'
+                          ? '#d32f2f'
+                          : getLatestShareStatus(student.id) === 'Pagado'
+                          ? '#1976d2'
+                          : '#666',
+                      fontWeight: 700,
+                      textAlign: 'center',
+                      fontSize: { xs: '0.75rem', md: '1rem' },
+                      p: { xs: 0.5, md: 2 },
+                    }}
+                  >
+                    {getLatestShareStatus(student.id)}
+                  </TableCell>
+                  <TableCell
+                    sx={{
+                      textAlign: 'center',
+                      p: { xs: 0.25, md: 2 },
+                    }}
+                  >
                     <Button
                       variant="contained"
-                      color="info"
+                      color="success"
                       onClick={() => handleViewShares(student.id)}
                       disabled={loading}
-                      sx={{ 
-                        borderRadius: '50%', 
-                        minWidth: { xs: 32, md: 40 }, 
-                        height: { xs: 32, md: 40 }, 
-                        p: 0, 
-                        fontWeight: 700,
-                        fontSize: { xs: '0.8rem', md: '1rem' }
+                      sx={{
+                        borderRadius: '50%',
+                        minWidth: { xs: 28, md: 40 },
+                        height: { xs: 28, md: 40 },
+                        p: 0,
+                        fontSize: { xs: '0.7rem', md: '1rem' },
                       }}
                     >
-                      💲
+                      $
                     </Button>
                   </TableCell>
                 </TableRow>
@@ -454,45 +522,102 @@ const Share = () => {
           </TableBody>
         </Table>
       </TableContainer>
-      <Dialog 
-        open={openMassShareDialog} 
-        onClose={handleCloseMassShareDialog} 
-        fullWidth
-        maxWidth="sm"
-        sx={{ 
-          '& .MuiDialog-paper': { 
-            borderRadius: '12px', 
-            boxShadow: '0 8px 16px rgba(0, 0, 0, 0.2)', 
-            backgroundColor: '#E6F9EC',
-            m: { xs: 1, sm: 2 },
-            maxWidth: { xs: '95vw', sm: '600px' }
-          } 
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'center',
+          gap: { xs: 0.5, md: 1 },
+          mb: 0,
+          flexWrap: 'wrap',
         }}
       >
-        <DialogTitle sx={{ 
-          background: 'linear-gradient(90deg, #8eeab1, #007e32)', 
-          color: '#00335c', 
-          fontWeight: 700, 
-          borderTopLeftRadius: '12px', 
-          borderTopRightRadius: '12px', 
-          p: { xs: 1.5, md: 2 },
-          fontSize: { xs: '1.1rem', md: '1.3rem' }
-        }}>
+        <Button
+          variant="outlined"
+          onClick={handlePrevPage}
+          disabled={currentPage === 1}
+          size={window.innerWidth < 768 ? 'small' : 'medium'}
+          sx={{ fontSize: { xs: '0.75rem', md: '1rem' }, px: { xs: 1, md: 2 }, minWidth: { xs: 32, md: 40 } }}
+        >
+          Anterior
+        </Button>
+        {[...Array(totalPages)].map((_, i) => {
+          const pageNum = i + 1;
+          return (
+            <Button
+              key={pageNum}
+              variant={pageNum === currentPage ? 'contained' : 'outlined'}
+              onClick={() => handlePageClick(pageNum)}
+              size={window.innerWidth < 768 ? 'small' : 'medium'}
+              sx={{
+                fontSize: { xs: '0.75rem', md: '1rem' },
+                minWidth: { xs: 32, md: 40 },
+                px: { xs: 1, md: 2 },
+              }}
+            >
+              {pageNum}
+            </Button>
+          );
+        })}
+        <Button
+          variant="outlined"
+          onClick={handleNextPage}
+          disabled={currentPage === totalPages || totalPages === 0}
+          size={window.innerWidth < 768 ? 'small' : 'medium'}
+          sx={{ fontSize: { xs: '0.75rem', md: '1rem' }, px: { xs: 1, md: 2 }, minWidth: { xs: 32, md: 40 } }}
+        >
+          Siguiente
+        </Button>
+      </Box>
+      <Dialog
+        open={openMassShareDialog}
+        onClose={handleCloseMassShareDialog}
+        fullWidth
+        maxWidth="sm"
+        sx={{
+          '& .MuiDialog-paper': {
+            borderRadius: '12px',
+            boxShadow: '0 8px 16px rgba(0, 0, 0, 0.2)',
+            backgroundColor: '#E6F9EC',
+            m: { xs: 1, sm: 2 },
+            maxWidth: { xs: '95vw', sm: '600px' },
+          },
+        }}
+      >
+        <DialogTitle
+          sx={{
+            background: 'linear-gradient(90deg, #8eeab1, #007e32)',
+            color: '#00335c',
+            fontWeight: 700,
+            borderTopLeftRadius: '12px',
+            borderTopRightRadius: '12px',
+            p: { xs: 1, md: 1.5 },
+            fontSize: { xs: '1rem', md: '1.2rem' },
+          }}
+        >
           Crear Cuota Masiva
         </DialogTitle>
-        <DialogContent sx={{ p: { xs: 2, md: 3 }, pt: { xs: 2, md: 4 } }}>
-          <FormControl fullWidth sx={{ mt: 2, mb: 2 }}>
-            <InputLabel>Año</InputLabel>
+        <DialogContent sx={{ p: { xs: 1.5, md: 2 }, pt: { xs: 1.5, md: 3 } }}>
+          <FormControl fullWidth sx={{ mt: 1, mb: 1 }}>
+            <InputLabel sx={{ fontSize: { xs: '0.8rem', md: '0.9rem' } }}>Año</InputLabel>
             <Select
               name="year"
               value={massShareData.year}
               onChange={handleMassShareInputChange}
               label="Año"
-              size={window.innerWidth < 768 ? "small" : "medium"}
-              sx={{ '& .MuiOutlinedInput-root': { '& fieldset': { borderColor: '#38f9d7' }, '&:hover fieldset': { borderColor: '#43e97b' }, '&.Mui-focused fieldset': { borderColor: '#43e97b' } }, '& .MuiInputLabel-root': { color: '#00335c' }, '& .MuiInputLabel-root.Mui-focused': { color: '#43e97b' } }}
+              size={window.innerWidth < 768 ? 'small' : 'medium'}
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  '& fieldset': { borderColor: '#38f9d7' },
+                  '&:hover fieldset': { borderColor: '#43e97b' },
+                  '&.Mui-focused fieldset': { borderColor: '#43e97b' },
+                },
+                '& .MuiInputLabel-root': { color: '#00335c' },
+                '& .MuiInputLabel-root.Mui-focused': { color: '#43e97b' },
+                fontSize: { xs: '0.8rem', md: '0.9rem' },
+              }}
             >
               {[2023, 2024, 2025, 2026, 2027].map((year) => (
-                <MenuItem key={year} value={year}>
+                <MenuItem key={year} value={year} sx={{ fontSize: { xs: '0.8rem', md: '0.9rem' } }}>
                   {year}
                 </MenuItem>
               ))}
@@ -504,8 +629,18 @@ const Share = () => {
             value={massShareData.quotaName}
             onChange={handleMassShareInputChange}
             fullWidth
-            size={window.innerWidth < 768 ? "small" : "medium"}
-            sx={{ mb: 2, '& .MuiOutlinedInput-root': { '& fieldset': { borderColor: '#38f9d7' }, '&:hover fieldset': { borderColor: '#43e97b' }, '&.Mui-focused fieldset': { borderColor: '#43e97b' } }, '& .MuiInputLabel-root': { color: '#00335c' }, '& .MuiInputLabel-root.Mui-focused': { color: '#43e97b' } }}
+            size={window.innerWidth < 768 ? 'small' : 'medium'}
+            sx={{
+              mb: 1,
+              '& .MuiOutlinedInput-root': {
+                '& fieldset': { borderColor: '#38f9d7' },
+                '&:hover fieldset': { borderColor: '#43e97b' },
+                '&.Mui-focused fieldset': { borderColor: '#43e97b' },
+                fontSize: { xs: '0.8rem', md: '0.9rem' },
+              },
+              '& .MuiInputLabel-root': { color: '#00335c', fontSize: { xs: '0.8rem', md: '0.9rem' } },
+              '& .MuiInputLabel-root.Mui-focused': { color: '#43e97b' },
+            }}
             required
             placeholder="Ej: Cuota Masiva - Semestre 1 - 2025"
           />
@@ -516,8 +651,18 @@ const Share = () => {
             value={massShareData.amount}
             onChange={handleMassShareInputChange}
             fullWidth
-            size={window.innerWidth < 768 ? "small" : "medium"}
-            sx={{ mb: 2, '& .MuiOutlinedInput-root': { '& fieldset': { borderColor: '#38f9d7' }, '&:hover fieldset': { borderColor: '#43e97b' }, '&.Mui-focused fieldset': { borderColor: '#43e97b' } }, '& .MuiInputLabel-root': { color: '#00335c' }, '& .MuiInputLabel-root.Mui-focused': { color: '#43e97b' } }}
+            size={window.innerWidth < 768 ? 'small' : 'medium'}
+            sx={{
+              mb: 1,
+              '& .MuiOutlinedInput-root': {
+                '& fieldset': { borderColor: '#38f9d7' },
+                '&:hover fieldset': { borderColor: '#43e97b' },
+                '&.Mui-focused fieldset': { borderColor: '#43e97b' },
+                fontSize: { xs: '0.8rem', md: '0.9rem' },
+              },
+              '& .MuiInputLabel-root': { color: '#00335c', fontSize: { xs: '0.8rem', md: '0.9rem' } },
+              '& .MuiInputLabel-root.Mui-focused': { color: '#43e97b' },
+            }}
             required
           />
           <TextField
@@ -527,45 +672,60 @@ const Share = () => {
             value={massShareData.date}
             onChange={handleMassShareInputChange}
             fullWidth
-            size={window.innerWidth < 768 ? "small" : "medium"}
-            sx={{ mb: 2, '& .MuiOutlinedInput-root': { '& fieldset': { borderColor: '#38f9d7' }, '&:hover fieldset': { borderColor: '#43e97b' }, '&.Mui-focused fieldset': { borderColor: '#43e97b' } }, '& .MuiInputLabel-root': { color: '#00335c' }, '& .MuiInputLabel-root.Mui-focused': { color: '#43e97b' } }}
+            size={window.innerWidth < 768 ? 'small' : 'medium'}
+            sx={{
+              mb: 1,
+              '& .MuiOutlinedInput-root': {
+                '& fieldset': { borderColor: '#38f9d7' },
+                '&:hover fieldset': { borderColor: '#43e97b' },
+                '&.Mui-focused fieldset': { borderColor: '#43e97b' },
+                fontSize: { xs: '0.8rem', md: '0.9rem' },
+              },
+              '& .MuiInputLabel-root': { color: '#00335c', fontSize: { xs: '0.8rem', md: '0.9rem' } },
+              '& .MuiInputLabel-root.Mui-focused': { color: '#43e97b' },
+            }}
             required
             InputLabelProps={{ shrink: true }}
           />
         </DialogContent>
-        <DialogActions sx={{ 
-          p: { xs: 1.5, md: 2 }, 
-          justifyContent: 'space-between',
-          flexDirection: { xs: 'column', sm: 'row' },
-          gap: { xs: 2, sm: 0 }
-        }}>
-          <Button 
-            onClick={handleCloseMassShareDialog} 
-            variant="outlined" 
-            startIcon={<CancelIcon />} 
-            sx={{ 
-              color: '#00335c', 
-              borderColor: '#00335c', 
-              cursor: 'pointer', 
-              '&:hover': { backgroundColor: 'rgba(142, 234, 177, 0.1)', borderColor: '#8eeab1' }, 
+        <DialogActions
+          sx={{
+            p: { xs: 1, md: 1.5 },
+            justifyContent: 'space-between',
+            flexDirection: { xs: 'column', sm: 'row' },
+            gap: { xs: 1, sm: 0 },
+          }}
+        >
+          <Button
+            onClick={handleCloseMassShareDialog}
+            variant="outlined"
+            startIcon={<CancelIcon />}
+            sx={{
+              color: '#00335c',
+              borderColor: '#00335c',
+              cursor: 'pointer',
+              '&:hover': {
+                backgroundColor: 'rgba(142, 234, 177, 0.1)',
+                borderColor: '#8eeab1',
+              },
               fontWeight: 700,
               width: { xs: '100%', sm: 'auto' },
-              fontSize: { xs: '0.9rem', md: '1rem' }
+              fontSize: { xs: '0.8rem', md: '0.9rem' },
             }}
           >
             Cancelar
           </Button>
-          <Button 
-            onClick={handleMassShareSubmit} 
-            variant="contained" 
-            sx={{ 
-              backgroundColor: '#43e97b', 
-              color: '#ffffff', 
-              cursor: 'pointer', 
-              '&:hover': { backgroundColor: '#38f9d7' }, 
+          <Button
+            onClick={handleMassShareSubmit}
+            variant="contained"
+            sx={{
+              backgroundColor: '#43e97b',
+              color: '#ffffff',
+              cursor: 'pointer',
+              '&:hover': { backgroundColor: '#38f9d7' },
               fontWeight: 700,
               width: { xs: '100%', sm: 'auto' },
-              fontSize: { xs: '0.9rem', md: '1rem' }
+              fontSize: { xs: '0.8rem', md: '0.9rem' },
             }}
           >
             Guardar
@@ -573,12 +733,12 @@ const Share = () => {
         </DialogActions>
       </Dialog>
       {loading && (
-        <Typography variant="body1" sx={{ textAlign: 'center', mt: 2 }}>
+        <Typography variant="h6" color="#00335c" sx={{ textAlign: 'center', mt: 1, fontSize: { xs: '0.9rem', md: '1rem' } }}>
           Cargando datos...
         </Typography>
       )}
       {error && (
-        <Typography variant="body1" color="error" sx={{ textAlign: 'center', mt: 2 }}>
+        <Typography variant="body1" color="error" sx={{ textAlign: 'center', mt: 1, fontSize: { xs: '0.8rem', md: '0.9rem' } }}>
           {error}
         </Typography>
       )}
