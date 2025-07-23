@@ -1,4 +1,5 @@
 import React, { useContext, useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom'; // Importado para la navegación
 import {
   Box,
   Typography,
@@ -22,7 +23,7 @@ import {
 } from '@mui/material';
 import { SharesContext } from '../../context/share/ShareContext';
 import { toast } from 'react-toastify';
-import CancelIcon from '@mui/icons-material/Cancel'; // Importado para el botón Cancelar
+import CancelIcon from '@mui/icons-material/Cancel';
 import { calculateDueDate } from '../../utils/dateUtils';
 
 const getShareStatusAndAmount = (share, today) => {
@@ -50,7 +51,8 @@ const getShareStatusAndAmount = (share, today) => {
   }
 };
 
-const StudentShares = ({ studentId, onBack }) => {
+const StudentShares = ({ studentId }) => {
+  const navigate = useNavigate(); // Inicializamos useNavigate para la navegación
   const { studentsWithShares, loading, error, createShare, updateShare, deleteShare, fetchSharesByStudent } = useContext(SharesContext);
   const [openCreateDialog, setOpenCreateDialog] = useState(false);
   const [openEditDialog, setOpenEditDialog] = useState(false);
@@ -326,9 +328,8 @@ const StudentShares = ({ studentId, onBack }) => {
             flexGrow: 1,
             width: '100%',
             minWidth: '260px',
-            background: '#fff',
+            background: 'transparent', // Fondo transparente
             borderRadius: '12px',
-            boxShadow: '0 2px 8px rgba(56, 249, 215, 0.08)',
             p: { xs: 1.5, md: 2 },
             alignItems: { xs: 'stretch', md: 'center' },
             justifyContent: 'space-between',
@@ -340,7 +341,15 @@ const StudentShares = ({ studentId, onBack }) => {
               value={selectedYear}
               onChange={(e) => setSelectedYear(e.target.value)}
               label="Año"
-              sx={{ '& .MuiOutlinedInput-root': { '& fieldset': { borderColor: '#38f9d7' }, '&:hover fieldset': { borderColor: '#43e97b' }, '&.Mui-focused fieldset': { borderColor: '#43e97b' } }, '& .MuiInputLabel-root': { color: '#00335c' }, '& .MuiInputLabel-root.Mui-focused': { color: '#43e97b' } }}
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  '& fieldset': { borderColor: '#38f9d7' },
+                  '&:hover fieldset': { borderColor: '#43e97b' },
+                  '&.Mui-focused fieldset': { borderColor: '#43e97b' },
+                },
+                '& .MuiInputLabel-root': { color: '#00335c' },
+                '& .MuiInputLabel-root.Mui-focused': { color: '#43e97b' },
+              }}
             >
               {[2023, 2024, 2025, 2026, 2027].map((year) => (
                 <MenuItem key={year} value={year}>
@@ -353,31 +362,31 @@ const StudentShares = ({ studentId, onBack }) => {
             variant="contained"
             color="success"
             onClick={handleOpenCreateDialog}
-            sx={{ 
-              borderRadius: '32px', 
-              fontWeight: 700, 
-              fontSize: { xs: '0.9rem', md: '1.1rem', lg: '1.3rem' }, 
-              px: { xs: 2, md: 3, lg: 5 }, 
-              py: { xs: 1, md: 1.5, lg: 2 }, 
-              minWidth: { xs: '100%', sm: '180px', md: '220px' }, 
-              flex: { sm: 1 } 
+            sx={{
+              borderRadius: '32px',
+              fontWeight: 700,
+              fontSize: { xs: '0.8rem', md: '0.9rem', lg: '1rem' }, // Tamaño de fuente reducido
+              px: { xs: 1.5, md: 2, lg: 3 }, // Padding horizontal reducido
+              py: { xs: 0.8, md: 1, lg: 1.2 }, // Padding vertical reducido
+              minWidth: { xs: '100%', sm: '140px', md: '160px' }, // Ancho mínimo reducido
+              flex: { sm: 1 },
             }}
           >
             Crear Nueva Cuota
           </Button>
           <Button
             variant="outlined"
-            onClick={onBack}
-            sx={{ 
-              borderRadius: '32px', 
-              fontWeight: 700, 
-              fontSize: { xs: '0.9rem', md: '1.1rem', lg: '1.3rem' }, 
-              px: { xs: 2, md: 3, lg: 5 }, 
-              py: { xs: 1, md: 1.5, lg: 2 }, 
-              minWidth: { xs: '100%', sm: '180px', md: '220px' }, 
-              color: '#00335c', 
-              borderColor: '#00335c', 
-              '&:hover': { backgroundColor: 'rgba(142, 234, 177, 0.1)', borderColor: '#8eeab1' } 
+            onClick={() => navigate(-1)} // Navegar a la página anterior
+            sx={{
+              borderRadius: '32px',
+              fontWeight: 700,
+              fontSize: { xs: '0.8rem', md: '0.9rem', lg: '1rem' }, // Tamaño de fuente reducido
+              px: { xs: 1.5, md: 2, lg: 3 }, // Padding horizontal reducido
+              py: { xs: 0.8, md: 1, lg: 1.2 }, // Padding vertical reducido
+              minWidth: { xs: '100%', sm: '140px', md: '160px' }, // Ancho mínimo reducido
+              color: '#00335c',
+              borderColor: '#00335c',
+              '&:hover': { backgroundColor: 'rgba(142, 234, 177, 0.1)', borderColor: '#8eeab1' },
             }}
           >
             Volver
@@ -436,12 +445,12 @@ const StudentShares = ({ studentId, onBack }) => {
                         color="info"
                         size="small"
                         onClick={() => handleEditShare(share)}
-                        sx={{ 
-                          borderRadius: '50%', 
-                          minWidth: { xs: 28, sm: 40 }, 
-                          height: { xs: 28, sm: 40 }, 
+                        sx={{
+                          borderRadius: '50%',
+                          minWidth: { xs: 28, sm: 40 },
+                          height: { xs: 28, sm: 40 },
                           p: 0,
-                          fontSize: { xs: '0.6rem', sm: '1rem' }
+                          fontSize: { xs: '0.6rem', sm: '1rem' },
                         }}
                       >
                         ✎
@@ -451,12 +460,12 @@ const StudentShares = ({ studentId, onBack }) => {
                         color="error"
                         size="small"
                         onClick={() => handleOpenDeleteDialog(share.share_id)}
-                        sx={{ 
-                          borderRadius: '50%', 
-                          minWidth: { xs: 28, sm: 40 }, 
-                          height: { xs: 28, sm: 40 }, 
+                        sx={{
+                          borderRadius: '50%',
+                          minWidth: { xs: 28, sm: 40 },
+                          height: { xs: 28, sm: 40 },
                           p: 0,
-                          fontSize: { xs: '0.6rem', sm: '1rem' }
+                          fontSize: { xs: '0.6rem', sm: '1rem' },
                         }}
                       >
                         ✗
@@ -467,12 +476,12 @@ const StudentShares = ({ studentId, onBack }) => {
                           color="success"
                           size="small"
                           onClick={() => handleOpenPayDialog(share.share_id)}
-                          sx={{ 
-                            borderRadius: '50%', 
-                            minWidth: { xs: 28, sm: 40 }, 
-                            height: { xs: 28, sm: 40 }, 
+                          sx={{
+                            borderRadius: '50%',
+                            minWidth: { xs: 28, sm: 40 },
+                            height: { xs: 28, sm: 40 },
                             p: 0,
-                            fontSize: { xs: '0.6rem', sm: '1rem' }
+                            fontSize: { xs: '0.6rem', sm: '1rem' },
                           }}
                         >
                           ✔
@@ -492,29 +501,29 @@ const StudentShares = ({ studentId, onBack }) => {
         onClose={handleCloseCreateDialog}
         fullWidth
         maxWidth="sm"
-        sx={{ 
-          '& .MuiDialog-paper': { 
-            borderRadius: '16px', 
-            boxShadow: '0 12px 32px rgba(0, 51, 92, 0.15)', 
+        sx={{
+          '& .MuiDialog-paper': {
+            borderRadius: '16px',
+            boxShadow: '0 12px 32px rgba(0, 51, 92, 0.15)',
             backgroundColor: '#ffffff',
             margin: { xs: 1, sm: 3 },
             width: { xs: 'calc(100% - 16px)', sm: 'auto' },
             maxHeight: { xs: '95vh', sm: 'auto' },
-            border: '2px solid #e0f7fa'
-          } 
+            border: '2px solid #e0f7fa',
+          },
         }}
       >
         <DialogTitle
-          sx={{ 
-            background: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)', 
-            color: '#ffffff', 
-            fontWeight: 800, 
-            borderTopLeftRadius: '14px', 
-            borderTopRightRadius: '14px', 
+          sx={{
+            background: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
+            color: '#ffffff',
+            fontWeight: 800,
+            borderTopLeftRadius: '14px',
+            borderTopRightRadius: '14px',
             p: { xs: 2, md: 3 },
             fontSize: { xs: '1.2rem', sm: '1.4rem' },
             textAlign: 'center',
-            textShadow: '0 2px 4px rgba(0, 0, 0, 0.2)'
+            textShadow: '0 2px 4px rgba(0, 0, 0, 0.2)',
           }}
         >
           🎯 Crear Nueva Cuota
@@ -527,16 +536,16 @@ const StudentShares = ({ studentId, onBack }) => {
               value={newShareData.quotaName}
               onChange={(e) => setNewShareData((prev) => ({ ...prev, quotaName: e.target.value }))}
               fullWidth
-              sx={{ 
-                '& .MuiOutlinedInput-root': { 
+              sx={{
+                '& .MuiOutlinedInput-root': {
                   borderRadius: '12px',
                   backgroundColor: '#ffffff',
-                  '& fieldset': { borderColor: '#b2dfdb', borderWidth: '2px' }, 
-                  '&:hover fieldset': { borderColor: '#43e97b' }, 
-                  '&.Mui-focused fieldset': { borderColor: '#43e97b', borderWidth: '2px' } 
-                }, 
-                '& .MuiInputLabel-root': { color: '#00335c', fontWeight: 600 }, 
-                '& .MuiInputLabel-root.Mui-focused': { color: '#43e97b' }
+                  '& fieldset': { borderColor: '#b2dfdb', borderWidth: '2px' },
+                  '&:hover fieldset': { borderColor: '#43e97b' },
+                  '&.Mui-focused fieldset': { borderColor: '#43e97b', borderWidth: '2px' },
+                },
+                '& .MuiInputLabel-root': { color: '#00335c', fontWeight: 600 },
+                '& .MuiInputLabel-root.Mui-focused': { color: '#43e97b' },
               }}
               required
               placeholder="Ej: Cuota Escuela 2025"
@@ -549,21 +558,21 @@ const StudentShares = ({ studentId, onBack }) => {
               value={newShareData.amount}
               onChange={(e) => setNewShareData((prev) => ({ ...prev, amount: e.target.value }))}
               fullWidth
-              sx={{ 
-                '& .MuiOutlinedInput-root': { 
+              sx={{
+                '& .MuiOutlinedInput-root': {
                   borderRadius: '12px',
                   backgroundColor: '#ffffff',
-                  '& fieldset': { borderColor: '#b2dfdb', borderWidth: '2px' }, 
-                  '&:hover fieldset': { borderColor: '#43e97b' }, 
-                  '&.Mui-focused fieldset': { borderColor: '#43e97b', borderWidth: '2px' } 
-                }, 
-                '& .MuiInputLabel-root': { color: '#00335c', fontWeight: 600 }, 
-                '& .MuiInputLabel-root.Mui-focused': { color: '#43e97b' }
+                  '& fieldset': { borderColor: '#b2dfdb', borderWidth: '2px' },
+                  '&:hover fieldset': { borderColor: '#43e97b' },
+                  '&.Mui-focused fieldset': { borderColor: '#43e97b', borderWidth: '2px' },
+                },
+                '& .MuiInputLabel-root': { color: '#00335c', fontWeight: 600 },
+                '& .MuiInputLabel-root.Mui-focused': { color: '#43e97b' },
               }}
               required
               size="medium"
               InputProps={{
-                startAdornment: <Typography sx={{ color: '#00335c', mr: 1, fontWeight: 600 }}>$</Typography>
+                startAdornment: <Typography sx={{ color: '#00335c', mr: 1, fontWeight: 600 }}>$</Typography>,
               }}
             />
             <TextField
@@ -573,32 +582,36 @@ const StudentShares = ({ studentId, onBack }) => {
               value={newShareData.date}
               onChange={(e) => setNewShareData((prev) => ({ ...prev, date: e.target.value }))}
               fullWidth
-              sx={{ 
-                '& .MuiOutlinedInput-root': { 
+              sx={{
+                '& .MuiOutlinedInput-root': {
                   borderRadius: '12px',
                   backgroundColor: '#ffffff',
-                  '& fieldset': { borderColor: '#b2dfdb', borderWidth: '2px' }, 
-                  '&:hover fieldset': { borderColor: '#43e97b' }, 
-                  '&.Mui-focused fieldset': { borderColor: '#43e97b', borderWidth: '2px' } 
-                }, 
-                '& .MuiInputLabel-root': { color: '#00335c', fontWeight: 600 }, 
-                '& .MuiInputLabel-root.Mui-focused': { color: '#43e97b' }
+                  '& fieldset': { borderColor: '#b2dfdb', borderWidth: '2px' },
+                  '&:hover fieldset': { borderColor: '#43e97b' },
+                  '&.Mui-focused fieldset': { borderColor: '#43e97b', borderWidth: '2px' },
+                },
+                '& .MuiInputLabel-root': { color: '#00335c', fontWeight: 600 },
+                '& .MuiInputLabel-root.Mui-focused': { color: '#43e97b' },
               }}
               required
               InputLabelProps={{ shrink: true }}
               size="medium"
             />
-            <FormControl fullWidth sx={{ 
-              '& .MuiOutlinedInput-root': { 
-                borderRadius: '12px',
-                backgroundColor: '#ffffff',
-                '& fieldset': { borderColor: '#b2dfdb', borderWidth: '2px' }, 
-                '&:hover fieldset': { borderColor: '#43e97b' }, 
-                '&.Mui-focused fieldset': { borderColor: '#43e97b', borderWidth: '2px' } 
-              }, 
-              '& .MuiInputLabel-root': { color: '#00335c', fontWeight: 600 }, 
-              '& .MuiInputLabel-root.Mui-focused': { color: '#43e97b' }
-            }} size="medium">
+            <FormControl
+              fullWidth
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: '12px',
+                  backgroundColor: '#ffffff',
+                  '& fieldset': { borderColor: '#b2dfdb', borderWidth: '2px' },
+                  '&:hover fieldset': { borderColor: '#43e97b' },
+                  '&.Mui-focused fieldset': { borderColor: '#43e97b', borderWidth: '2px' },
+                },
+                '& .MuiInputLabel-root': { color: '#00335c', fontWeight: 600 },
+                '& .MuiInputLabel-root.Mui-focused': { color: '#43e97b' },
+              }}
+              size="medium"
+            >
               <InputLabel>Año</InputLabel>
               <Select
                 name="year"
@@ -615,21 +628,23 @@ const StudentShares = ({ studentId, onBack }) => {
             </FormControl>
           </Box>
         </DialogContent>
-        <DialogActions sx={{ 
-          p: { xs: 2, md: 3 }, 
-          backgroundColor: '#f8fffe',
-          borderTop: '1px solid #e0f7fa',
-          flexDirection: { xs: 'column', sm: 'row' }, 
-          gap: { xs: 1, sm: 2 },
-          justifyContent: 'center'
-        }}>
+        <DialogActions
+          sx={{
+            p: { xs: 2, md: 3 },
+            backgroundColor: '#f8fffe',
+            borderTop: '1px solid #e0f7fa',
+            flexDirection: { xs: 'column', sm: 'row' },
+            gap: { xs: 1, sm: 2 },
+            justifyContent: 'center',
+          }}
+        >
           <Button
             onClick={handleCloseCreateDialog}
             variant="outlined"
             startIcon={<CancelIcon />}
-            sx={{ 
-              color: '#00335c', 
-              borderColor: '#b2dfdb', 
+            sx={{
+              color: '#00335c',
+              borderColor: '#b2dfdb',
               borderWidth: '2px',
               borderRadius: '25px',
               px: { xs: 4, sm: 6 },
@@ -638,11 +653,11 @@ const StudentShares = ({ studentId, onBack }) => {
               fontSize: { xs: '0.95rem', sm: '1rem' },
               width: { xs: '100%', sm: 'auto' },
               order: { xs: 2, sm: 1 },
-              '&:hover': { 
-                backgroundColor: 'rgba(178, 223, 219, 0.1)', 
+              '&:hover': {
+                backgroundColor: 'rgba(178, 223, 219, 0.1)',
                 borderColor: '#43e97b',
-                borderWidth: '2px'
-              }
+                borderWidth: '2px',
+              },
             }}
           >
             Cancelar
@@ -650,9 +665,9 @@ const StudentShares = ({ studentId, onBack }) => {
           <Button
             onClick={handleSaveNewShare}
             variant="contained"
-            sx={{ 
-              background: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)', 
-              color: '#ffffff', 
+            sx={{
+              background: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
+              color: '#ffffff',
               borderRadius: '25px',
               px: { xs: 4, sm: 6 },
               py: 1.2,
@@ -661,10 +676,10 @@ const StudentShares = ({ studentId, onBack }) => {
               width: { xs: '100%', sm: 'auto' },
               order: { xs: 1, sm: 2 },
               boxShadow: '0 4px 12px rgba(67, 233, 123, 0.3)',
-              '&:hover': { 
+              '&:hover': {
                 background: 'linear-gradient(135deg, #38f9d7 0%, #43e97b 100%)',
-                boxShadow: '0 6px 16px rgba(67, 233, 123, 0.4)'
-              }
+                boxShadow: '0 6px 16px rgba(67, 233, 123, 0.4)',
+              },
             }}
           >
             💾 Guardar
@@ -677,29 +692,29 @@ const StudentShares = ({ studentId, onBack }) => {
         onClose={handleCloseEditDialog}
         fullWidth
         maxWidth="sm"
-        sx={{ 
-          '& .MuiDialog-paper': { 
-            borderRadius: '16px', 
-            boxShadow: '0 12px 32px rgba(0, 51, 92, 0.15)', 
+        sx={{
+          '& .MuiDialog-paper': {
+            borderRadius: '16px',
+            boxShadow: '0 12px 32px rgba(0, 51, 92, 0.15)',
             backgroundColor: '#ffffff',
             margin: { xs: 1, sm: 3 },
             width: { xs: 'calc(100% - 16px)', sm: 'auto' },
             maxHeight: { xs: '95vh', sm: 'auto' },
-            border: '2px solid #e0f7fa'
-          } 
+            border: '2px solid #e0f7fa',
+          },
         }}
       >
         <DialogTitle
-          sx={{ 
-            background: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)', 
-            color: '#ffffff', 
-            fontWeight: 800, 
-            borderTopLeftRadius: '14px', 
-            borderTopRightRadius: '14px', 
+          sx={{
+            background: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
+            color: '#ffffff',
+            fontWeight: 800,
+            borderTopLeftRadius: '14px',
+            borderTopRightRadius: '14px',
             p: { xs: 2, md: 3 },
             fontSize: { xs: '1.2rem', sm: '1.4rem' },
             textAlign: 'center',
-            textShadow: '0 2px 4px rgba(0, 0, 0, 0.2)'
+            textShadow: '0 2px 4px rgba(0, 0, 0, 0.2)',
           }}
         >
           ✏️ Editar Cuota
@@ -712,16 +727,16 @@ const StudentShares = ({ studentId, onBack }) => {
               value={editData.quotaName}
               onChange={(e) => setEditData((prev) => ({ ...prev, quotaName: e.target.value }))}
               fullWidth
-              sx={{ 
-                '& .MuiOutlinedInput-root': { 
+              sx={{
+                '& .MuiOutlinedInput-root': {
                   borderRadius: '12px',
                   backgroundColor: '#ffffff',
-                  '& fieldset': { borderColor: '#b2dfdb', borderWidth: '2px' }, 
-                  '&:hover fieldset': { borderColor: '#43e97b' }, 
-                  '&.Mui-focused fieldset': { borderColor: '#43e97b', borderWidth: '2px' } 
-                }, 
-                '& .MuiInputLabel-root': { color: '#00335c', fontWeight: 600 }, 
-                '& .MuiInputLabel-root.Mui-focused': { color: '#43e97b' }
+                  '& fieldset': { borderColor: '#b2dfdb', borderWidth: '2px' },
+                  '&:hover fieldset': { borderColor: '#43e97b' },
+                  '&.Mui-focused fieldset': { borderColor: '#43e97b', borderWidth: '2px' },
+                },
+                '& .MuiInputLabel-root': { color: '#00335c', fontWeight: 600 },
+                '& .MuiInputLabel-root.Mui-focused': { color: '#43e97b' },
               }}
               required
               placeholder="Ej: Cuota Escuela 2025"
@@ -734,21 +749,21 @@ const StudentShares = ({ studentId, onBack }) => {
               value={editData.amount}
               onChange={(e) => setEditData((prev) => ({ ...prev, amount: e.target.value }))}
               fullWidth
-              sx={{ 
-                '& .MuiOutlinedInput-root': { 
+              sx={{
+                '& .MuiOutlinedInput-root': {
                   borderRadius: '12px',
                   backgroundColor: '#ffffff',
-                  '& fieldset': { borderColor: '#b2dfdb', borderWidth: '2px' }, 
-                  '&:hover fieldset': { borderColor: '#43e97b' }, 
-                  '&.Mui-focused fieldset': { borderColor: '#43e97b', borderWidth: '2px' } 
-                }, 
-                '& .MuiInputLabel-root': { color: '#00335c', fontWeight: 600 }, 
-                '& .MuiInputLabel-root.Mui-focused': { color: '#43e97b' }
+                  '& fieldset': { borderColor: '#b2dfdb', borderWidth: '2px' },
+                  '&:hover fieldset': { borderColor: '#43e97b' },
+                  '&.Mui-focused fieldset': { borderColor: '#43e97b', borderWidth: '2px' },
+                },
+                '& .MuiInputLabel-root': { color: '#00335c', fontWeight: 600 },
+                '& .MuiInputLabel-root.Mui-focused': { color: '#43e97b' },
               }}
               required
               size="medium"
               InputProps={{
-                startAdornment: <Typography sx={{ color: '#00335c', mr: 1, fontWeight: 600 }}>$</Typography>
+                startAdornment: <Typography sx={{ color: '#00335c', mr: 1, fontWeight: 600 }}>$</Typography>,
               }}
             />
             <TextField
@@ -758,32 +773,36 @@ const StudentShares = ({ studentId, onBack }) => {
               value={editData.date}
               onChange={(e) => setEditData((prev) => ({ ...prev, date: e.target.value }))}
               fullWidth
-              sx={{ 
-                '& .MuiOutlinedInput-root': { 
+              sx={{
+                '& .MuiOutlinedInput-root': {
                   borderRadius: '12px',
                   backgroundColor: '#ffffff',
-                  '& fieldset': { borderColor: '#b2dfdb', borderWidth: '2px' }, 
-                  '&:hover fieldset': { borderColor: '#43e97b' }, 
-                  '&.Mui-focused fieldset': { borderColor: '#43e97b', borderWidth: '2px' } 
-                }, 
-                '& .MuiInputLabel-root': { color: '#00335c', fontWeight: 600 }, 
-                '& .MuiInputLabel-root.Mui-focused': { color: '#43e97b' }
+                  '& fieldset': { borderColor: '#b2dfdb', borderWidth: '2px' },
+                  '&:hover fieldset': { borderColor: '#43e97b' },
+                  '&.Mui-focused fieldset': { borderColor: '#43e97b', borderWidth: '2px' },
+                },
+                '& .MuiInputLabel-root': { color: '#00335c', fontWeight: 600 },
+                '& .MuiInputLabel-root.Mui-focused': { color: '#43e97b' },
               }}
               required
               InputLabelProps={{ shrink: true }}
               size="medium"
             />
-            <FormControl fullWidth sx={{ 
-              '& .MuiOutlinedInput-root': { 
-                borderRadius: '12px',
-                backgroundColor: '#ffffff',
-                '& fieldset': { borderColor: '#b2dfdb', borderWidth: '2px' }, 
-                '&:hover fieldset': { borderColor: '#43e97b' }, 
-                '&.Mui-focused fieldset': { borderColor: '#43e97b', borderWidth: '2px' } 
-              }, 
-              '& .MuiInputLabel-root': { color: '#00335c', fontWeight: 600 }, 
-              '& .MuiInputLabel-root.Mui-focused': { color: '#43e97b' }
-            }} size="medium">
+            <FormControl
+              fullWidth
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: '12px',
+                  backgroundColor: '#ffffff',
+                  '& fieldset': { borderColor: '#b2dfdb', borderWidth: '2px' },
+                  '&:hover fieldset': { borderColor: '#43e97b' },
+                  '&.Mui-focused fieldset': { borderColor: '#43e97b', borderWidth: '2px' },
+                },
+                '& .MuiInputLabel-root': { color: '#00335c', fontWeight: 600 },
+                '& .MuiInputLabel-root.Mui-focused': { color: '#43e97b' },
+              }}
+              size="medium"
+            >
               <InputLabel>Método de Pago</InputLabel>
               <Select
                 name="paymentmethod"
@@ -792,28 +811,36 @@ const StudentShares = ({ studentId, onBack }) => {
                 label="Método de Pago"
                 required
               >
-                <MenuItem value="Efectivo" sx={{ color: '#00335c', '&:hover': { backgroundColor: '#e0f7fa' } }}>Efectivo</MenuItem>
-                <MenuItem value="Tarjeta" sx={{ color: '#00335c', '&:hover': { backgroundColor: '#e0f7fa' } }}>Tarjeta</MenuItem>
-                <MenuItem value="Transferencia" sx={{ color: '#00335c', '&:hover': { backgroundColor: '#e0f7fa' } }}>Transferencia</MenuItem>
+                <MenuItem value="Efectivo" sx={{ color: '#00335c', '&:hover': { backgroundColor: '#e0f7fa' } }}>
+                  Efectivo
+                </MenuItem>
+                <MenuItem value="Tarjeta" sx={{ color: '#00335c', '&:hover': { backgroundColor: '#e0f7fa' } }}>
+                  Tarjeta
+                </MenuItem>
+                <MenuItem value="Transferencia" sx={{ color: '#00335c', '&:hover': { backgroundColor: '#e0f7fa' } }}>
+                  Transferencia
+                </MenuItem>
               </Select>
             </FormControl>
           </Box>
         </DialogContent>
-        <DialogActions sx={{ 
-          p: { xs: 2, md: 3 }, 
-          backgroundColor: '#f8fffe',
-          borderTop: '1px solid #e0f7fa',
-          flexDirection: { xs: 'column', sm: 'row' }, 
-          gap: { xs: 1, sm: 2 },
-          justifyContent: 'center'
-        }}>
+        <DialogActions
+          sx={{
+            p: { xs: 2, md: 3 },
+            backgroundColor: '#f8fffe',
+            borderTop: '1px solid #e0f7fa',
+            flexDirection: { xs: 'column', sm: 'row' },
+            gap: { xs: 1, sm: 2 },
+            justifyContent: 'center',
+          }}
+        >
           <Button
             onClick={handleCloseEditDialog}
             variant="outlined"
             startIcon={<CancelIcon />}
-            sx={{ 
-              color: '#00335c', 
-              borderColor: '#b2dfdb', 
+            sx={{
+              color: '#00335c',
+              borderColor: '#b2dfdb',
               borderWidth: '2px',
               borderRadius: '25px',
               px: { xs: 4, sm: 6 },
@@ -822,11 +849,11 @@ const StudentShares = ({ studentId, onBack }) => {
               fontSize: { xs: '0.95rem', sm: '1rem' },
               width: { xs: '100%', sm: 'auto' },
               order: { xs: 2, sm: 1 },
-              '&:hover': { 
-                backgroundColor: 'rgba(178, 223, 219, 0.1)', 
+              '&:hover': {
+                backgroundColor: 'rgba(178, 223, 219, 0.1)',
                 borderColor: '#43e97b',
-                borderWidth: '2px'
-              }
+                borderWidth: '2px',
+              },
             }}
           >
             Cancelar
@@ -834,9 +861,9 @@ const StudentShares = ({ studentId, onBack }) => {
           <Button
             onClick={handleSaveEdit}
             variant="contained"
-            sx={{ 
-              background: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)', 
-              color: '#ffffff', 
+            sx={{
+              background: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
+              color: '#ffffff',
               borderRadius: '25px',
               px: { xs: 4, sm: 6 },
               py: 1.2,
@@ -845,10 +872,10 @@ const StudentShares = ({ studentId, onBack }) => {
               width: { xs: '100%', sm: 'auto' },
               order: { xs: 1, sm: 2 },
               boxShadow: '0 4px 12px rgba(67, 233, 123, 0.3)',
-              '&:hover': { 
+              '&:hover': {
                 background: 'linear-gradient(135deg, #38f9d7 0%, #43e97b 100%)',
-                boxShadow: '0 6px 16px rgba(67, 233, 123, 0.4)'
-              }
+                boxShadow: '0 6px 16px rgba(67, 233, 123, 0.4)',
+              },
             }}
           >
             💾 Actualizar
@@ -861,80 +888,81 @@ const StudentShares = ({ studentId, onBack }) => {
         onClose={handleCloseDeleteDialog}
         fullWidth
         maxWidth="xs"
-        sx={{ 
-          '& .MuiDialog-paper': { 
-            borderRadius: '16px', 
-            boxShadow: '0 12px 32px rgba(211, 47, 47, 0.15)', 
+        sx={{
+          '& .MuiDialog-paper': {
+            borderRadius: '16px',
+            boxShadow: '0 12px 32px rgba(211, 47, 47, 0.15)',
             backgroundColor: '#ffffff',
             margin: { xs: 1, sm: 3 },
             width: { xs: 'calc(100% - 16px)', sm: 'auto' },
-            border: '2px solid #ffebee'
-          } 
+            border: '2px solid #ffebee',
+          },
         }}
       >
         <DialogTitle
-          sx={{ 
-            background: 'linear-gradient(135deg, #f44336 0%, #e91e63 100%)', 
-            color: '#ffffff', 
-            fontWeight: 800, 
-            borderTopLeftRadius: '14px', 
-            borderTopRightRadius: '14px', 
+          sx={{
+            background: 'linear-gradient(135deg, #f44336 0%, #e91e63 100%)',
+            color: '#ffffff',
+            fontWeight: 800,
+            borderTopLeftRadius: '14px',
+            borderTopRightRadius: '14px',
             p: { xs: 2, md: 3 },
             fontSize: { xs: '1.2rem', sm: '1.4rem' },
             textAlign: 'center',
-            textShadow: '0 2px 4px rgba(0, 0, 0, 0.2)'
+            textShadow: '0 2px 4px rgba(0, 0, 0, 0.2)',
           }}
         >
           ⚠️ Confirmar Eliminación
         </DialogTitle>
         <DialogContent sx={{ p: { xs: 3, md: 4 }, pt: { xs: 4, md: 4 }, backgroundColor: '#fefefe', textAlign: 'center' }}>
           <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
-            <Box sx={{ 
-              width: 80, 
-              height: 80, 
-              borderRadius: '50%', 
-              backgroundColor: '#ffebee', 
-              display: 'flex', 
-              alignItems: 'center', 
-              justifyContent: 'center',
-              mb: 1
-            }}>
+            <Box
+              sx={{
+                width: 80,
+                height: 80,
+                borderRadius: '50%',
+                backgroundColor: '#ffebee',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                mb: 1,
+              }}
+            >
               <Typography sx={{ fontSize: '2.5rem' }}>🗑️</Typography>
             </Box>
-            <Typography sx={{ 
-              color: '#424242', 
-              fontSize: { xs: '1rem', sm: '1.1rem' },
-              fontWeight: 500,
-              lineHeight: 1.6,
-              maxWidth: '300px'
-            }}>
+            <Typography
+              sx={{
+                color: '#424242',
+                fontSize: { xs: '1rem', sm: '1.1rem' },
+                fontWeight: 500,
+                lineHeight: 1.6,
+                maxWidth: '300px',
+              }}
+            >
               ¿Estás seguro de que quieres eliminar esta cuota?
             </Typography>
-            <Typography sx={{ 
-              color: '#757575', 
-              fontSize: { xs: '0.9rem', sm: '1rem' },
-              fontWeight: 400,
-              fontStyle: 'italic'
-            }}>
+            <Typography sx={{ color: '#757575', fontSize: { xs: '0.9rem', sm: '1rem' }, fontWeight: 400, fontStyle: 'italic' }}>
               Esta acción no se puede deshacer.
             </Typography>
           </Box>
         </DialogContent>
-        <DialogActions sx={{ 
-          p: { xs: 2, md: 3 }, 
-          backgroundColor: '#fefefe',
-          borderTop: '1px solid #ffebee',
-          flexDirection: { xs: 'column', sm: 'row' }, 
-          gap: { xs: 1, sm: 2 },
-          justifyContent: 'center'
-        }}>
+        <DialogActions
+          sx={{
+            p: { xs: 2, md: 3 },
+            backgroundColor: '#fefefe',
+            borderTop: '1px solid #ffebee',
+            flexDirection: { xs: 'column', sm: 'row' },
+            gap: { xs: 1, sm: 2 },
+            justifyContent: 'center',
+          }}
+        >
           <Button
             onClick={handleCloseDeleteDialog}
             variant="outlined"
             startIcon={<CancelIcon />}
-            sx={{ 
-              color: '#424242', 
-              borderColor: '#e0e0e0', 
+            sx={{
+              color: '#424242',
+              borderColor: '#e0e0e0',
               borderWidth: '2px',
               borderRadius: '25px',
               px: { xs: 4, sm: 6 },
@@ -943,11 +971,11 @@ const StudentShares = ({ studentId, onBack }) => {
               fontSize: { xs: '0.95rem', sm: '1rem' },
               width: { xs: '100%', sm: 'auto' },
               order: { xs: 2, sm: 1 },
-              '&:hover': { 
-                backgroundColor: 'rgba(224, 224, 224, 0.1)', 
+              '&:hover': {
+                backgroundColor: 'rgba(224, 224, 224, 0.1)',
                 borderColor: '#bdbdbd',
-                borderWidth: '2px'
-              }
+                borderWidth: '2px',
+              },
             }}
           >
             Cancelar
@@ -955,9 +983,9 @@ const StudentShares = ({ studentId, onBack }) => {
           <Button
             onClick={handleConfirmDelete}
             variant="contained"
-            sx={{ 
-              background: 'linear-gradient(135deg, #f44336 0%, #e91e63 100%)', 
-              color: '#ffffff', 
+            sx={{
+              background: 'linear-gradient(135deg, #f44336 0%, #e91e63 100%)',
+              color: '#ffffff',
               borderRadius: '25px',
               px: { xs: 4, sm: 6 },
               py: 1.2,
@@ -966,10 +994,10 @@ const StudentShares = ({ studentId, onBack }) => {
               width: { xs: '100%', sm: 'auto' },
               order: { xs: 1, sm: 2 },
               boxShadow: '0 4px 12px rgba(244, 67, 54, 0.3)',
-              '&:hover': { 
+              '&:hover': {
                 background: 'linear-gradient(135deg, #e91e63 0%, #f44336 100%)',
-                boxShadow: '0 6px 16px rgba(244, 67, 54, 0.4)'
-              }
+                boxShadow: '0 6px 16px rgba(244, 67, 54, 0.4)',
+              },
             }}
           >
             🗑️ Eliminar
@@ -982,66 +1010,74 @@ const StudentShares = ({ studentId, onBack }) => {
         onClose={handleClosePayDialog}
         fullWidth
         maxWidth="xs"
-        sx={{ 
-          '& .MuiDialog-paper': { 
-            borderRadius: '16px', 
-            boxShadow: '0 12px 32px rgba(76, 175, 80, 0.15)', 
+        sx={{
+          '& .MuiDialog-paper': {
+            borderRadius: '16px',
+            boxShadow: '0 12px 32px rgba(76, 175, 80, 0.15)',
             backgroundColor: '#ffffff',
             margin: { xs: 1, sm: 3 },
             width: { xs: 'calc(100% - 16px)', sm: 'auto' },
-            border: '2px solid #e8f5e9'
-          } 
+            border: '2px solid #e8f5e9',
+          },
         }}
       >
         <DialogTitle
-          sx={{ 
-            background: 'linear-gradient(135deg, #4caf50 0%, #8bc34a 100%)', 
-            color: '#ffffff', 
-            fontWeight: 800, 
-            borderTopLeftRadius: '14px', 
-            borderTopRightRadius: '14px', 
+          sx={{
+            background: 'linear-gradient(135deg, #4caf50 0%, #8bc34a 100%)',
+            color: '#ffffff',
+            fontWeight: 800,
+            borderTopLeftRadius: '14px',
+            borderTopRightRadius: '14px',
             p: { xs: 2, md: 3 },
             fontSize: { xs: '1.2rem', sm: '1.4rem' },
             textAlign: 'center',
-            textShadow: '0 2px 4px rgba(0, 0, 0, 0.2)'
+            textShadow: '0 2px 4px rgba(0, 0, 0, 0.2)',
           }}
         >
           ✅ Marcar como Pagado
         </DialogTitle>
         <DialogContent sx={{ p: { xs: 3, md: 4 }, pt: { xs: 4, md: 4 }, backgroundColor: '#f8fffe' }}>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5, alignItems: 'center' }}>
-            <Box sx={{ 
-              width: 80, 
-              height: 80, 
-              borderRadius: '50%', 
-              backgroundColor: '#e8f5e9', 
-              display: 'flex', 
-              alignItems: 'center', 
-              justifyContent: 'center',
-              mb: 1
-            }}>
+            <Box
+              sx={{
+                width: 80,
+                height: 80,
+                borderRadius: '50%',
+                backgroundColor: '#e8f5e9',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                mb: 1,
+              }}
+            >
               <Typography sx={{ fontSize: '2.5rem' }}>💰</Typography>
             </Box>
-            <Typography sx={{ 
-              color: '#424242', 
-              fontSize: { xs: '1rem', sm: '1.1rem' },
-              fontWeight: 600,
-              textAlign: 'center',
-              mb: 2
-            }}>
+            <Typography
+              sx={{
+                color: '#424242',
+                fontSize: { xs: '1rem', sm: '1.1rem' },
+                fontWeight: 600,
+                textAlign: 'center',
+                mb: 2,
+              }}
+            >
               Selecciona el método de pago
             </Typography>
-            <FormControl fullWidth sx={{ 
-              '& .MuiOutlinedInput-root': { 
-                borderRadius: '12px',
-                backgroundColor: '#ffffff',
-                '& fieldset': { borderColor: '#c8e6c9', borderWidth: '2px' }, 
-                '&:hover fieldset': { borderColor: '#4caf50' }, 
-                '&.Mui-focused fieldset': { borderColor: '#4caf50', borderWidth: '2px' } 
-              }, 
-              '& .MuiInputLabel-root': { color: '#2e7d32', fontWeight: 600 }, 
-              '& .MuiInputLabel-root.Mui-focused': { color: '#4caf50' }
-            }} size="medium">
+            <FormControl
+              fullWidth
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: '12px',
+                  backgroundColor: '#ffffff',
+                  '& fieldset': { borderColor: '#c8e6c9', borderWidth: '2px' },
+                  '&:hover fieldset': { borderColor: '#4caf50' },
+                  '&.Mui-focused fieldset': { borderColor: '#4caf50', borderWidth: '2px' },
+                },
+                '& .MuiInputLabel-root': { color: '#2e7d32', fontWeight: 600 },
+                '& .MuiInputLabel-root.Mui-focused': { color: '#4caf50' },
+              }}
+              size="medium"
+            >
               <InputLabel>Método de Pago</InputLabel>
               <Select
                 name="paymentmethod"
@@ -1072,21 +1108,23 @@ const StudentShares = ({ studentId, onBack }) => {
             </FormControl>
           </Box>
         </DialogContent>
-        <DialogActions sx={{ 
-          p: { xs: 2, md: 3 }, 
-          backgroundColor: '#f8fffe',
-          borderTop: '1px solid #e8f5e9',
-          flexDirection: { xs: 'column', sm: 'row' }, 
-          gap: { xs: 1, sm: 2 },
-          justifyContent: 'center'
-        }}>
+        <DialogActions
+          sx={{
+            p: { xs: 2, md: 3 },
+            backgroundColor: '#f8fffe',
+            borderTop: '1px solid #e8f5e9',
+            flexDirection: { xs: 'column', sm: 'row' },
+            gap: { xs: 1, sm: 2 },
+            justifyContent: 'center',
+          }}
+        >
           <Button
             onClick={handleClosePayDialog}
             variant="outlined"
             startIcon={<CancelIcon />}
-            sx={{ 
-              color: '#424242', 
-              borderColor: '#e0e0e0', 
+            sx={{
+              color: '#424242',
+              borderColor: '#e0e0e0',
               borderWidth: '2px',
               borderRadius: '25px',
               px: { xs: 4, sm: 6 },
@@ -1095,11 +1133,11 @@ const StudentShares = ({ studentId, onBack }) => {
               fontSize: { xs: '0.95rem', sm: '1rem' },
               width: { xs: '100%', sm: 'auto' },
               order: { xs: 2, sm: 1 },
-              '&:hover': { 
-                backgroundColor: 'rgba(224, 224, 224, 0.1)', 
+              '&:hover': {
+                backgroundColor: 'rgba(224, 224, 224, 0.1)',
                 borderColor: '#bdbdbd',
-                borderWidth: '2px'
-              }
+                borderWidth: '2px',
+              },
             }}
           >
             Cancelar
@@ -1107,9 +1145,9 @@ const StudentShares = ({ studentId, onBack }) => {
           <Button
             onClick={handleConfirmPay}
             variant="contained"
-            sx={{ 
-              background: 'linear-gradient(135deg, #4caf50 0%, #8bc34a 100%)', 
-              color: '#ffffff', 
+            sx={{
+              background: 'linear-gradient(135deg, #4caf50 0%, #8bc34a 100%)',
+              color: '#ffffff',
               borderRadius: '25px',
               px: { xs: 4, sm: 6 },
               py: 1.2,
@@ -1118,10 +1156,10 @@ const StudentShares = ({ studentId, onBack }) => {
               width: { xs: '100%', sm: 'auto' },
               order: { xs: 1, sm: 2 },
               boxShadow: '0 4px 12px rgba(76, 175, 80, 0.3)',
-              '&:hover': { 
+              '&:hover': {
                 background: 'linear-gradient(135deg, #8bc34a 0%, #4caf50 100%)',
-                boxShadow: '0 6px 16px rgba(76, 175, 80, 0.4)'
-              }
+                boxShadow: '0 6px 16px rgba(76, 175, 80, 0.4)',
+              },
             }}
           >
             ✅ Confirmar Pago

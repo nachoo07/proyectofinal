@@ -1,6 +1,8 @@
 import { useState, useMemo } from 'react';
 import { format, parseISO, isBefore } from 'date-fns';
 import { useNotifications } from '../../context/notification/notificationContext';
+import { useNavigate } from 'react-router-dom'; // Added for navigation
+import { Box, Typography, Button } from '@mui/material'; // Added Material-UI components
 import './notifications.css';
 
 const NotificationComponent = () => {
@@ -13,6 +15,7 @@ const NotificationComponent = () => {
   const [successMessage, setSuccessMessage] = useState('');
   const [notificationToDelete, setNotificationToDelete] = useState(null);
   const context = useNotifications();
+  const navigate = useNavigate(); // Added for navigation
 
   const [newNotification, setNewNotification] = useState({
     message: '',
@@ -78,41 +81,147 @@ const NotificationComponent = () => {
 
   if (context.loading) {
     return (
-      <div className="notification-container">
-        <div className="notification-topbar">
-          <button
-            className="notification-back-btn"
-            onClick={() => {
-              if (typeof window !== 'undefined' && window.history) window.history.back();
+      <Box
+        sx={{
+          background: 'linear-gradient(135deg, #e8f5e9 0%, #b2dfdb 100%)',
+          minHeight: '100vh',
+          p: { xs: 1, md: 2, lg: 2 },
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'flex-start',
+          boxSizing: 'border-box',
+        }}
+      >
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '80%',
+            mb: 2,
+            p: 1,
+            borderRadius: '16px',
+            background: '#e8f5e9',
+          }}
+        >
+          <Typography
+            variant="h3"
+            sx={{
+              textAlign: 'center',
+              fontWeight: 800,
+              color: 'rgba(32, 129, 38, 1) !important',
+              letterSpacing: '0.08rem',
+              fontSize: { xs: '1.5rem', sm: '2rem', md: '3rem' },
+              textShadow: '2px 2px 6px rgba(56, 249, 215, 0.15)',
+            }}
+          >
+            Notificaciones
+          </Typography>
+        </Box>
+        <Box
+          sx={{
+            display: 'flex',
+            gap: { xs: 1, md: 2 },
+            flexDirection: 'row',
+            width: { xs: '100%', md: 'auto' },
+            mb: { xs: 2, md: 4 },
+            justifyContent: 'center',
+          }}
+        >
+          <Button
+            variant="outlined"
+            color="success"
+            onClick={() => navigate(-1)}
+            sx={{
+              borderRadius: '32px',
+              fontWeight: 600,
+              fontSize: { xs: '0.8rem', md: '1rem' },
+              px: { xs: 1.5, md: 3 },
+              py: { xs: 0.5, md: 1 },
+              minWidth: { xs: '120px', md: '160px' },
+              flex: { xs: 1, md: 'none' },
             }}
           >
             Volver
-          </button>
-          <h1 className="notification-title">Notificaciones</h1>
-        </div>
+          </Button>
+        </Box>
         <div className="content-container">
           <div className="notification-loading">
             <div className="spinner"></div>
           </div>
         </div>
-      </div>
+      </Box>
     );
   }
 
   if (context.error) {
     return (
-      <div className="notification-container">
-        <div className="notification-topbar">
-          <button
-            className="notification-back-btn"
-            onClick={() => {
-              if (typeof window !== 'undefined' && window.history) window.history.back();
+      <Box
+        sx={{
+          background: 'linear-gradient(135deg, #e8f5e9 0%, #b2dfdb 100%)',
+          minHeight: '100vh',
+          p: { xs: 1, md: 2, lg: 2 },
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'flex-start',
+          boxSizing: 'border-box',
+        }}
+      >
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '80%',
+            mb: 2,
+            p: 1,
+            borderRadius: '16px',
+            background: '#e8f5e9',
+          }}
+        >
+          <Typography
+            variant="h3"
+            sx={{
+              textAlign: 'center',
+              fontWeight: 800,
+              color: 'rgba(32, 129, 38, 1) !important',
+              letterSpacing: '0.08rem',
+              fontSize: { xs: '1.5rem', sm: '2rem', md: '3rem' },
+              textShadow: '2px 2px 6px rgba(56, 249, 215, 0.15)',
+            }}
+          >
+            Notificaciones
+          </Typography>
+        </Box>
+        <Box
+          sx={{
+            display: 'flex',
+            gap: { xs: 1, md: 2 },
+            flexDirection: 'row',
+            width: { xs: '100%', md: 'auto' },
+            mb: { xs: 2, md: 4 },
+            justifyContent: 'center',
+          }}
+        >
+          <Button
+            variant="outlined"
+            color="success"
+            onClick={() => navigate(-1)}
+            sx={{
+              borderRadius: '32px',
+              fontWeight: 600,
+              fontSize: { xs: '0.8rem', md: '1rem' },
+              px: { xs: 1.5, md: 3 },
+              py: { xs: 0.5, md: 1 },
+              minWidth: { xs: '120px', md: '160px' },
+              flex: { xs: 1, md: 'none' },
             }}
           >
             Volver
-          </button>
-          <h1 className="notification-title">Notificaciones</h1>
-        </div>
+          </Button>
+        </Box>
         <div className="content-container">
           <div className="notification-error">
             <span>{context.error}</span>
@@ -121,23 +230,82 @@ const NotificationComponent = () => {
             </button>
           </div>
         </div>
-      </div>
+      </Box>
     );
   }
 
   return (
-    <div className="notification-container">
-      <div className="notification-topbar">
-        <button
-          className="notification-back-btn"
-          onClick={() => {
-            if (typeof window !== 'undefined' && window.history) window.history.back();
+    <Box
+      sx={{
+        background: 'linear-gradient(135deg, #e8f5e9 0%, #b2dfdb 100%)',
+        minHeight: '100vh',
+        p: { xs: 1, md: 2, lg: 2 },
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'flex-start',
+        boxSizing: 'border-box',
+      }}
+      className="main-container" // igual que StudentTable
+    >
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          width: '80%',
+          mb: 2,
+          p: 1,
+          borderRadius: '16px',
+          background: '#e8f5e9'
+        }}
+      >
+        <Typography
+          variant="h3"
+          sx={{
+            textAlign: 'center',
+            fontWeight: 800,
+            color: 'rgba(32, 129, 38, 1) !important',
+            letterSpacing: '0.08rem',
+            fontSize: { xs: '1.5rem', sm: '2rem', md: '3rem' },
+            textShadow: '2px 2px 6px rgba(56, 249, 215, 0.15)',
           }}
         >
-          Volver
-        </button>
-        <h1 className="notification-title">Notificaciones</h1>
-      </div>
+          Notificaciones
+        </Typography>
+      </Box>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: { xs: 'column', md: 'row' },
+          justifyContent: 'center',
+          alignItems: 'center',
+          mb: { xs: 2, md: 4 },
+          flexWrap: 'wrap',
+          gap: 2,
+          width: '100%',
+          maxWidth: '1200px',
+        }}
+      >
+        <Box sx={{ display: 'flex', gap: { xs: 1, md: 2 }, flexDirection: 'row', width: { xs: '100%', md: 'auto' } }}>
+          <Button
+            variant="outlined"
+            color="success"
+            onClick={() => navigate(-1)}
+            sx={{
+              borderRadius: '32px',
+              fontWeight: 600,
+              fontSize: { xs: '0.8rem', md: '1rem' },
+              px: { xs: 1.5, md: 3 },
+              py: { xs: 0.5, md: 1 },
+              minWidth: { xs: '120px', md: '160px' },
+              flex: { xs: 1, md: 'none' },
+            }}
+          >
+            Volver
+          </Button>
+        </Box>
+      </Box>
       <div className="content-container">
         <div className="notification-header">
           <div className="notification-actions">
@@ -380,7 +548,7 @@ const NotificationComponent = () => {
           </div>
         )}
       </div>
-    </div>
+    </Box>
   );
 };
 

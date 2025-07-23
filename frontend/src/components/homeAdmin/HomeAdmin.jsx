@@ -11,7 +11,7 @@ import './homeAdmin.css';
 const HomeAdmin = () => {
   const navigate = useNavigate();
 
-  const textColor = '#1b5e20';
+  const textColor = '#16801dff';
 
   const sections = [
     { title: 'Estudiantes', route: '/students', icon: <FaUserGraduate size={30} color={textColor} /> },
