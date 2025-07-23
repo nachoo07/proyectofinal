@@ -12,7 +12,7 @@ import {
 } from 'react-bootstrap';
 import fondoLogin from '../../assets/ninos-futbol.webp';
 import './login.css';
-
+ 
 const PageLogin = () => {
   const { login, auth, loading } = useContext(LoginContext);
   const navigate = useNavigate();
@@ -20,6 +20,7 @@ const PageLogin = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
   const [formErrors, setFormErrors] = useState({ email: '', password: '' });
+  const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
     if (auth && !loading) {
@@ -109,14 +110,33 @@ const PageLogin = () => {
                         <i className="fas fa-lock" style={{marginRight: '8px'}}></i>
                         Contraseña
                       </Form.Label>
-                      <Form.Control
-                        type="password"
-                        placeholder="Ingresa tu contraseña"
-                        className="login-form-control"
-                        value={password}
-                        isInvalid={!!formErrors.password}
-                        onChange={(e) => setPassword(e.target.value)}
-                      />
+                      <div style={{ position: 'relative' }}>
+  <Form.Control
+    type={showPassword ? 'text' : 'password'}
+    placeholder="Ingresa tu contraseña"
+    className="login-form-control"
+    value={password}
+    isInvalid={!!formErrors.password}
+    onChange={(e) => setPassword(e.target.value)}
+    style={{ paddingRight: '40px' }}
+  />
+  <i
+    className={`fas ${showPassword ? 'fa-eye-slash' : 'fa-eye'}`}
+    onClick={() => setShowPassword(!showPassword)}
+    style={{
+      position: 'absolute',
+      top: '50%',
+      right: '10px',
+      transform: 'translateY(-50%)',
+      cursor: 'pointer',
+      color: '#666'
+    }}
+  />
+</div>
+<Form.Control.Feedback type="invalid" className="login-form-feedback">
+  {formErrors.password}
+</Form.Control.Feedback>
+
                       <Form.Control.Feedback type="invalid" className="login-form-feedback">
                         {formErrors.password}
                       </Form.Control.Feedback>

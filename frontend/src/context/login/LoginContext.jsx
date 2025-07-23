@@ -20,7 +20,7 @@ export const LoginProvider = ({ children }) => {
     const checkAuth = async () => {
       if (location.pathname === '/login') {
         setLoading(false);
-        return;
+        return; 
       }
 
       try {

@@ -51,7 +51,7 @@ const StudentTable = () => {
           mt: 8,
           backgroundColor: '#E6F9EC',
           minHeight: '100vh',
-          textAlign: 'center',
+          textAlign: 'center ',
         }}
       >
         <Typography variant="h6" color="#1b5e20">
@@ -138,13 +138,15 @@ const StudentTable = () => {
         }}
       >
         <Typography
-          variant="h1"
+          variant="h3"
           sx={{
             textAlign: 'center',
             fontWeight: 800,
-            color: '#1b5e20', // Verde oscuro para consistencia
+            color: 'rgba(32, 129, 38, 1) !important', // Verde oscuro para consistencia
             letterSpacing: '0.08rem',
-            fontSize: { xs: '1rem', sm: '2rem', md: '3rem' },
+            fontSize: { xs: '1.5rem', sm: '2rem', md: '3rem' },
+            letterSpacing: '0.08rem',
+            textShadow: '2px 2px 6px rgba(56, 249, 215, 0.15)',
             
           }}
         >
@@ -194,7 +196,7 @@ const StudentTable = () => {
                 '&:hover fieldset': { borderColor: '#43e97b' },
                 '&.Mui-focused fieldset': { borderColor: '#43e97b' },
               },
-              '& .MuiInputLabel-root': { color: '#1b5e20' },
+              '& .MuiInputLabel-root': { color: '#000000ff' },
               '& .MuiInputLabel-root.Mui-focused': { color: '#43e97b' },
             }}
           />
@@ -265,10 +267,10 @@ const StudentTable = () => {
       >
         <Table sx={{ minWidth: { xs: 320, md: 650 } }}>
           <TableHead>
-            <TableRow sx={{ background: '#e8f5e9' }}>
+            <TableRow sx={{ background: '#208126ff' }}>
               <TableCell
                 sx={{
-                  color: '#1b5e20',
+                  color: '#ffffffff',
                   fontWeight: 700,
                   fontSize: { xs: '0.75rem', md: '1.1rem' },
                   borderTopLeftRadius: '16px',
@@ -280,7 +282,7 @@ const StudentTable = () => {
               </TableCell>
               <TableCell
                 sx={{
-                  color: '#1b5e20',
+                  color: '#ffffffff',
                   fontWeight: 700,
                   fontSize: { xs: '0.75rem', md: '1.1rem' },
                   textAlign: 'center',
@@ -291,7 +293,7 @@ const StudentTable = () => {
               </TableCell>
               <TableCell
                 sx={{
-                  color: '#1b5e20',
+                  color: '#ffffffff',
                   fontWeight: 700,
                   fontSize: { xs: '0.75rem', md: '1.1rem' },
                   textAlign: 'center',
@@ -302,7 +304,7 @@ const StudentTable = () => {
               </TableCell>
               <TableCell
                 sx={{
-                  color: '#1b5e20',
+                  color: '#ffffffff',
                   fontWeight: 700,
                   fontSize: { xs: '0.75rem', md: '1.1rem' },
                   textAlign: 'center',
@@ -313,7 +315,7 @@ const StudentTable = () => {
               </TableCell>
               <TableCell
                 sx={{
-                  color: '#1b5e20',
+                  color: '#ffffffff',
                   fontWeight: 700,
                   fontSize: { xs: '0.75rem', md: '1.1rem' },
                   borderTopRightRadius: '16px',
