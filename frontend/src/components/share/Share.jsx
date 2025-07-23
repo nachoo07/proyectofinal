@@ -20,8 +20,6 @@ import {
   InputLabel,
   Select,
   MenuItem,
-  Checkbox,
-  FormControlLabel,
 } from '@mui/material';
 import { SharesContext } from '../../context/share/ShareContext';
 import { toast } from 'react-toastify';
@@ -45,13 +43,7 @@ const Share = () => {
     date: '',
     year: new Date().getFullYear(),
   });
-  const [filters, setFilters] = useState({
-    all: true,
-    pendiente: false,
-    vencido: false,
-    pagado: false,
-    sinCuotas: false,
-  });
+  const [statusFilter, setStatusFilter] = useState('Todos');
   const [currentPage, setCurrentPage] = useState(1);
   const studentsPerPage = 5;
 
@@ -86,11 +78,7 @@ const Share = () => {
       .toLowerCase()
       .includes(searchQuery.toLowerCase());
     const matchesFilter =
-      filters.all ||
-      (filters.pendiente && status === 'Pendiente') ||
-      (filters.vencido && status === 'Vencido') ||
-      (filters.pagado && status === 'Pagado') ||
-      (filters.sinCuotas && status === 'Sin Cuota');
+      statusFilter === 'Todos' || status === statusFilter;
     return matchesSearch && matchesFilter;
   });
 
@@ -101,7 +89,7 @@ const Share = () => {
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchQuery, filters]);
+  }, [searchQuery, statusFilter]);
 
   useEffect(() => {
     fetchStudentsWithShares();
@@ -144,26 +132,6 @@ const Share = () => {
     } catch (err) {
       toast.error('Error al crear la cuota masiva: ' + (err.response?.data?.error || err.message));
       console.error(err);
-    }
-  };
-
-  const handleFilterChange = (event) => {
-    const { name, checked } = event.target;
-    if (name === 'all') {
-      setFilters({
-        all: checked,
-        pendiente: false,
-        vencido: false,
-        pagado: false,
-        sinCuotas: false,
-      });
-    } else {
-      setFilters((prev) => {
-        const newFilters = { ...prev, [name]: checked };
-        newFilters.all = false; // Desmarcar "Todos" si se selecciona un filtro específico
-        newFilters.all = newFilters.pendiente && newFilters.vencido && newFilters.pagado && newFilters.sinCuotas;
-        return newFilters;
-      });
     }
   };
 
@@ -250,8 +218,7 @@ const Share = () => {
             boxShadow: '0 2px 8px rgba(56, 249, 215, 0.08)',
             p: { xs: 1, md: 2 },
             alignItems: 'center',
-            justifyContent: 'space-between',
-            flexWrap: 'wrap',
+            justifyContent: 'center',
           }}
         >
           <TextField
@@ -262,7 +229,6 @@ const Share = () => {
             size={window.innerWidth < 768 ? 'small' : 'medium'}
             sx={{
               flex: 1,
-              minWidth: { xs: '180px', md: '250px' },
               '& .MuiOutlinedInput-root': {
                 '& fieldset': { borderColor: '#38f9d7' },
                 '&:hover fieldset': { borderColor: '#43e97b' },
@@ -272,75 +238,63 @@ const Share = () => {
               '& .MuiInputLabel-root.Mui-focused': { color: '#43e97b' },
             }}
           />
-          <Box sx={{ display: 'flex', gap: { xs: 1, md: 2 }, flexDirection: 'row', flexWrap: 'wrap' }}>
-            <Button
-              variant="contained"
-              color="success"
-              onClick={handleOpenMassShareDialog}
-              sx={{
-                borderRadius: '32px',
-                fontWeight: 700,
-                fontSize: { xs: '0.9rem', md: '1.3rem' },
-                px: { xs: 2, md: 5 },
-                py: { xs: 1, md: 2 },
-                minWidth: { xs: '140px', md: '220px' },
-              }}
-            >
-              Crear Cuota Masiva
-            </Button>
-            <Button
-              variant="outlined"
-              color="success"
-              onClick={() => navigate(-1)}
-              sx={{
-                borderRadius: '32px',
-                fontWeight: 700,
-                fontSize: { xs: '0.9rem', md: '1.3rem' },
-                px: { xs: 2, md: 5 },
-                py: { xs: 1, md: 2 },
-                minWidth: { xs: '140px', md: '220px' },
-              }}
-            >
-              Volver
-            </Button>
-          </Box>
+          <TextField
+            select
+            label="Estado"
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+            SelectProps={{ native: true }}
+            size={window.innerWidth < 768 ? 'small' : 'medium'}
+            sx={{
+              minWidth: { xs: 100, md: 120 },
+              flexShrink: 0,
+              '& .MuiOutlinedInput-root': {
+                '& fieldset': { borderColor: '#38f9d7' },
+                '&:hover fieldset': { borderColor: '#43e97b' },
+                '&.Mui-focused fieldset': { borderColor: '#43e97b' },
+              },
+              '& .MuiInputLabel-root': { color: '#00335c' },
+              '& .MuiInputLabel-root.Mui-focused': { color: '#43e97b' },
+            }}
+          >
+            <option value="Todos">Todos</option>
+            <option value="Pendiente">Pendiente</option>
+            <option value="Vencido">Vencido</option>
+            <option value="Pagado">Pagado</option>
+            <option value="Sin Cuota">Sin Cuotas</option>
+          </TextField>
         </Box>
-        <Box
-          sx={{
-            display: 'flex',
-            flexDirection: 'row',
-            gap: { xs: 0.5, md: 1 },
-            alignItems: 'center',
-            flexWrap: 'wrap',
-            background: 'transparent',
-            borderRadius: '12px',
-            boxShadow: '0 2px 8px rgba(56, 249, 215, 0.08)',
-            p: { xs: 1, md: 2 },
-            width: '100%',
-            maxWidth: '1200px',
-            justifyContent: 'center',
-          }}
-        >
-          <FormControlLabel
-            control={<Checkbox checked={filters.all} onChange={handleFilterChange} name="all" size="small" />}
-            label={<Typography sx={{ fontSize: { xs: '0.75rem', md: '1rem' } }}>Todos</Typography>}
-          />
-          <FormControlLabel
-            control={<Checkbox checked={filters.pendiente} onChange={handleFilterChange} name="pendiente" size="small" />}
-            label={<Typography sx={{ fontSize: { xs: '0.75rem', md: '1rem' } }}>Pendiente</Typography>}
-          />
-          <FormControlLabel
-            control={<Checkbox checked={filters.vencido} onChange={handleFilterChange} name="vencido" size="small" />}
-            label={<Typography sx={{ fontSize: { xs: '0.75rem', md: '1rem' } }}>Vencido</Typography>}
-          />
-          <FormControlLabel
-            control={<Checkbox checked={filters.pagado} onChange={handleFilterChange} name="pagado" size="small" />}
-            label={<Typography sx={{ fontSize: { xs: '0.75rem', md: '1rem' } }}>Pagado</Typography>}
-          />
-          <FormControlLabel
-            control={<Checkbox checked={filters.sinCuotas} onChange={handleFilterChange} name="sinCuotas" size="small" />}
-            label={<Typography sx={{ fontSize: { xs: '0.75rem', md: '1rem' } }}>Sin Cuotas</Typography>}
-          />
+        <Box sx={{ display: 'flex', gap: { xs: 1, md: 2 }, flexDirection: 'row', width: { xs: '100%', md: 'auto' } }}>
+          <Button
+            variant="contained"
+            color="success"
+            onClick={handleOpenMassShareDialog}
+            sx={{
+              borderRadius: '32px',
+              fontWeight: 700,
+              fontSize: { xs: '0.9rem', md: '1.3rem' },
+              px: { xs: 2, md: 5 },
+              py: { xs: 1, md: 2 },
+              minWidth: { xs: '140px', md: '220px' },
+            }}
+          >
+            Crear Cuota Masiva
+          </Button>
+          <Button
+            variant="outlined"
+            color="success"
+            onClick={() => navigate(-1)}
+            sx={{
+              borderRadius: '32px',
+              fontWeight: 700,
+              fontSize: { xs: '0.9rem', md: '1.3rem' },
+              px: { xs: 2, md: 5 },
+              py: { xs: 1, md: 2 },
+              minWidth: { xs: '140px', md: '220px' },
+            }}
+          >
+            Volver
+          </Button>
         </Box>
       </Box>
       <TableContainer
@@ -480,12 +434,13 @@ const Share = () => {
                     sx={{
                       color:
                         getLatestShareStatus(student.id) === 'Pendiente'
-                          ? '#388e3c'
+                          ? '#ebeb34ff'
                           : getLatestShareStatus(student.id) === 'Vencido'
                           ? '#d32f2f'
                           : getLatestShareStatus(student.id) === 'Pagado'
-                          ? '#1976d2'
-                          : '#666',
+                          ? '#388e3c'
+                          
+                          : '#1585fdff',
                       fontWeight: 700,
                       textAlign: 'center',
                       fontSize: { xs: '0.75rem', md: '1rem' },
@@ -585,7 +540,7 @@ const Share = () => {
       >
         <DialogTitle
           sx={{
-            background: 'linear-gradient(90deg, #8eeab1, #007e32)',
+            background: 'linear-gradient(90deg, #075324ff, #007e32)',
             color: '#00335c',
             fontWeight: 700,
             borderTopLeftRadius: '12px',
